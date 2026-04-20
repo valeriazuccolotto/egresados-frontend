@@ -2,7 +2,7 @@
 <header class="top-header">
     <div class="header-left">
         <button (click)="toggleMenu()">☰</button>
-        <img src="assets/img/favicon-UNPA.ico" class="logo">
+        <img src="img/favicon-UNPA.ico" class="logo">
         <h2 class="titulo">Seguimiento de Egresados</h2>
     </div>
 
@@ -75,32 +75,31 @@
                 <h3>Formación de Posgrado</h3>
 
                 <div class="field-group">
-                <label>Nivel</label>
-                <select [(ngModel)]="form.nivel" name="nivel">
-                    <option>Especialidad</option>
-                    <option>Maestría</option>
-                    <option>Doctorado</option>
-                    <option>Otro</option>
-                </select>
+                    <label>Nivel</label>
+                    <select [(ngModel)]="form.nivel" name="nivel">
+                        <option>Licenciatura</option>
+                        <option>Maestria</option>
+                        <option>Doctorado</option>
+                    </select>
                 </div>
 
                 <div class="field-group">
-                <label>Institución</label>
-                <input [(ngModel)]="form.institucion" name="institucion">
+                    <label>Institución</label>
+                    <input [(ngModel)]="form.institucion" name="institucion">
                 </div>
 
                 <div class="field-group full">
-                <label>Programa</label>
-                <input [(ngModel)]="form.programa" name="programa">
+                    <label>Programa</label>
+                    <input [(ngModel)]="form.programa" name="programa">
                 </div>
 
                 <div class="field-group">
-                <label>Modalidad</label>
-                <select [(ngModel)]="form.modalidad" name="modalidad">
-                    <option>Presencial</option>
-                    <option>En línea</option>
-                    <option>Híbrido</option>
-                </select>
+                    <label>Modalidad</label>
+                    <select [(ngModel)]="form.modalidad" name="modalidad">
+                        <option>Presencial</option>
+                        <option>Virtual</option>
+                        <option>Hibrido</option>
+                    </select>
                 </div>
             </div>
 
@@ -108,31 +107,31 @@
                 <h3>Estado Académico</h3>
 
                 <div class="field-group">
-                <label>Estatus</label>
-                <select [(ngModel)]="form.estatus" name="estatus">
-                    <option>En curso</option>
-                    <option>Finalizado</option>
-                    <option>Pausado</option>
-                </select>
+                    <label>Estatus</label>
+                    <select [(ngModel)]="form.estatus" name="estatus">
+                        <option>En curso</option>
+                        <option>Finalizado</option>
+                        <option>Pausado</option>
+                    </select>
                 </div>
 
                 <div class="field-group">
-                <label>Relación</label>
-                <select [(ngModel)]="form.relacion" name="relacion">
-                    <option>Totalmente</option>
-                    <option>Parcialmente</option>
-                    <option>No relacionado</option>
-                </select>
+                    <label>Relación</label>
+                    <select [(ngModel)]="form.relacion" name="relacion">
+                        <option>Si</option>
+                        <option>No</option>
+                        <option>Un poco</option>
+                    </select>
                 </div>
 
                 <div class="field-group">
-                <label>Inicio</label>
-                <input type="date" [(ngModel)]="form.inicio" name="inicio">
+                    <label>Inicio</label>
+                    <input type="date" [(ngModel)]="form.inicio" name="inicio">
                 </div>
 
                 <div class="field-group">
-                <label>Fin</label>
-                <input type="date" [(ngModel)]="form.fin" name="fin">
+                    <label>Fin</label>
+                    <input type="date" [(ngModel)]="form.fin" name="fin">
                 </div>
             </div>
 
@@ -140,11 +139,11 @@
                 <h3>Apoyos</h3>
 
                 <div class="field-group">
-                <label>Beca</label>
-                <select [(ngModel)]="form.beca" name="beca">
-                    <option>Sí</option>
-                    <option>No</option>
-                </select>
+                    <label>Beca</label>
+                    <select [(ngModel)]="form.tieneBeca" name="tieneBeca">
+                        <option [ngValue]="true">Sí</option>
+                        <option [ngValue]="false">No</option>
+                    </select>
                 </div>
             </div>
 
@@ -154,38 +153,65 @@
                 CERTIFICACIÓN
             ========================== -->
             <div *ngIf="mostrarCert" class="full">
-            <div class="bloque-formulario">
-                <h3>Certificación</h3>
+                <div class="bloque-formulario">
+                    <h3>Certificación</h3>
+                    <div class="field-group">
+                        <label>Nombre de la certificación</label>
+                        <input [(ngModel)]="form.certNombre" name="certNombre">
+                    </div>
 
-                <div class="field-group">
-                <label>Nombre</label>
-                <input [(ngModel)]="form.certNombre" name="certNombre">
+                    <div class="field-group">
+                        <label>Fecha de inicio</label>
+                        <input type="date" [(ngModel)]="form.certInicio" name="certInicio">
+                    </div>
+
+                    <div class="field-group">
+                        <label>Fecha de término</label>
+                        <input type="date" [(ngModel)]="form.certFin" name="certFin">
+                    </div>
+
+                    <div class="field-group">
+                        <label>Fecha de obtención</label>
+                        <input type="date" [(ngModel)]="form.certObtencion" name="certObtencion">
+                    </div>
+
                 </div>
 
-                <div class="field-group">
-                <label>Institución</label>
-                <input [(ngModel)]="form.certInst" name="certInst">
-                </div>
-
-                <div class="field-group">
-                <label>Fecha</label>
-                <input type="date" [(ngModel)]="form.certFecha" name="certFecha">
-                </div>
-            </div>
             </div>
 
             <!-- =========================
                 RECONOCIMIENTO
             ========================== -->
             <div *ngIf="mostrarReco" class="full">
-            <div class="bloque-formulario">
-                <h3>Reconocimiento</h3>
 
-                <div class="field-group">
-                <label>Nombre</label>
-                <input [(ngModel)]="form.recoNombre" name="recoNombre">
+                <div class="bloque-formulario">
+                    <h3>Reconocimiento Académico</h3>
+                    <div class="field-group">
+                        <label>Nombre del reconocimiento</label>
+                        <input [(ngModel)]="form.recoNombre" name="recoNombre">
+                    </div>
+
+                    <div class="field-group">
+                        <label>Tipo de reconocimiento</label>
+                        <select [(ngModel)]="form.recoTipo" name="recoTipo">
+                            <option>Académico</option>
+                            <option>Cultural</option>
+                            <option>Deportivo</option>
+                        </select>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Fecha de entrega</label>
+                        <input type="date" [(ngModel)]="form.recoFecha" name="recoFecha">
+                    </div>
+
+                    <div class="field-group">
+                        <label>Institución</label>
+                        <input [(ngModel)]="form.recoInstitucion" name="recoInstitucion">
+                    </div>
+
                 </div>
-            </div>
+
             </div>
 
             <!-- BOTÓN -->

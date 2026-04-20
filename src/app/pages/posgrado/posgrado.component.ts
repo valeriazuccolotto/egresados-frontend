@@ -2,17 +2,18 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-posgrado',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './posgrado.component.html',
   styleUrls: ['./posgrado.component.css']
 })
 export class PosgradoComponent {
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private http: HttpClient) {}
 
   // ===== USUARIO =====
   usuario = 'Valeria';
@@ -30,6 +31,8 @@ export class PosgradoComponent {
 
   // ===== FORM =====
   form: any = {
+
+    // POSGRADO
     nivel: '',
     institucion: '',
     programa: '',
@@ -38,13 +41,19 @@ export class PosgradoComponent {
     relacion: '',
     inicio: '',
     fin: '',
-    beca: '',
+    beca: false,
 
+    // CERTIFICACIÓN (CORRECTO)
     certNombre: '',
-    certInst: '',
-    certFecha: '',
+    certInicio: '',
+    certFin: '',
+    certObtencion: '',
 
-    recoNombre: ''
+    // RECONOCIMIENTO (CORRECTO)
+    recoNombre: '',
+    recoTipo: '',
+    recoFecha: '',
+    recoInstitucion: ''
   };
 
   // ===== HEADER =====
@@ -77,15 +86,74 @@ export class PosgradoComponent {
   // ===== GUARDAR =====
   guardar() {
 
-    console.log("Datos enviados:", this.form);
+  // ===== POSGRADO =====
+  if (this.mostrarPosgrado) {
 
-    // Aquí luego conectas backend igual que laboral
+    const datos = {
+    matricula: "A1234567",
 
-    this.mensaje = "✓ Guardado correctamente";
+    nivelEstudio: this.form.nivel,
+    institucion: this.form.institucion,
+    nombrePrograma: this.form.programa,
 
-    setTimeout(() => {
-      this.mensaje = '';
-    }, 3000);
+    modalidad: this.form.modalidad,
+    estatus: this.form.estatus,
+    relacionadoCarrera: this.form.relacion,
+
+    fechaInicio: this.form.inicio,
+    fechaFin: this.form.fin,
+
+    tieneBeca: this.form.beca
+  };
+
+    this.http.post('http://localhost:8181/egresado/posgrado', datos)
+      .subscribe({
+        next: () => this.mostrarMensaje("✓ Posgrado guardado"),
+        error: () => this.mostrarMensaje("❌ Error al guardar posgrado")
+      });
   }
+
+  // ===== CERTIFICACIÓN =====
+  if (this.mostrarCert) {
+
+    const datos = {
+      matricula: "A1234567", 
+      nombreCertificacion: this.form.certNombre,
+      fechaInicio: this.form.certInicio,
+      fechaFin: this.form.certFin,
+      fechaObtencion: this.form.certObtencion
+    };
+
+    this.http.post('http://localhost:8181/egresado/certificaciones', datos)
+      .subscribe({
+        next: () => this.mostrarMensaje("✓ Certificación guardada"),
+        error: () => this.mostrarMensaje("❌ Error al guardar certificación")
+      });
+  }
+
+  // ===== RECONOCIMIENTO =====
+  if (this.mostrarReco) {
+
+  const datos = {
+  matricula: "A1234567", 
+  nombreReconocimiento: this.form.recoNombre,
+  tipoReconocimiento: this.form.recoTipo,
+  fechaEntrega: this.form.recoFecha,
+  institucion: this.form.recoInstitucion
+};
+
+  this.http.post('http://localhost:8181/egresado/reconocimientos', datos)
+    .subscribe({
+      next: () => this.mostrarMensaje("✓ Reconocimiento guardado"),
+      error: () => this.mostrarMensaje("❌ Error al guardar reconocimiento")
+    });
+}
+
+}
+
+mostrarMensaje(texto: string) {
+  this.mensaje = texto;
+  setTimeout(() => this.mensaje = '', 3000);
+}
 
 }
