@@ -1,0 +1,208 @@
+<!-- HEADER igual que laboral -->
+<header class="top-header">
+    <div class="header-left">
+        <button (click)="toggleMenu()">☰</button>
+        <img src="assets/img/favicon-UNPA.ico" class="logo">
+        <h2 class="titulo">Seguimiento de Egresados</h2>
+    </div>
+
+    <div class="user-info">
+        <div class="notification-bell" (click)="irNotificaciones()">
+        🔔
+        <span class="notification-dot"></span>
+        </div>
+
+        <span class="username">{{ usuario }}</span>
+
+        <div class="avatar" (click)="togglePopup($event)">
+        {{ usuario.charAt(0) }}
+        </div>
+    </div>
+    </header>
+
+    <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" [class.hidden]="menuOculto">
+        <nav>
+        <a routerLink="/perfil">Mi perfil</a>
+        <a routerLink="/contacto">Contacto</a>
+        <a routerLink="/academico">Académico</a>
+        <a routerLink="/posgrado" class="active">Posgrado</a>
+        <a routerLink="/laboral">Laboral</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+
+        <div class="section-header">
+        <div class="section-title">
+            <h2>Información de Posgrado</h2>
+            <p>Registra estudios posteriores a tu licenciatura</p>
+        </div>
+        </div>
+
+        <div class="card">
+
+        <form class="form-grid">
+
+            <!-- BOTONES -->
+            <div class="acciones-posgrado full">
+            <button type="button" class="btn-secundario" (click)="mostrar('posgrado')">
+                + Agregar Posgrado
+            </button>
+
+            <button type="button" class="btn-secundario" (click)="mostrar('certificacion')">
+                + Agregar Certificación
+            </button>
+
+            <button type="button" class="btn-secundario" (click)="mostrar('reconocimiento')">
+                + Agregar Reconocimiento Académico
+            </button>
+            </div>
+
+            <!-- MENSAJE VACÍO -->
+            <div class="estado-vacio full" *ngIf="!mostrarPosgrado && !mostrarCert && !mostrarReco">
+            No se han registrado posgrados, certificaciones ni reconocimientos.
+            </div>
+
+            <!-- =========================
+                POSGRADO
+            ========================== -->
+            <div *ngIf="mostrarPosgrado" class="full">
+
+            <div class="bloque-formulario">
+                <h3>Formación de Posgrado</h3>
+
+                <div class="field-group">
+                <label>Nivel</label>
+                <select [(ngModel)]="form.nivel" name="nivel">
+                    <option>Especialidad</option>
+                    <option>Maestría</option>
+                    <option>Doctorado</option>
+                    <option>Otro</option>
+                </select>
+                </div>
+
+                <div class="field-group">
+                <label>Institución</label>
+                <input [(ngModel)]="form.institucion" name="institucion">
+                </div>
+
+                <div class="field-group full">
+                <label>Programa</label>
+                <input [(ngModel)]="form.programa" name="programa">
+                </div>
+
+                <div class="field-group">
+                <label>Modalidad</label>
+                <select [(ngModel)]="form.modalidad" name="modalidad">
+                    <option>Presencial</option>
+                    <option>En línea</option>
+                    <option>Híbrido</option>
+                </select>
+                </div>
+            </div>
+
+            <div class="bloque-formulario">
+                <h3>Estado Académico</h3>
+
+                <div class="field-group">
+                <label>Estatus</label>
+                <select [(ngModel)]="form.estatus" name="estatus">
+                    <option>En curso</option>
+                    <option>Finalizado</option>
+                    <option>Pausado</option>
+                </select>
+                </div>
+
+                <div class="field-group">
+                <label>Relación</label>
+                <select [(ngModel)]="form.relacion" name="relacion">
+                    <option>Totalmente</option>
+                    <option>Parcialmente</option>
+                    <option>No relacionado</option>
+                </select>
+                </div>
+
+                <div class="field-group">
+                <label>Inicio</label>
+                <input type="date" [(ngModel)]="form.inicio" name="inicio">
+                </div>
+
+                <div class="field-group">
+                <label>Fin</label>
+                <input type="date" [(ngModel)]="form.fin" name="fin">
+                </div>
+            </div>
+
+            <div class="bloque-formulario">
+                <h3>Apoyos</h3>
+
+                <div class="field-group">
+                <label>Beca</label>
+                <select [(ngModel)]="form.beca" name="beca">
+                    <option>Sí</option>
+                    <option>No</option>
+                </select>
+                </div>
+            </div>
+
+            </div>
+
+            <!-- =========================
+                CERTIFICACIÓN
+            ========================== -->
+            <div *ngIf="mostrarCert" class="full">
+            <div class="bloque-formulario">
+                <h3>Certificación</h3>
+
+                <div class="field-group">
+                <label>Nombre</label>
+                <input [(ngModel)]="form.certNombre" name="certNombre">
+                </div>
+
+                <div class="field-group">
+                <label>Institución</label>
+                <input [(ngModel)]="form.certInst" name="certInst">
+                </div>
+
+                <div class="field-group">
+                <label>Fecha</label>
+                <input type="date" [(ngModel)]="form.certFecha" name="certFecha">
+                </div>
+            </div>
+            </div>
+
+            <!-- =========================
+                RECONOCIMIENTO
+            ========================== -->
+            <div *ngIf="mostrarReco" class="full">
+            <div class="bloque-formulario">
+                <h3>Reconocimiento</h3>
+
+                <div class="field-group">
+                <label>Nombre</label>
+                <input [(ngModel)]="form.recoNombre" name="recoNombre">
+                </div>
+            </div>
+            </div>
+
+            <!-- BOTÓN -->
+            <div class="full" *ngIf="mostrarPosgrado || mostrarCert || mostrarReco">
+            <button type="button" (click)="guardar()" class="btn-guardar">
+                Guardar información
+            </button>
+            </div>
+
+            <!-- MENSAJE -->
+            <div *ngIf="mensaje" class="save-msg">
+            {{ mensaje }}
+            </div>
+
+        </form>
+
+        </div>
+
+    </main>
+</div>
