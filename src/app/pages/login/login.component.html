@@ -1,1 +1,76 @@
-<p>login works!</p>
+<div class="login-page">
+
+  <!-- ENCABEZADO -->
+  <div class="login-header">
+    <h1>UNIVERSIDAD DEL PAPALOAPAN</h1>
+    <img src="favicon-UNPA.ico" alt="Logo UNPA" class="login-logo">
+  </div>
+
+  <!-- TARJETA -->
+  <div class="login-card">
+
+    <h2>Bienvenido(a)</h2>
+
+    <!-- Error -->
+    <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+    <!-- Matrícula -->
+    <div class="input-group">
+      <input
+        type="text"
+        placeholder="Matrícula"
+        maxlength="10"
+        autocomplete="off"
+        [(ngModel)]="matricula"
+        [class.input-error]="errorMatricula"
+        (input)="limpiarErrores()"
+        (keydown.enter)="iniciarSesion()"
+      >
+    </div>
+
+    <!-- Contraseña -->
+    <div class="input-group">
+      <input
+        [type]="mostrarPassword ? 'text' : 'password'"
+        placeholder="Contraseña"
+        autocomplete="off"
+        [(ngModel)]="password"
+        [class.input-error]="errorPassword"
+        (input)="limpiarErrores()"
+        (keydown.enter)="iniciarSesion()"
+      >
+      <button type="button" class="toggle-pass" (click)="togglePassword()">
+        <!-- Ojo tachado (password oculta) -->
+        <svg *ngIf="!mostrarPassword" xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8
+                   a18.45 18.45 0 0 1 5.06-5.94"/>
+          <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8
+                   a18.5 18.5 0 0 1-2.16 3.19"/>
+          <line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>
+        <!-- Ojo abierto (password visible) -->
+        <svg *ngIf="mostrarPassword" xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Botón -->
+    <button class="btn-login" (click)="iniciarSesion()" [disabled]="cargando">
+      {{ cargando ? 'VERIFICANDO...' : 'INICIAR SESIÓN' }}
+    </button>
+
+    <p class="nota">* NOTA: Para recuperar tu contraseña acude a Servicios Escolares</p>
+
+  </div>
+
+  <p class="footer-text">
+    Desarrollado por alumnos y profesores de Ingeniería en Computación
+  </p>
+
+</div>

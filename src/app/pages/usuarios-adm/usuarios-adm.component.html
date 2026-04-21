@@ -1,0 +1,117 @@
+<app-admin-layout>
+<div class="usuarios-page">
+
+  <!-- ENCABEZADO + SELECTOR CAMPUS -->
+  <div class="section-header">
+    <div class="section-title">
+      <h2>Concentrado de egresados en la aplicación</h2>
+      <p>Usuarios registrados y estatus de encuesta por carrera</p>
+    </div>
+    <div class="campus-box">
+      <span class="campus-text">Campus</span>
+      <select [(ngModel)]="campusFiltro" id="campusSelect">
+        <option value="">Todos</option>
+        <option value="Loma Bonita">Loma Bonita</option>
+        <option value="Tuxtepec">Tuxtepec</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- MÉTRICAS -->
+  <section class="metrics">
+    <div class="card">
+      <h3>{{ totalUsuarios }}</h3>
+      <p>Usuarios registrados</p>
+    </div>
+    <div class="card">
+      <h3>{{ totalContestadas }}</h3>
+      <p>Encuestas contestadas</p>
+    </div>
+    <div class="card">
+      <h3>{{ totalPendientes }}</h3>
+      <p>Encuestas pendientes</p>
+    </div>
+    <div class="card">
+      <h3>{{ tasaRespuesta }}</h3>
+      <p>Tasa de respuesta</p>
+    </div>
+  </section>
+
+  <!-- BUSCADOR -->
+  <div class="search-bar">
+    <input
+      type="text"
+      id="buscador"
+      [(ngModel)]="busqueda"
+      placeholder="🔍  Buscar usuario por nombre, matrícula o carrera..."
+    >
+  </div>
+
+  <!-- FILTROS PILLS -->
+  <div class="filtros">
+    <span class="filtro-label">Filtrar por estatus:</span>
+    <button class="filtro-btn" [class.active]="estatusFiltro==='todos'"
+            (click)="setEstatus('todos')">Todos</button>
+    <button class="filtro-btn" [class.active]="estatusFiltro==='Contestada'"
+            (click)="setEstatus('Contestada')">
+      <span class="dot dot-si"></span> Encuesta contestada
+    </button>
+    <button class="filtro-btn" [class.active]="estatusFiltro==='Pendiente'"
+            (click)="setEstatus('Pendiente')">
+      <span class="dot dot-no"></span> Pendiente
+    </button>
+  </div>
+
+  <!-- VACÍO -->
+  <div class="sin-datos" *ngIf="secciones.length === 0">
+    No hay usuarios que coincidan con la búsqueda.
+  </div>
+
+  <!-- SECCIONES AGRUPADAS -->
+  <ng-container *ngFor="let seccion of secciones">
+
+    <div class="seccion-titulo">
+      <span class="badge" [ngClass]="seccion.badgeClass">{{ seccion.label }}</span>
+    </div>
+
+    <div class="carrera-block" *ngFor="let grupo of seccion.carreras">
+      <div class="carrera-header">
+        <h3>{{ grupo.nombre }}</h3>
+        <span class="total-badge">{{ grupo.usuarios.length }} usuario(s)</span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Matrícula</th>
+              <th>Nombre</th>
+              <th>Ap. Paterno</th>
+              <th>Ap. Materno</th>
+              <th>Generación</th>
+              <th>Estatus encuesta</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let u of grupo.usuarios">
+              <td>{{ u.matricula }}</td>
+              <td>{{ u.nombre }}</td>
+              <td>{{ u.apellidoPaterno }}</td>
+              <td>{{ u.apellidoMaterno }}</td>
+              <td>{{ u.generacion }}</td>
+              <td>
+                <span class="status-badge"
+                  [class.status-si]="u.estatusEncuesta==='Contestada'"
+                  [class.status-no]="u.estatusEncuesta==='Pendiente'">
+                  {{ u.estatusEncuesta === 'Contestada' ? '✓ Contestada' : '✗ Pendiente' }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </ng-container>
+
+</div>
+</app-admin-layout>

@@ -1,0 +1,89 @@
+<!-- ══════════════════════════════════════════════
+     CONTACTO — Solo visual, sin conexión a BD
+     TODO: cuando tu compañera mande su código,
+     reemplazar este componente completo con el suyo
+     y eliminar este archivo
+══════════════════════════════════════════════ -->
+
+<div class="contacto-page">
+
+  <!-- HEADER del egresado -->
+  <header class="top-header">
+    <div class="header-left">
+      <button class="menu-btn" (click)="toggleMenu()">☰</button>
+      <img src="favicon-UNPA.ico" class="logo" alt="UNPA">
+      <h2 class="titulo">Seguimiento de Egresados</h2>
+    </div>
+    <div class="user-info">
+      <span class="username">{{ nombreUsuario }}</span>
+      <div class="avatar">{{ inicial }}</div>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- SIDEBAR del egresado -->
+    <aside class="sidebar" [class.oculto]="!menuAbierto">
+      <nav>
+        <a href="#">Mi perfil</a>
+        <a class="active" href="#">Contacto</a>
+        <a href="#">Académico</a>
+        <a href="#">Laboral</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+
+      <div class="section-header">
+        <div class="section-title">
+          <h2>Información de contacto</h2>
+          <p>Mantén tus datos actualizados para recibir notificaciones</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="form-grid">
+
+          <div class="field-group">
+            <label>Correo personal</label>
+            <input type="email" placeholder="correo@ejemplo.com">
+          </div>
+
+          <div class="field-group">
+            <label>Teléfono</label>
+            <input type="tel" placeholder="+52 000 000 0000">
+          </div>
+
+          <div class="field-group">
+            <label>Ciudad</label>
+            <input type="text" placeholder="Ciudad">
+          </div>
+
+          <div class="field-group">
+            <label>Estado</label>
+            <input type="text" placeholder="Estado">
+          </div>
+
+          <div class="field-group full">
+            <label>LinkedIn</label>
+            <input type="url" placeholder="https://linkedin.com/in/...">
+          </div>
+
+          <!-- Mensaje de guardado simulado -->
+          <div class="save-msg" *ngIf="guardado">
+            ✓ Información guardada correctamente.
+          </div>
+
+          <!-- TODO: este botón no guarda en BD todavía.
+               Cuando llegue el código de tu compañera,
+               conectar al servicio real -->
+          <button class="btn-guardar" (click)="simularGuardado()">
+            Guardar contacto
+          </button>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
