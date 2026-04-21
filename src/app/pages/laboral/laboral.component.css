@@ -236,3 +236,46 @@
     gap: 15px;
     margin-top: 10px;
 }
+
+.prestaciones-box {
+    margin-top: 10px;
+    padding: 15px;
+    border-radius: 10px;
+    background: #f8f9fb;
+    border: 1px solid #e0e0e0;
+}
+
+.subtitulo {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.prestaciones-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.check-item {
+    font-size: 13px;
+}
+
+.input-otro {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.input-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: none;
+}

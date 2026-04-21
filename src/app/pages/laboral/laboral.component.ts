@@ -98,7 +98,7 @@ export class LaboralComponent implements OnInit {
       prestaciones: this.form.prestaciones === 'si',
       detallePrestaciones: prestacionesFinal.join(", "),
       relacionCarrera: this.form.relacion,
-      comentarios: ""
+      comentarios: this.form.comentarios 
     };
   }
 
