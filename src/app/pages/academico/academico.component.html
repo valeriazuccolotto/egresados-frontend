@@ -1,0 +1,217 @@
+<div class="academico-page">
+  <div class="page-header">
+    <h1>Información Académica</h1>
+    <p>Actualiza tu situación actual para mantener tu perfil completo</p>
+  </div>
+
+  <div *ngIf="mensajeExito" class="alert success">
+    Registro guardado correctamente.
+  </div>
+
+  <div *ngIf="mensajeError" class="alert error">
+    {{ mensajeError }}
+  </div>
+
+  <form (ngSubmit)="guardar()" #academicoForm="ngForm" class="academico-form">
+
+    <section class="card">
+      <h2>Datos Académicos</h2>
+
+      <div class="form-group">
+        <label for="matricula">Matrícula</label>
+        <input
+          type="text"
+          id="matricula"
+          name="matricula"
+          [(ngModel)]="academico.matricula"
+          [readonly]="editando"
+          placeholder="Ej. 19012345"
+          required>
+      </div>
+
+      <div class="form-group">
+        <label for="claveCarrera">Carrera</label>
+        <select
+          id="claveCarrera"
+          name="claveCarrera"
+          [(ngModel)]="academico.claveCarrera"
+          required>
+          <option value="">Selecciona una opción</option>
+          <option *ngFor="let carrera of carreras" [value]="carrera.clave">
+            {{ carrera.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="promedio">Promedio</label>
+        <input
+          type="number"
+          step="0.01"
+          id="promedio"
+          name="promedio"
+          [(ngModel)]="academico.promedio"
+          placeholder="Ej. 9.25">
+      </div>
+
+      <div class="form-group">
+        <label for="anioEgreso">Año de egreso</label>
+        <input
+          type="number"
+          id="anioEgreso"
+          name="anioEgreso"
+          [(ngModel)]="academico.anioEgreso"
+          placeholder="2023"
+          required>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Titulación</h2>
+
+      <div class="form-group">
+        <label for="titulado">Titulado</label>
+        <select
+          id="titulado"
+          name="titulado"
+          [(ngModel)]="academico.titulado"
+          required>
+          <option value="">Selecciona una opción</option>
+          <option value="Si">Sí</option>
+          <option value="No">No</option>
+        </select>
+      </div>
+
+      <div class="form-group" *ngIf="academico.titulado === 'Si'">
+        <label for="fechaTitulacion">Fecha de titulación</label>
+        <input
+          type="date"
+          id="fechaTitulacion"
+          name="fechaTitulacion"
+          [(ngModel)]="academico.fechaTitulacion">
+      </div>
+
+      <div class="form-group" *ngIf="academico.titulado === 'Si'">
+        <label for="tipoTitulacion">Tipo de titulación</label>
+        <select
+          id="tipoTitulacion"
+          name="tipoTitulacion"
+          [(ngModel)]="academico.tipoTitulacion">
+          <option value="">Selecciona una opción</option>
+          <option value="Tesis">Tesis</option>
+          <option value="Promedio">Promedio</option>
+          <option value="CENEVAL">CENEVAL</option>
+          <option value="Experiencia laboral">Experiencia laboral</option>
+        </select>
+      </div>
+
+      <div class="form-group" *ngIf="academico.titulado === 'Si'">
+        <label for="cedulaProfesional">Cédula profesional</label>
+        <select
+          id="cedulaProfesional"
+          name="cedulaProfesional"
+          [(ngModel)]="academico.cedulaProfesional">
+          <option value="">Selecciona una opción</option>
+          <option value="Si">Sí</option>
+          <option value="No">No</option>
+        </select>
+      </div>
+
+      <div class="extra-block" *ngIf="mostrarTesis()">
+        <h3>Datos de tesis</h3>
+
+        <div class="form-group">
+          <label for="nombreTesis">Nombre de tesis</label>
+          <input
+            type="text"
+            id="nombreTesis"
+            name="nombreTesis"
+            [(ngModel)]="academico.nombreTesis"
+            placeholder="Escribe el nombre de la tesis">
+        </div>
+
+        <div class="form-group">
+          <label for="director">Director</label>
+          <input
+            type="text"
+            id="director"
+            name="director"
+            [(ngModel)]="academico.director"
+            placeholder="Nombre del director">
+        </div>
+
+        <div class="form-group">
+          <label for="codirector">Codirector</label>
+          <input
+            type="text"
+            id="codirector"
+            name="codirector"
+            [(ngModel)]="academico.codirector"
+            placeholder="Nombre del codirector">
+        </div>
+      </div>
+
+      <div class="extra-block" *ngIf="mostrarCeneval()">
+        <h3>Datos de CENEVAL</h3>
+
+        <div class="form-group">
+          <label for="fechaExamenCeneval">Fecha de examen</label>
+          <input
+            type="date"
+            id="fechaExamenCeneval"
+            name="fechaExamenCeneval"
+            [(ngModel)]="academico.fechaExamenCeneval">
+        </div>
+
+        <div class="form-group">
+          <label for="puntajeCeneval">Puntaje CENEVAL</label>
+          <input
+            type="number"
+            id="puntajeCeneval"
+            name="puntajeCeneval"
+            [(ngModel)]="academico.puntajeCeneval"
+            placeholder="Ej. 1000">
+        </div>
+      </div>
+
+      <div class="extra-block" *ngIf="mostrarMemoria()">
+        <h3>Experiencia laboral</h3>
+
+        <div class="form-group">
+          <label for="tituloMemoria">Título memoria</label>
+          <input
+            type="text"
+            id="tituloMemoria"
+            name="tituloMemoria"
+            [(ngModel)]="academico.tituloMemoria"
+            placeholder="Título de la memoria">
+        </div>
+
+        <div class="form-group">
+          <label for="asesor">Asesor</label>
+          <input
+            type="text"
+            id="asesor"
+            name="asesor"
+            [(ngModel)]="academico.asesor"
+            placeholder="Nombre del asesor">
+        </div>
+
+        <div class="form-group">
+          <label for="fechaExamenMemoria">Fecha de examen</label>
+          <input
+            type="date"
+            id="fechaExamenMemoria"
+            name="fechaExamenMemoria"
+            [(ngModel)]="academico.fechaExamenMemoria">
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button type="submit" class="btn-primary">
+          {{ editando ? 'Actualizar información académica' : 'Guardar información académica' }}
+        </button>
+      </div>
+    </section>
+  </form>
+</div>
