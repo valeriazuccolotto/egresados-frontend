@@ -1,0 +1,19 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.layout {
+  display: flex;
+  height: calc(100vh - 65px);  /* altura exacta bajo el header */
+  overflow: hidden;             /* evita scroll en el contenedor padre */
+}
+
+.contenido {
+  flex: 1;
+  min-width: 0;
+  background: #f3f5f7;
+  overflow-y: auto;             /* SOLO este div hace scroll */
+  height: 100%;
+}
