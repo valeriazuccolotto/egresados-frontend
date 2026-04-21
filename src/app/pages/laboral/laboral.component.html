@@ -1,72 +1,13 @@
-<header class="top-header">
-    <div class="header-left">
-        <button (click)="toggleMenu()">☰</button>
-        <img src="img/favicon-UNPA.ico" class="logo">
-        <h2 class="titulo">Seguimiento de Egresados</h2>
-    </div>
-
-    <div class="user-info">
-        <div class="notification-bell" (click)="irNotificaciones()">
-        🔔
-        <span class="notification-dot"></span>
-        </div>
-
-        <span class="username">{{ usuario }}</span>
-
-        <div class="avatar"
-        (click)="togglePopup($event)"
-        [ngStyle]="imagenPerfil ? {'background-image': 'url(' + imagenPerfil + ')', 'background-size':'cover'} : {}">
-
-        <span *ngIf="!imagenPerfil">{{ usuario.charAt(0) }}</span>
-        </div>
-    </div>
-    </header>
-
-    <!-- POPUP PERFIL -->
-    <div class="profile-popup" *ngIf="mostrarPopup">
-    <div class="profile-popup-card">
-
-        <div class="profile-popup-title">
-        Cambiar foto de perfil
-        </div>
-
-        <div class="profile-upload-btn">
-        📷 Seleccionar imagen
-        <input type="file" (change)="onFileSelected($event)">
-        </div>
-
-        <div class="profile-preview"
-        *ngIf="imagenPerfil"
-        [ngStyle]="{'background-image': 'url(' + imagenPerfil + ')'}">
-        </div>
-
-    </div>
-    </div>
-
-    <div class="layout">
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar" [class.hidden]="menuOculto">
-        <nav>
-            <a routerLink="/posgrado" routerLinkActive="active">Posgrado</a>
-            <a routerLink="/laboral" routerLinkActive="active">Laboral</a>
-            <a routerLink="/certificaciones" routerLinkActive="active">Certificaciones</a>
-            <a routerLink="/reconocimientos" routerLinkActive="active">Reconocimientos</a>
-        </nav>
-    </aside>
-
-    <main class="main">
-
-        <div class="section-header">
+    <div class="section-header">
         <div class="section-title">
             <h2>Información Laboral</h2>
             <p>Registra y administra tu historial de empleos</p>
         </div>
-        </div>
+    </div>
 
-        <div class="card">
+    <div class="card">
 
-        <form (ngSubmit)="guardar()" #formRef="ngForm" class="form-grid">
+        <form #formRef="ngForm" class="form-grid">
 
             <!-- BOTÓN INICIAL -->
             <div class="acciones-iniciales full" *ngIf="!mostrarFormulario">
@@ -82,165 +23,110 @@
             <!-- FORMULARIO -->
             <div class="full" *ngIf="mostrarFormulario">
 
-            <!-- INFO EMPLEO -->
-            <div class="bloque-formulario">
-                <h3>Información de empleo</h3>
+                <!-- INFO EMPLEO -->
+                <div class="bloque-formulario">
+                    <h3>Información de empleo</h3>
 
-                <div class="field-group">
-                <label>Empresa</label>
-                <input type="text" [(ngModel)]="form.empresa" name="empresa" required>
-                </div>
-
-                <div class="field-group">
-                <label>Puesto</label>
-                <input type="text" [(ngModel)]="form.puesto" name="puesto">
-                </div>
-
-                <div class="field-group">
-                <label>Sector</label>
-                <select [(ngModel)]="form.sector" name="sector">
-                    <option>Tecnologico</option>
-                    <option>Industria</option>
-                    <option>Agricola</option>
-                    <option>Educacion</option>
-                    <option>Servicios</option>
-                    <option>Otro</option>
-                </select>
-                </div>
-            </div>
-
-            <!-- INSERCIÓN LABORAL -->
-            <div class="bloque-formulario">
-                <h3>Inserción laboral</h3>
-
-                <div class="field-group">
-                <label>¿Cómo consiguió empleo?</label>
-                <select [(ngModel)]="form.medio" name="medio">
-                    <option>Bolsa de trabajo</option>
-                    <option>Internet</option>
-                    <option>Recomendacion</option>
-                    <option>Entrevista</option>
-                </select>
-                </div>
-
-                <div class="field-group">
-                <label>Tiempo en conseguir empleo</label>
-                <select [(ngModel)]="form.tiempo" name="tiempo">
-                    <option>Menos de 3 meses</option>
-                    <option>3-6 meses</option>
-                    <option>6-12 meses</option>
-                    <option>Mas de un año</option>
-                </select>
-                </div>
-            </div>
-
-            <!-- CONDICIONES -->
-            <div class="bloque-formulario">
-                <h3>Condiciones laborales</h3>
-
-                <div class="field-group">
-                <label>Tipo de contrato</label>
-                <select [(ngModel)]="form.contrato" name="contrato">
-                    <option>Tiempo completo</option>
-                    <option>Freelance</option>
-                </select>
-                </div>
-
-                <div class="field-group">
-                <label>Modalidad</label>
-                <select [(ngModel)]="form.modalidad" name="modalidad">
-                    <option>Presencial</option>
-                    <option>Remoto</option>
-                    <option>Hibrido</option>
-                </select>
-                </div>
-
-                <div class="field-group">
-                <label>Salario</label>
-                <select [(ngModel)]="form.salario" name="salario">
-                    <option>$5,000 - $12,000</option>
-                    <option>$12,000 - $20,000</option>
-                    <option>$20,000 - $30,000</option>
-                </select>
-                </div>
-
-                <div class="field-group">
-                <label>¿Tiene prestaciones?</label>
-
-                <select [(ngModel)]="form.prestaciones"
-                        name="prestaciones"
-                        (change)="onPrestacionesChange()">
-
-                    <option value="">Seleccione</option>
-                    <option value="si">Sí</option>
-                    <option value="no">No</option>
-                </select>
-
-                <!-- DETALLE -->
-                <div *ngIf="form.prestaciones === 'si'" class="subcampo">
-
-                    <div class="checkbox-grid">
-
-                    <label *ngFor="let p of listaPrestaciones">
-                        <input type="checkbox"
-                        [value]="p"
-                        (change)="togglePrestacion($event)">
-                        {{ p }}
-                    </label>
-
-                    <label>
-                        <input type="checkbox" (change)="toggleOtro($event)">
-                        Otro
-                    </label>
-
-                    <input *ngIf="mostrarOtro"
-                        type="text"
-                        [(ngModel)]="otroTexto"
-                        name="otroTexto"
-                        placeholder="Otra prestación">
-
+                    <div class="field-group">
+                        <label>Empresa</label>
+                        <input type="text" [(ngModel)]="form.empresa" name="empresa">
                     </div>
 
+                    <div class="field-group">
+                        <label>Puesto</label>
+                        <input type="text" [(ngModel)]="form.puesto" name="puesto">
+                    </div>
+
+                    <div class="field-group">
+                        <label>Sector</label>
+                        <select [(ngModel)]="form.sector" name="sector">
+                            <option>Tecnologico</option>
+                            <option>Industria</option>
+                            <option>Agricola</option>
+                            <option>Educacion</option>
+                            <option>Servicios</option>
+                            <option>Otro</option>
+                        </select>
+                    </div>
                 </div>
+
+                <!-- INSERCIÓN -->
+                <div class="bloque-formulario">
+                    <h3>Inserción laboral</h3>
+
+                    <div class="field-group">
+                        <label>¿Cómo consiguió empleo?</label>
+                        <select [(ngModel)]="form.medio" name="medio">
+                            <option>Bolsa de trabajo</option>
+                            <option>Internet</option>
+                            <option>Recomendacion</option>
+                            <option>Entrevista</option>
+                        </select>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Tiempo en conseguir empleo</label>
+                        <select [(ngModel)]="form.tiempo" name="tiempo">
+                            <option>Menos de 3 meses</option>
+                            <option>3-6 meses</option>
+                            <option>6-12 meses</option>
+                            <option>Mas de un año</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <!-- EVALUACIÓN -->
-            <div class="bloque-formulario">
-                <h3>Evaluación profesional</h3>
+                <!-- CONDICIONES -->
+                <div class="bloque-formulario">
+                    <h3>Condiciones laborales</h3>
 
-                <div class="field-group">
-                <label>Relación con la carrera</label>
-                <select [(ngModel)]="form.relacion" name="relacion">
-                    <option>Totalmente relacionada</option>
-                    <option>Parcialmente relacionada</option>
-                    <option>Poco relacionada</option>
-                    <option>Totalmente diferente</option>
-                </select>
+                    <div class="field-group">
+                        <label>Tipo de contrato</label>
+                        <select [(ngModel)]="form.contrato" name="contrato">
+                            <option>Tiempo completo</option>
+                            <option>Freelance</option>
+                        </select>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Modalidad</label>
+                        <select [(ngModel)]="form.modalidad" name="modalidad">
+                            <option>Presencial</option>
+                            <option>Remoto</option>
+                            <option>Hibrido</option>
+                        </select>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Salario</label>
+                        <select [(ngModel)]="form.salario" name="salario">
+                            <option>$5,000 - $12,000</option>
+                            <option>$12,000 - $20,000</option>
+                            <option>$20,000 - $30,000</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <!-- BOTÓN -->
-            <div class="acciones-laborales full">
-                <button type="button" (click)="guardar()" class="btn-guardar">
-                    Guardar información laboral
-                </button>
+                <!-- BOTONES -->
+                <div class="acciones-laborales full">
+                    <button type="button" (click)="guardar()" class="btn-guardar">
+                        Guardar información laboral
+                    </button>
 
-                <button type="button" (click)="cancelarFormulario()" class="btn-secundario">
-                    Cancelar
-                </button>
-            </div>
+                    <button type="button" (click)="cancelarFormulario()" class="btn-secundario">
+                        Cancelar
+                    </button>
+                </div>
 
             </div>
 
             <!-- MENSAJE -->
             <div *ngIf="mensaje" class="save-msg">
-            {{ mensaje }}
+                {{ mensaje }}
             </div>
 
         </form>
 
-        <!-- HISTORIAL -->
+        <!-- ================= HISTORIAL ================= -->
         <div class="historial-grid" *ngIf="historial.length > 0">
 
             <ng-container *ngFor="let laboral of historial">
@@ -248,136 +134,78 @@
                 <!-- CARD -->
                 <div class="historial-card">
 
-                <!-- HEADER -->
-                <div class="historial-header">
-                    <div>
-                    <strong>{{ laboral.empresa }}</strong>
-                    <p class="puesto">{{ laboral.puesto }}</p>
+                    <div class="historial-header">
+                        <div>
+                            <strong>{{ laboral.empresa }}</strong>
+                            <p class="puesto">{{ laboral.puesto }}</p>
+                        </div>
+
+                        <span class="badge">{{ laboral.modalidadTrabajo }}</span>
                     </div>
 
-                    <span class="badge">{{ laboral.modalidadTrabajo }}</span>
-                </div>
+                    <div class="historial-body">
+                        <p>{{ laboral.tipoContrato }} • {{ laboral.salario }}</p>
+                    </div>
 
-                <!-- INFO -->
-                <div class="historial-body">
-                    <p>{{ laboral.tipoContrato }} • {{ laboral.salario }}</p>
-                </div>
+                    <div class="historial-actions">
 
-                <!-- BOTONES -->
-                <div class="historial-actions">
-                     <button *ngIf="laboralSeleccionado?.idLaboral !== laboral.idLaboral"
-                            (click)="verDetalle(laboral)"
-                            class="btn-ver">
-                        Ver
-                    </button>
+                        <button *ngIf="laboralSeleccionado?.idLaboral !== laboral.idLaboral"
+                                (click)="verDetalle(laboral)"
+                                class="btn-ver">
+                            Ver
+                        </button>
 
-                    <button (click)="eliminarLaboral(laboral.idLaboral)" class="btn-eliminar">
-                    Eliminar
-                    </button>
-                </div>
+                        <button (click)="eliminarLaboral(laboral.idLaboral)"
+                                class="btn-eliminar">
+                            Eliminar
+                        </button>
+
+                    </div>
 
                 </div>
 
+                <!-- DETALLE -->
                 <div *ngIf="laboralSeleccionado?.idLaboral === laboral.idLaboral"
                     class="detalle-expandido">
 
-                <form (ngSubmit)="actualizarLaboral()" class="form-grid">
+                    <form (ngSubmit)="actualizarLaboral()" class="form-grid">
 
-                    <!-- EMPLEO -->
-                    <div class="bloque-formulario">
-                    <h3>Información de empleo</h3>
+                        <div class="bloque-formulario">
+                            <h3>Editar empleo</h3>
 
-                    <div class="field-group">
-                        <label>Empresa</label>
-                        <input [(ngModel)]="laboralSeleccionado.empresa" name="empresa">
-                    </div>
+                            <div class="field-group">
+                                <label>Empresa</label>
+                                <input [(ngModel)]="laboralSeleccionado.empresa" name="empresa">
+                            </div>
 
-                    <div class="field-group">
-                        <label>Puesto</label>
-                        <input [(ngModel)]="laboralSeleccionado.puesto" name="puesto">
-                    </div>
+                            <div class="field-group">
+                                <label>Puesto</label>
+                                <input [(ngModel)]="laboralSeleccionado.puesto" name="puesto">
+                            </div>
 
-                    <div class="field-group">
-                        <label>Sector</label>
-                        <select [(ngModel)]="laboralSeleccionado.sector" name="sector">
-                        <option>Tecnologico</option>
-                        <option>Industria</option>
-                        <option>Agricola</option>
-                        <option>Educacion</option>
-                        <option>Servicios</option>
-                        <option>Otro</option>
-                        </select>
-                    </div>
-                    </div>
+                            <div class="field-group">
+                                <label>Modalidad</label>
+                                <select [(ngModel)]="laboralSeleccionado.modalidadTrabajo" name="modalidadTrabajo">
+                                    <option>Presencial</option>
+                                    <option>Remoto</option>
+                                    <option>Hibrido</option>
+                                </select>
+                            </div>
+                        </div>
 
-                    <!-- INSERCIÓN -->
-                    <div class="bloque-formulario">
-                    <h3>Inserción laboral</h3>
+                        <div class="acciones-detalle">
+                            <button type="submit" class="btn-guardar">
+                                Guardar cambios
+                            </button>
 
-                    <div class="field-group">
-                        <label>¿Cómo consiguió empleo?</label>
-                        <select [(ngModel)]="laboralSeleccionado.comoConsiguio" name="comoConsiguio">
-                        <option>Bolsa de trabajo</option>
-                        <option>Internet</option>
-                        <option>Recomendacion</option>
-                        <option>Entrevista</option>
-                        </select>
-                    </div>
+                            <button type="button"
+                                    (click)="cancelarEdicion()"
+                                    class="btn-secundario">
+                                Cancelar
+                            </button>
+                        </div>
 
-                    <div class="field-group">
-                        <label>Tiempo en conseguir empleo</label>
-                        <select [(ngModel)]="laboralSeleccionado.tiempoConseguir" name="tiempoConseguir">
-                        <option>Menos de 3 meses</option>
-                        <option>3-6 meses</option>
-                        <option>6-12 meses</option>
-                        <option>Mas de un año</option>
-                        </select>
-                    </div>
-                    </div>
-
-                    <!-- CONDICIONES -->
-                    <div class="bloque-formulario">
-                    <h3>Condiciones laborales</h3>
-
-                    <div class="field-group">
-                        <label>Tipo de contrato</label>
-                        <select [(ngModel)]="laboralSeleccionado.tipoContrato" name="tipoContrato">
-                        <option>Tiempo completo</option>
-                        <option>Freelance</option>
-                        </select>
-                    </div>
-
-                    <div class="field-group">
-                        <label>Modalidad</label>
-                        <select [(ngModel)]="laboralSeleccionado.modalidadTrabajo" name="modalidadTrabajo">
-                        <option>Presencial</option>
-                        <option>Remoto</option>
-                        <option>Hibrido</option>
-                        </select>
-                    </div>
-
-                    <div class="field-group">
-                        <label>Salario</label>
-                        <select [(ngModel)]="laboralSeleccionado.salario" name="salario">
-                        <option>$5,000 - $12,000</option>
-                        <option>$12,000 - $20,000</option>
-                        <option>$20,000 - $30,000</option>
-                        </select>
-                    </div>
-                    </div>
-
-                    <!-- BOTÓN -->
-                    <div class="acciones-detalle">
-                    <button type="submit" class="btn-guardar">
-                        Guardar cambios
-                    </button>
-
-                    <button type="button" (click)="cancelarEdicion()" class="btn-secundario">
-                        Cancelar
-                    </button>
-                    </div>
-
-                </form>
+                    </form>
 
                 </div>
 
@@ -385,8 +213,4 @@
 
         </div>
 
-
     </div>
-
-    </main>
-</div>
