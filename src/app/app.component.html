@@ -1,1 +1,39 @@
-<router-outlet></router-outlet>
+<header class="top-header">
+    <div class="header-left">
+        <button (click)="toggleMenu()">☰</button>
+        <img src="img/favicon-UNPA.ico" class="logo">
+        <h2 class="titulo">Seguimiento de Egresados</h2>
+    </div>
+
+    <div class="user-info">
+        <div class="notification-bell">
+            🔔
+            <span class="notification-dot"></span>
+        </div>
+
+        <span class="username">{{ usuario }}</span>
+
+        <div class="avatar" (click)="togglePopup($event)">
+            {{ usuario.charAt(0) }}
+        </div>
+    </div>
+</header>
+
+<div class="layout">
+
+    <!-- SIDEBAR GLOBAL -->
+    <aside class="sidebar" [class.hidden]="menuOculto">
+        <nav>
+            <a routerLink="/posgrado" routerLinkActive="active">Posgrado</a>
+            <a routerLink="/laboral" routerLinkActive="active">Laboral</a>
+            <a routerLink="/certificaciones" routerLinkActive="active">Certificaciones</a>
+            <a routerLink="/reconocimientos" routerLinkActive="active">Reconocimientos</a>
+        </nav>
+    </aside>
+
+    <!-- CONTENIDO DINÁMICO -->
+    <main class="main">
+        <router-outlet></router-outlet>
+    </main>
+
+</div>
