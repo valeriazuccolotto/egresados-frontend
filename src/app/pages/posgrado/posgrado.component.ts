@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,7 +11,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
   templateUrl: './posgrado.component.html',
   styleUrls: ['./posgrado.component.css']
 })
-export class PosgradoComponent {
+export class PosgradoComponent implements OnInit {
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -21,7 +21,6 @@ export class PosgradoComponent {
   // ===== UI =====
   menuOculto = false;
   mostrarPopup = false;
-  mostrarFormulario = false;
   mostrarPosgrado = false;
   mensaje = '';
 
@@ -42,6 +41,19 @@ export class PosgradoComponent {
     tieneBeca: false
   };
 
+  // ================= INIT =================
+  ngOnInit() {
+    this.cargarHistorial();
+  }
+
+  cargarHistorial() {
+    this.http.get<any[]>(`http://localhost:8181/egresado/posgrado/A1234567`)
+      .subscribe({
+        next: data => this.historial = data,
+        error: () => this.mostrarMensaje("❌ Error al cargar")
+      });
+  }
+
   // ================= HEADER =================
   toggleMenu() {
     this.menuOculto = !this.menuOculto;
@@ -56,7 +68,7 @@ export class PosgradoComponent {
     this.mostrarPopup = !this.mostrarPopup;
   }
 
-  // ================= ABRIR / CERRAR =================
+  // ================= FORMULARIO =================
   abrirFormulario() {
     this.mostrarPosgrado = true;
   }
@@ -66,11 +78,24 @@ export class PosgradoComponent {
     this.resetForm();
   }
 
-  // ================= GUARDAR (CREAR) =================
+  resetForm() {
+    this.form = {
+      nivel: '',
+      institucion: '',
+      programa: '',
+      modalidad: '',
+      estatus: '',
+      relacion: '',
+      inicio: '',
+      fin: '',
+      tieneBeca: false
+    };
+  }
+
+  // ================= GUARDAR =================
   guardar() {
 
     const datos = {
-      id: Date.now(),
       matricula: "A1234567",
 
       nivelEstudio: this.form.nivel,
@@ -90,9 +115,7 @@ export class PosgradoComponent {
     this.http.post('http://localhost:8181/egresado/posgrado', datos)
       .subscribe({
         next: () => {
-
-          this.historial.push(datos);
-
+          this.cargarHistorial(); // 🔥 igual que laboral
           this.mostrarMensaje("✓ Posgrado guardado");
           this.mostrarPosgrado = false;
           this.resetForm();
@@ -106,21 +129,24 @@ export class PosgradoComponent {
     this.posgradoSeleccionado = { ...item };
   }
 
+  cancelarEdicion() {
+    this.posgradoSeleccionado = null;
+  }
+
   // ================= ACTUALIZAR =================
   actualizarPosgrado() {
 
+    if (!this.posgradoSeleccionado?.idPosgrado) {
+      this.mostrarMensaje("❌ Error: ID no definido");
+      return;
+    }
+
     this.http.put(
-      `http://localhost:8181/egresado/posgrado/${this.posgradoSeleccionado.id}`,
+      `http://localhost:8181/egresado/posgrado/${this.posgradoSeleccionado.idPosgrado}`,
       this.posgradoSeleccionado
     ).subscribe({
       next: () => {
-
-        const index = this.historial.findIndex(p => p.id === this.posgradoSeleccionado.id);
-
-        if (index !== -1) {
-          this.historial[index] = { ...this.posgradoSeleccionado };
-        }
-
+        this.cargarHistorial(); // 🔥 igual que laboral
         this.mostrarMensaje("✓ Posgrado actualizado");
         this.posgradoSeleccionado = null;
       },
@@ -128,24 +154,16 @@ export class PosgradoComponent {
     });
   }
 
-  // ================= CANCELAR EDICIÓN =================
-  cancelarEdicion() {
-    this.posgradoSeleccionado = null;
-  }
-
-  // ================= RESET =================
-  resetForm() {
-    this.form = {
-      nivel: '',
-      institucion: '',
-      programa: '',
-      modalidad: '',
-      estatus: '',
-      relacion: '',
-      inicio: '',
-      fin: '',
-      tieneBeca: false
-    };
+  // ================= ELIMINAR =================
+  eliminar(id: number) {
+    this.http.delete(`http://localhost:8181/egresado/posgrado/${id}`)
+      .subscribe({
+        next: () => {
+          this.mostrarMensaje("✓ Eliminado correctamente");
+          this.cargarHistorial();
+        },
+        error: () => this.mostrarMensaje("❌ Error al eliminar")
+      });
   }
 
   // ================= MENSAJE =================
@@ -153,9 +171,4 @@ export class PosgradoComponent {
     this.mensaje = texto;
     setTimeout(() => this.mensaje = '', 3000);
   }
-
-  // ===== ELIMINAR POSGRADO =====
-eliminar(id: number) {
-  this.historial = this.historial.filter(p => p.id !== id);
-}
 }

@@ -1,4 +1,3 @@
-
 <div class="section-header">
     <div class="section-title">
         <h2>Información de Posgrado</h2>
@@ -140,13 +139,15 @@
 
             <div class="historial-actions">
 
-                <button *ngIf="posgradoSeleccionado?.id !== pos.id"
+                <!-- ✅ CORREGIDO -->
+                <button *ngIf="posgradoSeleccionado?.idPosgrado !== pos.idPosgrado"
                         (click)="verDetalle(pos)"
                         class="btn-ver">
                     Ver
                 </button>
 
-                <button (click)="eliminar(pos.id)" class="btn-eliminar">
+                <!-- ✅ CORREGIDO -->
+                <button (click)="eliminar(pos.idPosgrado)" class="btn-eliminar">
                     Eliminar
                 </button>
 
@@ -155,51 +156,99 @@
         </div>
 
         <!-- ================= DETALLE EDITABLE ================= -->
-        <div *ngIf="posgradoSeleccionado?.id === pos.id" class="detalle-expandido">
+        <!-- ✅ CORREGIDO -->
+        <div *ngIf="posgradoSeleccionado?.idPosgrado === pos.idPosgrado" class="detalle-expandido">
 
-            <form (ngSubmit)="actualizarPosgrado()" class="form-grid">
+            <form (ngSubmit)="actualizarPosgrado()" #formEdit="ngForm" class="form-grid">
 
-                <div class="bloque-formulario">
-                    <h3>Editar posgrado</h3>
+                <div class="full">
 
-                    <div class="field-group">
-                        <label>Programa</label>
-                        <input [(ngModel)]="posgradoSeleccionado.nombrePrograma"
-                            name="nombrePrograma">
+                    <!-- ================= FORMACIÓN ================= -->
+                    <div class="bloque-formulario">
+                        <h3>Formación de Posgrado</h3>
+
+                        <div class="field-group">
+                            <label>Nivel</label>
+                            <select [(ngModel)]="posgradoSeleccionado.nivelEstudio" name="nivelEstudio">
+                                <option>Licenciatura</option>
+                                <option>Maestria</option>
+                                <option>Doctorado</option>
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label>Institución</label>
+                            <input [(ngModel)]="posgradoSeleccionado.institucion" name="institucion">
+                        </div>
+
+                        <div class="field-group full">
+                            <label>Programa</label>
+                            <input [(ngModel)]="posgradoSeleccionado.nombrePrograma" name="nombrePrograma">
+                        </div>
+
+                        <div class="field-group">
+                            <label>Modalidad</label>
+                            <select [(ngModel)]="posgradoSeleccionado.modalidad" name="modalidad">
+                                <option>Presencial</option>
+                                <option>Virtual</option>
+                                <option>Hibrido</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="field-group">
-                        <label>Nivel</label>
-                        <select [(ngModel)]="posgradoSeleccionado.nivelEstudio"
-                                name="nivelEstudio">
-                            <option>Licenciatura</option>
-                            <option>Maestria</option>
-                            <option>Doctorado</option>
-                        </select>
+                    <!-- ================= ESTADO ================= -->
+                    <div class="bloque-formulario">
+                        <h3>Estado Académico</h3>
+
+                        <div class="field-group">
+                            <label>Estatus</label>
+                            <select [(ngModel)]="posgradoSeleccionado.estatus" name="estatus">
+                                <option>En curso</option>
+                                <option>Finalizado</option>
+                                <option>Pausado</option>
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label>Relación</label>
+                            <select [(ngModel)]="posgradoSeleccionado.relacionadoCarrera" name="relacionadoCarrera">
+                                <option>Si</option>
+                                <option>No</option>
+                                <option>Un poco</option>
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label>Inicio</label>
+                            <input type="date"
+                                [(ngModel)]="posgradoSeleccionado.fechaInicio"
+                                name="fechaInicio">
+                        </div>
+
+                        <div class="field-group">
+                            <label>Fin</label>
+                            <input type="date"
+                                [(ngModel)]="posgradoSeleccionado.fechaFin"
+                                name="fechaFin">
+                        </div>
                     </div>
 
-                    <div class="field-group">
-                        <label>Institución</label>
-                        <input [(ngModel)]="posgradoSeleccionado.institucion"
-                            name="institucion">
-                    </div>
+                    <!-- ================= APOYOS ================= -->
+                    <div class="bloque-formulario">
+                        <h3>Apoyos</h3>
 
-                    <div class="field-group">
-                        <label>Inicio</label>
-                        <input type="date"
-                            [(ngModel)]="posgradoSeleccionado.fechaInicio"
-                            name="fechaInicio">
-                    </div>
-
-                    <div class="field-group">
-                        <label>Fin</label>
-                        <input type="date"
-                            [(ngModel)]="posgradoSeleccionado.fechaFin"
-                            name="fechaFin">
+                        <div class="field-group">
+                            <label>Beca</label>
+                            <select [(ngModel)]="posgradoSeleccionado.tieneBeca" name="tieneBeca">
+                                <option [ngValue]="true">Sí</option>
+                                <option [ngValue]="false">No</option>
+                            </select>
+                        </div>
                     </div>
 
                 </div>
 
+                <!-- BOTONES -->
                 <div class="acciones-detalle">
                     <button type="submit" class="btn-guardar">
                         Guardar cambios
@@ -213,7 +262,6 @@
                 </div>
 
             </form>
-
         </div>
 
     </ng-container>
