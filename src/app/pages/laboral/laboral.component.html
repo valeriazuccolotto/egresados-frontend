@@ -48,11 +48,10 @@
     <!-- SIDEBAR -->
     <aside class="sidebar" [class.hidden]="menuOculto">
         <nav>
-        <a routerLink="/perfil">Mi perfil</a>
-        <a routerLink="/contacto">Contacto</a>
-        <a routerLink="/academico">Académico</a>
-        <a routerLink="/posgrado">Posgrado</a>
-        <a routerLink="/laboral" class="active">Laboral</a>
+            <a routerLink="/posgrado" routerLinkActive="active">Posgrado</a>
+            <a routerLink="/laboral" routerLinkActive="active">Laboral</a>
+            <a routerLink="/certificaciones" routerLinkActive="active">Certificaciones</a>
+            <a routerLink="/reconocimientos" routerLinkActive="active">Reconocimientos</a>
         </nav>
     </aside>
 
@@ -226,6 +225,10 @@
                 <button type="button" (click)="guardar()" class="btn-guardar">
                     Guardar información laboral
                 </button>
+
+                <button type="button" (click)="cancelarFormulario()" class="btn-secundario">
+                    Cancelar
+                </button>
             </div>
 
             </div>
@@ -262,8 +265,10 @@
 
                 <!-- BOTONES -->
                 <div class="historial-actions">
-                    <button (click)="verDetalle(laboral)" class="btn-ver">
-                    {{ laboralSeleccionado?.idLaboral === laboral.idLaboral ? 'Ocultar' : 'Ver' }}
+                     <button *ngIf="laboralSeleccionado?.idLaboral !== laboral.idLaboral"
+                            (click)="verDetalle(laboral)"
+                            class="btn-ver">
+                        Ver
                     </button>
 
                     <button (click)="eliminarLaboral(laboral.idLaboral)" class="btn-eliminar">
@@ -273,7 +278,6 @@
 
                 </div>
 
-                <!-- 🔽 DETALLE (FUERA DEL CARD, PERO EN EL MISMO LOOP) -->
                 <div *ngIf="laboralSeleccionado?.idLaboral === laboral.idLaboral"
                     class="detalle-expandido">
 
@@ -363,9 +367,13 @@
                     </div>
 
                     <!-- BOTÓN -->
-                    <div class="full">
+                    <div class="acciones-detalle">
                     <button type="submit" class="btn-guardar">
                         Guardar cambios
+                    </button>
+
+                    <button type="button" (click)="cancelarEdicion()" class="btn-secundario">
+                        Cancelar
                     </button>
                     </div>
 
