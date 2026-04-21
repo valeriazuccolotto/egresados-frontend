@@ -156,15 +156,31 @@ export class PosgradoComponent implements OnInit {
 
   // ================= ELIMINAR =================
   eliminar(id: number) {
-    this.http.delete(`http://localhost:8181/egresado/posgrado/${id}`)
-      .subscribe({
-        next: () => {
-          this.mostrarMensaje("✓ Eliminado correctamente");
+
+  this.http.delete(`http://localhost:8181/egresado/posgrado/${id}`)
+    .subscribe({
+      next: () => {
+
+        // 1. actualizar UI primero (rápido)
+        this.historial = this.historial.filter(
+          item => item.idPosgrado !== id
+        );
+
+        // 2. mostrar mensaje
+        this.mostrarMensaje("🗑️ Eliminado correctamente");
+
+        // 3. opcional: sincronizar con backend después
+        setTimeout(() => {
           this.cargarHistorial();
-        },
-        error: () => this.mostrarMensaje("❌ Error al eliminar")
-      });
-  }
+        }, 300);
+
+      },
+      error: () => {
+        this.mostrarMensaje("❌ Error al eliminar");
+      }
+    });
+
+}
 
   // ================= MENSAJE =================
   mostrarMensaje(texto: string) {
