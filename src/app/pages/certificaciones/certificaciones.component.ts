@@ -38,7 +38,7 @@ export class CertificacionesComponent implements OnInit {
 
   // ================= INIT =================
   ngOnInit() {
-    this.cargarHistorial(); // 🔥 AQUÍ ESTABA LO QUE TE FALTABA
+    this.cargarHistorial();
   }
 
   // ================= CARGAR HISTORIAL =================
@@ -88,13 +88,13 @@ export class CertificacionesComponent implements OnInit {
 
     this.http.post('http://localhost:8181/egresado/certificaciones', datos)
       .subscribe({
-        next: (res: any) => {
-
-          this.historial.push(res);
+        next: () => {
 
           this.mostrarMensaje("✓ Certificación guardada");
           this.resetForm();
           this.mostrarFormulario = false;
+
+          this.cargarHistorial(); // 🔥 importante
         },
         error: () => this.mostrarMensaje("❌ Error al guardar")
       });
@@ -118,16 +118,10 @@ export class CertificacionesComponent implements OnInit {
     ).subscribe({
       next: () => {
 
-        const index = this.historial.findIndex(
-          c => c.idCertificacion === this.certSeleccionado.idCertificacion
-        );
-
-        if (index !== -1) {
-          this.historial[index] = { ...datosActualizados };
-        }
-
         this.mostrarMensaje("✓ Certificación actualizada");
         this.certSeleccionado = null;
+
+        this.cargarHistorial(); // 🔥 importante
       },
       error: (err) => {
         console.log(err.error);
@@ -153,9 +147,23 @@ export class CertificacionesComponent implements OnInit {
 
   // ================= ELIMINAR =================
   eliminarCertificacion(idCertificacion: number) {
-    this.historial = this.historial.filter(
-      c => c.idCertificacion !== idCertificacion
-    );
+
+    this.http.delete(
+      `http://localhost:8181/egresado/certificaciones/${idCertificacion}`
+    ).subscribe({
+      next: () => {
+
+        this.mostrarMensaje("🗑️ Certificación eliminada correctamente");
+
+        this.cargarHistorial(); // 🔥 importante
+
+      },
+      error: (err) => {
+        console.log(err.error);
+        this.mostrarMensaje("❌ Error al eliminar");
+      }
+    });
+
   }
 
   // ================= RESET =================
