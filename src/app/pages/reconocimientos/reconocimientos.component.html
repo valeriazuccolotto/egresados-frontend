@@ -110,16 +110,48 @@
                 <form (ngSubmit)="actualizarReconocimiento()" class="form-grid">
 
                     <div class="bloque-formulario">
+
                         <h3>Editar reconocimiento</h3>
 
-                        <input [(ngModel)]="reconocimientoSeleccionado.nombreReconocimiento" name="nombreReconocimiento">
-                        <input [(ngModel)]="reconocimientoSeleccionado.institucion" name="institucion">
+                        <div class="field-group">
+                            <label>Nombre del reconocimiento</label>
+                            <input [(ngModel)]="reconocimientoSeleccionado.nombreReconocimiento"
+                                name="nombreReconocimiento">
+                        </div>
+
+                        <div class="field-group">
+                            <label>Tipo de reconocimiento</label>
+                            <select [(ngModel)]="reconocimientoSeleccionado.tipoReconocimiento"
+                                    name="tipoReconocimiento">
+                                <option>Académico</option>
+                                <option>Cultural</option>
+                                <option>Deportivo</option>
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label>Fecha de entrega</label>
+                            <input type="date"
+                                [(ngModel)]="reconocimientoSeleccionado.fechaEntrega"
+                                name="fechaEntrega">
+                        </div>
+
+                        <div class="field-group">
+                            <label>Institución</label>
+                            <input [(ngModel)]="reconocimientoSeleccionado.institucion"
+                                name="institucion">
+                        </div>
 
                     </div>
 
+                    <!-- BOTONES (se quedan igual) -->
                     <div class="acciones-detalle">
                         <button type="submit" class="btn-guardar">Guardar cambios</button>
-                        <button type="button" (click)="cancelarEdicion()" class="btn-secundario">Cancelar</button>
+                        <button type="button"
+                                (click)="cancelarEdicion()"
+                                class="btn-secundario">
+                            Cancelar
+                        </button>
                     </div>
 
                 </form>
