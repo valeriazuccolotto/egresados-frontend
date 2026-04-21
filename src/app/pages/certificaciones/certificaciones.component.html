@@ -49,7 +49,6 @@
 
         </div>
 
-        <!-- BOTONES CREAR -->
         <div class="full">
             <button type="button" (click)="guardar()" class="btn-guardar">
                 Guardar certificación
@@ -62,16 +61,13 @@
 
     </div>
 
-    <!-- MENSAJE -->
     <div *ngIf="mensaje" class="save-msg">
         {{ mensaje }}
     </div>
 
 </form>
 
-<!-- =========================
-        HISTORIAL
-========================= -->
+<!-- ================= HISTORIAL ================= -->
 <div class="historial-grid" *ngIf="historial.length > 0">
 
     <ng-container *ngFor="let cert of historial">
@@ -94,13 +90,13 @@
 
             <div class="historial-actions">
 
-                <button *ngIf="certSeleccionado?.id !== cert.id"
+                <button *ngIf="certSeleccionado?.idCertificacion !== cert.idCertificacion"
                         (click)="verDetalle(cert)"
                         class="btn-ver">
                     Ver
                 </button>
 
-                <button (click)="eliminarCertificacion(cert.id)"
+                <button (click)="eliminarCertificacion(cert.idCertificacion)"
                         class="btn-eliminar">
                     Eliminar
                 </button>
@@ -110,7 +106,7 @@
         </div>
 
         <!-- DETALLE EDITABLE -->
-        <div *ngIf="certSeleccionado?.id === cert.id"
+        <div *ngIf="certSeleccionado?.idCertificacion === cert.idCertificacion"
             class="detalle-expandido">
 
             <form (ngSubmit)="actualizarCertificacion()" class="form-grid">
@@ -125,21 +121,21 @@
                     </div>
 
                     <div class="field-group">
-                        <label>Inicio</label>
+                        <label>Fecha Inicio</label>
                         <input type="date"
                             [(ngModel)]="certSeleccionado.fechaInicio"
                             name="fechaInicio">
                     </div>
 
                     <div class="field-group">
-                        <label>Fin</label>
+                        <label>Fecha Fin</label>
                         <input type="date"
                             [(ngModel)]="certSeleccionado.fechaFin"
                             name="fechaFin">
                     </div>
 
                     <div class="field-group">
-                        <label>Obtención</label>
+                        <label>Fecha de obtención</label>
                         <input type="date"
                             [(ngModel)]="certSeleccionado.fechaObtencion"
                             name="fechaObtencion">

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,7 +11,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
   templateUrl: './certificaciones.component.html',
   styleUrls: ['./certificaciones.component.css']
 })
-export class CertificacionesComponent {
+export class CertificacionesComponent implements OnInit {
 
   constructor(private router: Router, private http: HttpClient) {}
 
@@ -36,6 +36,26 @@ export class CertificacionesComponent {
     certObtencion: ''
   };
 
+  // ================= INIT =================
+  ngOnInit() {
+    this.cargarHistorial(); // 🔥 AQUÍ ESTABA LO QUE TE FALTABA
+  }
+
+  // ================= CARGAR HISTORIAL =================
+  cargarHistorial() {
+    this.http.get<any[]>(
+      'http://localhost:8181/egresado/certificaciones/A1234567'
+    ).subscribe({
+      next: (data) => {
+        this.historial = data;
+      },
+      error: () => {
+        this.historial = [];
+        this.mostrarMensaje("❌ Error al cargar historial");
+      }
+    });
+  }
+
   // ================= HEADER =================
   toggleMenu() {
     this.menuOculto = !this.menuOculto;
@@ -53,13 +73,11 @@ export class CertificacionesComponent {
   // ================= CREAR =================
   guardar() {
 
-    // 🔴 SI ESTÁS EDITANDO
     if (this.certSeleccionado) {
       this.actualizarCertificacion();
       return;
     }
 
-    // 🔵 SI ESTÁS CREANDO
     const datos = {
       matricula: "A1234567",
       nombreCertificacion: this.form.certNombre,
@@ -70,12 +88,9 @@ export class CertificacionesComponent {
 
     this.http.post('http://localhost:8181/egresado/certificaciones', datos)
       .subscribe({
-        next: () => {
+        next: (res: any) => {
 
-          this.historial.push({
-            id: Date.now(),
-            ...datos
-          });
+          this.historial.push(res);
 
           this.mostrarMensaje("✓ Certificación guardada");
           this.resetForm();
@@ -85,41 +100,48 @@ export class CertificacionesComponent {
       });
   }
 
-  // ================= EDITAR (UPDATE REAL) =================
+  // ================= EDITAR =================
   actualizarCertificacion() {
 
     const datosActualizados = {
-      id: this.certSeleccionado.id,
+      matricula: "A1234567",
+      idCertificacion: this.certSeleccionado.idCertificacion,
       nombreCertificacion: this.certSeleccionado.nombreCertificacion,
       fechaInicio: this.certSeleccionado.fechaInicio,
       fechaFin: this.certSeleccionado.fechaFin,
       fechaObtencion: this.certSeleccionado.fechaObtencion
     };
 
-    this.http.put(`http://localhost:8181/egresado/certificaciones/${this.certSeleccionado.id}`, datosActualizados)
-      .subscribe({
-        next: () => {
+    this.http.put(
+      `http://localhost:8181/egresado/certificaciones/${this.certSeleccionado.idCertificacion}`,
+      datosActualizados
+    ).subscribe({
+      next: () => {
 
-          // 🔥 ACTUALIZAR LISTA LOCAL SIN DUPLICAR
-          const index = this.historial.findIndex(c => c.id === this.certSeleccionado.id);
+        const index = this.historial.findIndex(
+          c => c.idCertificacion === this.certSeleccionado.idCertificacion
+        );
 
-          if (index !== -1) {
-            this.historial[index] = { ...this.certSeleccionado };
-          }
+        if (index !== -1) {
+          this.historial[index] = { ...datosActualizados };
+        }
 
-          this.mostrarMensaje("✓ Certificación actualizada");
-          this.certSeleccionado = null;
-        },
-        error: () => this.mostrarMensaje("❌ Error al actualizar")
-      });
+        this.mostrarMensaje("✓ Certificación actualizada");
+        this.certSeleccionado = null;
+      },
+      error: (err) => {
+        console.log(err.error);
+        this.mostrarMensaje("❌ Error al actualizar");
+      }
+    });
   }
 
   // ================= VER =================
   verDetalle(item: any) {
-    this.certSeleccionado = { ...item }; // copia segura
+    this.certSeleccionado = { ...item };
   }
 
-  // ================= CANCELAR EDICIÓN =================
+  // ================= CANCELAR =================
   cancelarEdicion() {
     this.certSeleccionado = null;
   }
@@ -130,8 +152,10 @@ export class CertificacionesComponent {
   }
 
   // ================= ELIMINAR =================
-  eliminarCertificacion(id: number) {
-    this.historial = this.historial.filter(c => c.id !== id);
+  eliminarCertificacion(idCertificacion: number) {
+    this.historial = this.historial.filter(
+      c => c.idCertificacion !== idCertificacion
+    );
   }
 
   // ================= RESET =================
