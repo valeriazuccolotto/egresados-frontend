@@ -118,12 +118,8 @@ export class LaboralComponent implements OnInit {
 
   // ================= MODAL =================
   verDetalle(laboral: any) {
-  if (this.laboralSeleccionado?.idLaboral === laboral.idLaboral) {
-    this.laboralSeleccionado = null; // cerrar
-  } else {
-    this.laboralSeleccionado = { ...laboral }; // abrir
+    this.laboralSeleccionado = { ...laboral };
   }
-}
 
   cerrarModal() {
     this.laboralSeleccionado = null;
@@ -213,5 +209,14 @@ export class LaboralComponent implements OnInit {
   mostrarMensaje(texto: string) {
     this.mensaje = texto;
     setTimeout(() => this.mensaje = '', 3000);
+  }
+
+  cancelarFormulario() {
+    this.mostrarFormulario = false;
+    this.resetForm();
+  }
+
+  cancelarEdicion() {
+    this.laboralSeleccionado = null;
   }
 }

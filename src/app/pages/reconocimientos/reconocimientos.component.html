@@ -110,93 +110,94 @@
             <!-- ================= HISTORIAL ================= -->
             <div class="historial-grid" *ngIf="historial.length > 0">
 
-    <ng-container *ngFor="let reco of historial">
+                <ng-container *ngFor="let reco of historial">
 
-        <!-- ================= CARD ================= -->
-        <div class="historial-card">
+                    <!-- ================= CARD ================= -->
+                    <div class="historial-card">
 
-            <div class="historial-header">
-                <div>
-                    <strong>{{ reco.nombreReconocimiento }}</strong>
-                    <p class="puesto">{{ reco.tipoReconocimiento }}</p>
-                </div>
-
-                <span class="badge">{{ reco.fechaEntrega }}</span>
-            </div>
-
-            <div class="historial-body">
-                <p>{{ reco.institucion }}</p>
-            </div>
-
-            <div class="historial-actions">
-                <button *ngIf="reconocimientoSeleccionado?.idReconocimiento !== reco.idReconocimiento"
-                        (click)="verDetalle(reco)"
-                        class="btn-ver">
-                    Ver
-                </button>
-
-                <button (click)="eliminarReconocimiento(reco.idReconocimiento)" class="btn-eliminar">
-                    Eliminar
-                </button>
-            </div>
-
-        </div>
-
-        <!-- ================= 🔥 DETALLE (CORRECTO) ================= -->
-        <div *ngIf="reconocimientoSeleccionado?.idReconocimiento === reco.idReconocimiento" class="detalle-expandido">
-
-                    <form (ngSubmit)="actualizarReconocimiento()" class="form-grid">
-
-                        <div class="bloque-formulario">
-                            <h3>Editar reconocimiento</h3>
-
-                            <div class="field-group">
-                                <label>Nombre</label>
-                                <input [(ngModel)]="reconocimientoSeleccionado.nombreReconocimiento"
-                                    name="nombreReconocimiento">
+                        <div class="historial-header">
+                            <div>
+                                <strong>{{ reco.nombreReconocimiento }}</strong>
+                                <p class="puesto">{{ reco.tipoReconocimiento }}</p>
                             </div>
 
-                            <div class="field-group">
-                                <label>Tipo</label>
-                                <select [(ngModel)]="reconocimientoSeleccionado.tipoReconocimiento"
-                                        name="tipoReconocimiento">
-                                    <option>Académico</option>
-                                    <option>Cultural</option>
-                                    <option>Deportivo</option>
-                                </select>
-                            </div>
-
-                            <div class="field-group">
-                                <label>Fecha</label>
-                                <input type="date"
-                                    [(ngModel)]="reconocimientoSeleccionado.fechaEntrega"
-                                    name="fechaEntrega">
-                            </div>
-
-                            <div class="field-group">
-                                <label>Institución</label>
-                                <input [(ngModel)]="reconocimientoSeleccionado.institucion"
-                                    name="institucion">
-                            </div>
+                            <span class="badge">{{ reco.fechaEntrega }}</span>
                         </div>
 
-                        <div class="acciones-detalle">
-                            <button type="submit" class="btn-guardar">
-                                Guardar cambios
+                        <div class="historial-body">
+                            <p>{{ reco.institucion }}</p>
+                        </div>
+
+                        <div class="historial-actions">
+                            <button *ngIf="reconocimientoSeleccionado?.idReconocimiento !== reco.idReconocimiento"
+                                    (click)="verDetalle(reco)"
+                                    class="btn-ver">
+                                Ver
                             </button>
 
-                            <button type="button" (click)="cancelarEdicion()" class="btn-secundario">
-                                Cancelar
+                            <button (click)="eliminarReconocimiento(reco.idReconocimiento)" class="btn-eliminar">
+                                Eliminar
                             </button>
                         </div>
 
-                    </form>
+                    </div>
 
-                </div>
 
-            </ng-container>
+                <!-- ================= 🔥 DETALLE (CORRECTO) ================= -->
+                    <div *ngIf="reconocimientoSeleccionado?.idReconocimiento === reco.idReconocimiento" class="detalle-expandido">
 
-        </div>
+                        <form (ngSubmit)="actualizarReconocimiento()" class="form-grid">
+
+                            <div class="bloque-formulario">
+                                <h3>Editar reconocimiento</h3>
+
+                                <div class="field-group">
+                                    <label>Nombre</label>
+                                    <input [(ngModel)]="reconocimientoSeleccionado.nombreReconocimiento"
+                                        name="nombreReconocimiento">
+                                </div>
+
+                                <div class="field-group">
+                                    <label>Tipo</label>
+                                    <select [(ngModel)]="reconocimientoSeleccionado.tipoReconocimiento"
+                                            name="tipoReconocimiento">
+                                        <option>Académico</option>
+                                        <option>Cultural</option>
+                                        <option>Deportivo</option>
+                                    </select>
+                                </div>
+
+                                <div class="field-group">
+                                    <label>Fecha</label>
+                                    <input type="date"
+                                        [(ngModel)]="reconocimientoSeleccionado.fechaEntrega"
+                                        name="fechaEntrega">
+                                </div>
+
+                                <div class="field-group">
+                                    <label>Institución</label>
+                                    <input [(ngModel)]="reconocimientoSeleccionado.institucion"
+                                        name="institucion">
+                                </div>
+                            </div>
+
+                            <div class="acciones-detalle">
+                                <button type="submit" class="btn-guardar">
+                                    Guardar cambios
+                                </button>
+
+                                <button type="button" (click)="cancelarEdicion()" class="btn-secundario">
+                                    Cancelar
+                                </button>
+                            </div>
+
+                        </form>
+
+                    </div>
+
+                </ng-container>
+
+            </div>
 
         </div>
 
