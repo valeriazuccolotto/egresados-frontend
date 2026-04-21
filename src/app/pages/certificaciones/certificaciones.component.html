@@ -1,0 +1,108 @@
+<header class="top-header">
+    <div class="header-left">
+        <button (click)="toggleMenu()">☰</button>
+        <img src="img/favicon-UNPA.ico" class="logo">
+        <h2 class="titulo">Seguimiento de Egresados</h2>
+    </div>
+
+    <div class="user-info">
+        <div class="notification-bell" (click)="irNotificaciones()">
+            🔔
+            <span class="notification-dot"></span>
+        </div>
+
+        <span class="username">{{ usuario }}</span>
+
+        <div class="avatar" (click)="togglePopup($event)">
+            {{ usuario.charAt(0) }}
+        </div>
+    </div>
+</header>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" [class.hidden]="menuOculto">
+    <nav>
+        <a routerLink="/perfil">Mi perfil</a>
+        <a routerLink="/contacto">Contacto</a>
+        <a routerLink="/academico">Académico</a>
+        <a routerLink="/posgrado">Posgrado</a>
+        <a routerLink="/laboral">Laboral</a>
+        <a routerLink="/certificaciones" class="active">Certificaciones</a>
+    </nav>
+</aside>
+
+<main class="main">
+
+<div class="section-header">
+    <div class="section-title">
+        <h2>Certificaciones</h2>
+        <p>Registra tus certificaciones profesionales</p>
+    </div>
+</div>
+
+<div class="card">
+
+<form class="form-grid">
+
+    <!-- BOTÓN -->
+    <div class="acciones-posgrado full">
+        <button type="button" class="btn-secundario" (click)="mostrarFormulario = true">
+            + Agregar Certificación
+        </button>
+    </div>
+
+    <!-- MENSAJE VACÍO -->
+    <div class="estado-vacio full" *ngIf="!mostrarFormulario">
+        No se han registrado certificaciones.
+    </div>
+
+    <!-- FORMULARIO -->
+    <div *ngIf="mostrarFormulario" class="full">
+
+        <div class="bloque-formulario">
+            <h3>Certificación</h3>
+
+            <div class="field-group">
+                <label>Nombre de la certificación</label>
+                <input [(ngModel)]="form.certNombre" name="certNombre">
+            </div>
+
+            <div class="field-group">
+                <label>Fecha de inicio</label>
+                <input type="date" [(ngModel)]="form.certInicio" name="certInicio">
+            </div>
+
+            <div class="field-group">
+                <label>Fecha de término</label>
+                <input type="date" [(ngModel)]="form.certFin" name="certFin">
+            </div>
+
+            <div class="field-group">
+                <label>Fecha de obtención</label>
+                <input type="date" [(ngModel)]="form.certObtencion" name="certObtencion">
+            </div>
+
+        </div>
+
+        <!-- BOTÓN GUARDAR -->
+        <div class="full">
+            <button type="button" (click)="guardar()" class="btn-guardar">
+                Guardar certificación
+            </button>
+        </div>
+
+    </div>
+
+    <!-- MENSAJE -->
+    <div *ngIf="mensaje" class="save-msg">
+        {{ mensaje }}
+    </div>
+
+</form>
+
+</div>
+
+</main>
+</div>
