@@ -21,13 +21,14 @@ export class PosgradoComponent {
   // ===== UI =====
   menuOculto = false;
   mostrarPopup = false;
-
-  // 🔴 IMPORTANTE: control del botón añadir
   mostrarPosgrado = false;
-
   mensaje = '';
 
-  // ===== FORM POSGRADO =====
+  // ===== HISTORIAL =====
+  historial: any[] = [];
+  posgradoSeleccionado: any = null;
+
+  // ===== FORM =====
   form: any = {
     nivel: '',
     institucion: '',
@@ -40,7 +41,7 @@ export class PosgradoComponent {
     tieneBeca: false
   };
 
-  // ===== HEADER =====
+  // ================= HEADER =================
   toggleMenu() {
     this.menuOculto = !this.menuOculto;
   }
@@ -54,20 +55,21 @@ export class PosgradoComponent {
     this.mostrarPopup = !this.mostrarPopup;
   }
 
-  // ===== ABRIR FORMULARIO =====
+  // ================= ABRIR / CERRAR =================
   abrirFormulario() {
     this.mostrarPosgrado = true;
   }
 
-  // ===== CERRAR FORMULARIO =====
   cancelar() {
     this.mostrarPosgrado = false;
+    this.resetForm();
   }
 
-  // ===== GUARDAR POSGRADO =====
+  // ================= GUARDAR (CREAR) =================
   guardar() {
 
     const datos = {
+      id: Date.now(),
       matricula: "A1234567",
 
       nivelEstudio: this.form.nivel,
@@ -87,15 +89,50 @@ export class PosgradoComponent {
     this.http.post('http://localhost:8181/egresado/posgrado', datos)
       .subscribe({
         next: () => {
+
+          this.historial.push(datos);
+
           this.mostrarMensaje("✓ Posgrado guardado");
-          this.mostrarPosgrado = false; // cerrar formulario
-          this.resetForm(); // limpiar campos
+          this.mostrarPosgrado = false;
+          this.resetForm();
         },
         error: () => this.mostrarMensaje("❌ Error al guardar posgrado")
       });
   }
 
-  // ===== LIMPIAR FORM =====
+  // ================= VER DETALLE =================
+  verDetalle(item: any) {
+    this.posgradoSeleccionado = { ...item };
+  }
+
+  // ================= ACTUALIZAR =================
+  actualizarPosgrado() {
+
+    this.http.put(
+      `http://localhost:8181/egresado/posgrado/${this.posgradoSeleccionado.id}`,
+      this.posgradoSeleccionado
+    ).subscribe({
+      next: () => {
+
+        const index = this.historial.findIndex(p => p.id === this.posgradoSeleccionado.id);
+
+        if (index !== -1) {
+          this.historial[index] = { ...this.posgradoSeleccionado };
+        }
+
+        this.mostrarMensaje("✓ Posgrado actualizado");
+        this.posgradoSeleccionado = null;
+      },
+      error: () => this.mostrarMensaje("❌ Error al actualizar")
+    });
+  }
+
+  // ================= CANCELAR EDICIÓN =================
+  cancelarEdicion() {
+    this.posgradoSeleccionado = null;
+  }
+
+  // ================= RESET =================
   resetForm() {
     this.form = {
       nivel: '',
@@ -110,9 +147,14 @@ export class PosgradoComponent {
     };
   }
 
-  // ===== MENSAJE =====
+  // ================= MENSAJE =================
   mostrarMensaje(texto: string) {
     this.mensaje = texto;
     setTimeout(() => this.mensaje = '', 3000);
   }
+
+  // ===== ELIMINAR POSGRADO =====
+eliminar(id: number) {
+  this.historial = this.historial.filter(p => p.id !== id);
+}
 }
