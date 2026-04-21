@@ -21,6 +21,7 @@ export class PosgradoComponent {
   // ===== UI =====
   menuOculto = false;
   mostrarPopup = false;
+  mostrarFormulario = false;
   mostrarPosgrado = false;
   mensaje = '';
 

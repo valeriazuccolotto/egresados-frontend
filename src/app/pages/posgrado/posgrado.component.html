@@ -50,6 +50,11 @@
     </button>
 </div>
 
+<!-- MENSAJE VACÍO -->
+    <div class="estado-vacio full" *ngIf="!mostrarFormulario && historial.length === 0">
+        No se han registrado certificaciones.
+    </div>
+
 <!-- ================= FORMULARIO ================= -->
 <form class="form-grid" *ngIf="mostrarPosgrado">
 
