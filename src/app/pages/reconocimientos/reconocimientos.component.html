@@ -1,0 +1,204 @@
+<header class="top-header">
+    <div class="header-left">
+        <button (click)="toggleMenu()">☰</button>
+        <img src="img/favicon-UNPA.ico" class="logo">
+        <h2 class="titulo">Seguimiento de Egresados</h2>
+    </div>
+
+    <div class="user-info">
+        <div class="notification-bell" (click)="irNotificaciones()">
+            🔔
+            <span class="notification-dot"></span>
+        </div>
+
+        <span class="username">{{ usuario }}</span>
+
+        <div class="avatar" (click)="togglePopup($event)">
+            {{ usuario.charAt(0) }}
+        </div>
+    </div>
+</header>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" [class.hidden]="menuOculto">
+        <nav>
+            <a routerLink="/perfil">Mi perfil</a>
+            <a routerLink="/contacto">Contacto</a>
+            <a routerLink="/academico">Académico</a>
+            <a routerLink="/posgrado">Posgrado</a>
+            <a routerLink="/certificaciones">Certificaciones</a>
+            <a routerLink="/reconocimientos" class="active">Reconocimientos</a>
+            <a routerLink="/laboral">Laboral</a>
+        </nav>
+    </aside>
+
+    <main class="main">
+
+        <div class="section-header">
+            <div class="section-title">
+                <h2>Reconocimientos Académicos</h2>
+                <p>Registra premios, logros y distinciones</p>
+            </div>
+        </div>
+
+        <div class="card">
+
+            <!-- ================= FORM NUEVO ================= -->
+            <form class="form-grid">
+
+                <div class="acciones-posgrado full" *ngIf="!mostrarFormulario">
+                    <button type="button" class="btn-secundario" (click)="nuevo()">
+                        + Agregar reconocimiento
+                    </button>
+
+                    <p class="empty-state" *ngIf="historial.length === 0">
+                        No se han registrado reconocimientos actualmente.
+                    </p>
+                </div>
+
+                <!-- FORMULARIO NUEVO -->
+                <div *ngIf="mostrarFormulario" class="full">
+
+                    <div class="bloque-formulario">
+                        <h3>Información del reconocimiento</h3>
+
+                        <div class="field-group">
+                            <label>Nombre</label>
+                            <input [(ngModel)]="form.recoNombre" name="recoNombre">
+                        </div>
+
+                        <div class="field-group">
+                            <label>Tipo</label>
+                            <select [(ngModel)]="form.recoTipo" name="recoTipo">
+                                <option>Académico</option>
+                                <option>Cultural</option>
+                                <option>Deportivo</option>
+                            </select>
+                        </div>
+
+                        <div class="field-group">
+                            <label>Fecha de entrega</label>
+                            <input type="date" [(ngModel)]="form.recoFecha" name="recoFecha">
+                        </div>
+
+                        <div class="field-group">
+                            <label>Institución</label>
+                            <input [(ngModel)]="form.recoInstitucion" name="recoInstitucion">
+                        </div>
+                    </div>
+
+                    <div class="full">
+                        <button type="button" (click)="guardar()" class="btn-guardar">
+                            Guardar reconocimiento
+                        </button>
+
+                        <button type="button" (click)="cancelarFormulario()" class="btn-secundario">
+                            Cancelar
+                        </button>
+                    </div>
+
+                </div>
+
+                <div *ngIf="mensaje" class="save-msg">
+                    {{ mensaje }}
+                </div>
+
+            </form>
+
+            <!-- ================= HISTORIAL ================= -->
+            <div class="historial-grid" *ngIf="historial.length > 0">
+
+    <ng-container *ngFor="let reco of historial">
+
+        <!-- ================= CARD ================= -->
+        <div class="historial-card">
+
+            <div class="historial-header">
+                <div>
+                    <strong>{{ reco.nombreReconocimiento }}</strong>
+                    <p class="puesto">{{ reco.tipoReconocimiento }}</p>
+                </div>
+
+                <span class="badge">{{ reco.fechaEntrega }}</span>
+            </div>
+
+            <div class="historial-body">
+                <p>{{ reco.institucion }}</p>
+            </div>
+
+            <div class="historial-actions">
+                <button *ngIf="reconocimientoSeleccionado?.idReconocimiento !== reco.idReconocimiento"
+                        (click)="verDetalle(reco)"
+                        class="btn-ver">
+                    Ver
+                </button>
+
+                <button (click)="eliminarReconocimiento(reco.idReconocimiento)" class="btn-eliminar">
+                    Eliminar
+                </button>
+            </div>
+
+        </div>
+
+        <!-- ================= 🔥 DETALLE (CORRECTO) ================= -->
+        <div *ngIf="reconocimientoSeleccionado?.idReconocimiento === reco.idReconocimiento" class="detalle-expandido">
+
+                    <form (ngSubmit)="actualizarReconocimiento()" class="form-grid">
+
+                        <div class="bloque-formulario">
+                            <h3>Editar reconocimiento</h3>
+
+                            <div class="field-group">
+                                <label>Nombre</label>
+                                <input [(ngModel)]="reconocimientoSeleccionado.nombreReconocimiento"
+                                    name="nombreReconocimiento">
+                            </div>
+
+                            <div class="field-group">
+                                <label>Tipo</label>
+                                <select [(ngModel)]="reconocimientoSeleccionado.tipoReconocimiento"
+                                        name="tipoReconocimiento">
+                                    <option>Académico</option>
+                                    <option>Cultural</option>
+                                    <option>Deportivo</option>
+                                </select>
+                            </div>
+
+                            <div class="field-group">
+                                <label>Fecha</label>
+                                <input type="date"
+                                    [(ngModel)]="reconocimientoSeleccionado.fechaEntrega"
+                                    name="fechaEntrega">
+                            </div>
+
+                            <div class="field-group">
+                                <label>Institución</label>
+                                <input [(ngModel)]="reconocimientoSeleccionado.institucion"
+                                    name="institucion">
+                            </div>
+                        </div>
+
+                        <div class="acciones-detalle">
+                            <button type="submit" class="btn-guardar">
+                                Guardar cambios
+                            </button>
+
+                            <button type="button" (click)="cancelarEdicion()" class="btn-secundario">
+                                Cancelar
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </ng-container>
+
+        </div>
+
+        </div>
+
+    </main>
+</div>
