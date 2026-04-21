@@ -54,11 +54,11 @@
     </div>
 
     <!-- MENSAJE VACÍO -->
-    <div class="estado-vacio full" *ngIf="!mostrarFormulario">
+    <div class="estado-vacio full" *ngIf="!mostrarFormulario && historial.length === 0">
         No se han registrado certificaciones.
     </div>
 
-    <!-- FORMULARIO -->
+    <!-- FORMULARIO CREAR -->
     <div *ngIf="mostrarFormulario" class="full">
 
         <div class="bloque-formulario">
@@ -86,10 +86,14 @@
 
         </div>
 
-        <!-- BOTÓN GUARDAR -->
+        <!-- BOTONES CREAR -->
         <div class="full">
             <button type="button" (click)="guardar()" class="btn-guardar">
                 Guardar certificación
+            </button>
+
+            <button type="button" (click)="cancelarFormulario()" class="btn-secundario">
+                Cancelar
             </button>
         </div>
 
@@ -101,6 +105,105 @@
     </div>
 
 </form>
+
+<!-- =========================
+        HISTORIAL
+========================= -->
+<div class="historial-grid" *ngIf="historial.length > 0">
+
+    <ng-container *ngFor="let cert of historial">
+
+        <!-- CARD -->
+        <div class="historial-card">
+
+            <div class="historial-header">
+                <div>
+                    <strong>{{ cert.nombreCertificacion }}</strong>
+                </div>
+
+                <span class="badge">{{ cert.fechaObtencion }}</span>
+            </div>
+
+            <div class="historial-body">
+                <p>Inicio: {{ cert.fechaInicio }}</p>
+                <p>Fin: {{ cert.fechaFin }}</p>
+            </div>
+
+            <div class="historial-actions">
+
+                <button *ngIf="certSeleccionado?.id !== cert.id"
+                        (click)="verDetalle(cert)"
+                        class="btn-ver">
+                    Ver
+                </button>
+
+                <button (click)="eliminarCertificacion(cert.id)"
+                        class="btn-eliminar">
+                    Eliminar
+                </button>
+
+            </div>
+
+        </div>
+
+        <!-- =========================
+            DETALLE EDITABLE (CORRECTO)
+        ========================== -->
+        <div *ngIf="certSeleccionado?.id === cert.id"
+            class="detalle-expandido">
+
+            <form (ngSubmit)="actualizarCertificacion()" class="form-grid">
+
+                <div class="bloque-formulario">
+                    <h3>Editar certificación</h3>
+
+                    <div class="field-group">
+                        <label>Nombre</label>
+                        <input [(ngModel)]="certSeleccionado.nombreCertificacion"
+                                name="nombreCertificacion">
+                    </div>
+
+                    <div class="field-group">
+                        <label>Inicio</label>
+                        <input type="date"
+                            [(ngModel)]="certSeleccionado.fechaInicio"
+                            name="fechaInicio">
+                    </div>
+
+                    <div class="field-group">
+                        <label>Fin</label>
+                        <input type="date"
+                            [(ngModel)]="certSeleccionado.fechaFin"
+                            name="fechaFin">
+                    </div>
+
+                    <div class="field-group">
+                        <label>Obtención</label>
+                        <input type="date"
+                            [(ngModel)]="certSeleccionado.fechaObtencion"
+                            name="fechaObtencion">
+                    </div>
+                </div>
+
+                <div class="acciones-detalle">
+                    <button type="submit" class="btn-guardar">
+                        Guardar cambios
+                    </button>
+
+                    <button type="button"
+                            (click)="cancelarEdicion()"
+                            class="btn-secundario">
+                        Cancelar
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+
+    </ng-container>
+
+</div>
 
 </div>
 
