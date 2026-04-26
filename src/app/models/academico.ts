@@ -3,19 +3,19 @@ export interface Academico {
   claveCarrera: string;
   promedio: number | null;
   anioEgreso: number | null;
+
   titulado: string;
   fechaTitulacion: string | null;
   tipoTitulacion: string | null;
   cedulaProfesional: string;
 
-  nombreTesis: string;
-  director: string;
-  codirector: string;
+  nombreTesis: string | null;
+  director: string | null;
+  codirector: string | null;
 
-  fechaExamenCeneval: string | null;
+  fechaExamen: string | null;
   puntajeCeneval: number | null;
 
-  tituloMemoria: string;
-  asesor: string;
-  fechaExamenMemoria: string | null;
+  tituloMemoria: string | null;
+  asesor: string | null;
 }
