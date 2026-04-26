@@ -81,7 +81,11 @@
       </div>
 
       <div *ngIf="mensajeExito" class="save-msg">
-        ✓ Información guardada correctamente.
+        {{ mensajeExito }}
+      </div>
+
+      <div *ngIf="mensajeError" class="error-msg">
+        {{ mensajeError }}
       </div>
 
       <div class="form-actions">
