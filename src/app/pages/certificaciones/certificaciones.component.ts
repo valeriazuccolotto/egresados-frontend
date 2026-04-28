@@ -22,11 +22,13 @@ export class CertificacionesComponent implements OnInit {
   menuOculto = false;
   mostrarPopup = false;
   mostrarFormulario = false;
+  mostrarConfirmacion = false;   // 🔥 para el modal de confirmación
   mensaje = '';
 
   // ===== DATA =====
   historial: any[] = [];
   certSeleccionado: any = null;
+  certAEliminar: number | null = null; // 🔥 id temporal para eliminar
 
   // ===== FORM NUEVO =====
   form: any = {
@@ -36,19 +38,15 @@ export class CertificacionesComponent implements OnInit {
     certObtencion: ''
   };
 
-  // ================= INIT =================
   ngOnInit() {
     this.cargarHistorial();
   }
 
-  // ================= CARGAR HISTORIAL =================
   cargarHistorial() {
     this.http.get<any[]>(
       'http://localhost:8181/egresado/certificaciones/A1234567'
     ).subscribe({
-      next: (data) => {
-        this.historial = data;
-      },
+      next: (data) => this.historial = data,
       error: () => {
         this.historial = [];
         this.mostrarMensaje("❌ Error al cargar historial");
@@ -57,22 +55,20 @@ export class CertificacionesComponent implements OnInit {
   }
 
   // ================= HEADER =================
-  toggleMenu() {
-    this.menuOculto = !this.menuOculto;
-  }
-
-  irNotificaciones() {
-    this.router.navigate(['/notificaciones']);
-  }
-
+  toggleMenu() { this.menuOculto = !this.menuOculto; }
+  irNotificaciones() { this.router.navigate(['/notificaciones']); }
   togglePopup(event: Event) {
     event.stopPropagation();
     this.mostrarPopup = !this.mostrarPopup;
   }
 
   // ================= CREAR =================
-  guardar() {
+  abrirFormulario() {
+    this.mostrarFormulario = true;
+    this.certSeleccionado = null; // 🔥 ocultar historial
+  }
 
+  guardar() {
     if (this.certSeleccionado) {
       this.actualizarCertificacion();
       return;
@@ -89,20 +85,22 @@ export class CertificacionesComponent implements OnInit {
     this.http.post('http://localhost:8181/egresado/certificaciones', datos)
       .subscribe({
         next: () => {
-
           this.mostrarMensaje("✓ Certificación guardada");
           this.resetForm();
-          this.mostrarFormulario = false;
-
-          this.cargarHistorial(); // 🔥 importante
+          this.mostrarFormulario = false; // 🔥 volver a mostrar historial
+          this.cargarHistorial();
         },
         error: () => this.mostrarMensaje("❌ Error al guardar")
       });
   }
 
   // ================= EDITAR =================
-  actualizarCertificacion() {
+  verDetalle(item: any) {
+    this.certSeleccionado = { ...item };
+    this.mostrarFormulario = false; // 🔥 ocultar historial
+  }
 
+  actualizarCertificacion() {
     const datosActualizados = {
       matricula: "A1234567",
       idCertificacion: this.certSeleccionado.idCertificacion,
@@ -117,53 +115,51 @@ export class CertificacionesComponent implements OnInit {
       datosActualizados
     ).subscribe({
       next: () => {
-
         this.mostrarMensaje("✓ Certificación actualizada");
-        this.certSeleccionado = null;
-
-        this.cargarHistorial(); // 🔥 importante
+        this.certSeleccionado = null; // 🔥 volver a mostrar historial
+        this.cargarHistorial();
       },
-      error: (err) => {
-        console.log(err.error);
-        this.mostrarMensaje("❌ Error al actualizar");
-      }
+      error: () => this.mostrarMensaje("❌ Error al actualizar")
     });
   }
 
-  // ================= VER =================
-  verDetalle(item: any) {
-    this.certSeleccionado = { ...item };
-  }
-
-  // ================= CANCELAR =================
   cancelarEdicion() {
-    this.certSeleccionado = null;
+    this.certSeleccionado = null; // 🔥 volver a mostrar historial
   }
 
   cancelarFormulario() {
-    this.mostrarFormulario = false;
+    this.mostrarFormulario = false; // 🔥 volver a mostrar historial
     this.resetForm();
   }
 
   // ================= ELIMINAR =================
-  eliminarCertificacion(idCertificacion: number) {
+  abrirConfirmacion(idCertificacion: number) {
+    this.certAEliminar = idCertificacion;
+    this.mostrarConfirmacion = true;
+  }
 
-    this.http.delete(
-      `http://localhost:8181/egresado/certificaciones/${idCertificacion}`
-    ).subscribe({
-      next: () => {
+  confirmarEliminacion() {
+    if (this.certAEliminar !== null) {
+      this.http.delete(
+        `http://localhost:8181/egresado/certificaciones/${this.certAEliminar}`
+      ).subscribe({
+        next: () => {
+          this.mostrarMensaje("🗑️ Certificación eliminada correctamente");
+          this.cargarHistorial();
+          this.cerrarConfirmacion();
+        },
+        error: (err) => {
+          console.log(err.error);
+          this.mostrarMensaje("❌ Error al eliminar");
+          this.cerrarConfirmacion();
+        }
+      });
+    }
+  }
 
-        this.mostrarMensaje("🗑️ Certificación eliminada correctamente");
-
-        this.cargarHistorial(); // 🔥 importante
-
-      },
-      error: (err) => {
-        console.log(err.error);
-        this.mostrarMensaje("❌ Error al eliminar");
-      }
-    });
-
+  cerrarConfirmacion() {
+    this.mostrarConfirmacion = false;
+    this.certAEliminar = null;
   }
 
   // ================= RESET =================
@@ -176,7 +172,6 @@ export class CertificacionesComponent implements OnInit {
     };
   }
 
-  // ================= MENSAJE =================
   mostrarMensaje(texto: string) {
     this.mensaje = texto;
     setTimeout(() => this.mensaje = '', 3000);

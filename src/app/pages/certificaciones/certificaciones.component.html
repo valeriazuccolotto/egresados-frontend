@@ -1,165 +1,145 @@
-<div class="section-header">
+    <div class="section-header">
     <div class="section-title">
         <h2>Certificaciones</h2>
         <p>Registra tus certificaciones profesionales</p>
     </div>
-</div>
+    </div>
 
-<div class="card">
-
-<form class="form-grid">
+    <div class="card">
 
     <!-- BOTÓN -->
-    <div class="acciones-posgrado full">
-        <button type="button" class="btn-secundario" (click)="mostrarFormulario = true">
-            + Agregar Certificación
+    <div class="acciones-posgrado full"
+        *ngIf="!mostrarFormulario && !certSeleccionado">
+        <button type="button" class="btn-secundario" (click)="abrirFormulario()">
+        + Agregar Certificación
         </button>
     </div>
 
     <!-- MENSAJE VACÍO -->
-    <div class="estado-vacio full" *ngIf="!mostrarFormulario && historial.length === 0">
+    <div class="estado-vacio full"
+        *ngIf="!mostrarFormulario && !certSeleccionado && historial.length === 0">
         No se han registrado certificaciones.
     </div>
 
     <!-- FORMULARIO CREAR -->
-    <div *ngIf="mostrarFormulario" class="full">
-
+    <form class="form-grid" *ngIf="mostrarFormulario && !certSeleccionado">
         <div class="bloque-formulario">
-            <h3>Certificación</h3>
+        <h3>Certificación</h3>
 
-            <div class="field-group">
-                <label>Nombre de la certificación</label>
-                <input [(ngModel)]="form.certNombre" name="certNombre">
-            </div>
+        <div class="field-group">
+            <label>Nombre de la certificación <span class="required">*</span></label>
+            <input [(ngModel)]="form.certNombre" name="certNombre" required #certNombre="ngModel">
+            <div class="error" *ngIf="certNombre.invalid && certNombre.touched">Campo obligatorio</div>
+        </div>
 
-            <div class="field-group">
-                <label>Fecha de inicio</label>
-                <input type="date" [(ngModel)]="form.certInicio" name="certInicio">
-            </div>
+        <div class="field-group">
+            <label>Fecha de inicio <span class="required">*</span></label>
+            <input type="date" [(ngModel)]="form.certInicio" name="certInicio" required #certInicio="ngModel">
+            <div class="error" *ngIf="certInicio.invalid && certInicio.touched">Campo obligatorio</div>
+        </div>
 
-            <div class="field-group">
-                <label>Fecha de término</label>
-                <input type="date" [(ngModel)]="form.certFin" name="certFin">
-            </div>
+        <div class="field-group">
+            <label>Fecha de término <span class="required">*</span></label>
+            <input type="date" [(ngModel)]="form.certFin" name="certFin" required #certFin="ngModel">
+            <div class="error" *ngIf="certFin.invalid && certFin.touched">Campo obligatorio</div>
+        </div>
 
-            <div class="field-group">
-                <label>Fecha de obtención</label>
-                <input type="date" [(ngModel)]="form.certObtencion" name="certObtencion">
-            </div>
-
+        <div class="field-group">
+            <label>Fecha de obtención <span class="required">*</span></label>
+            <input type="date" [(ngModel)]="form.certObtencion" name="certObtencion" required #certObtencion="ngModel">
+            <div class="error" *ngIf="certObtencion.invalid && certObtencion.touched">Campo obligatorio</div>
+        </div>
         </div>
 
         <div class="full">
-            <button type="button" (click)="guardar()" class="btn-guardar">
-                Guardar certificación
-            </button>
-
-            <button type="button" (click)="cancelarFormulario()" class="btn-secundario">
-                Cancelar
-            </button>
+        <button type="button" (click)="guardar()" class="btn-guardar">Guardar certificación</button>
+        <button type="button" (click)="cancelarFormulario()" class="btn-secundario">Cancelar</button>
         </div>
+    </form>
 
-    </div>
-
-    <div *ngIf="mensaje" class="save-msg">
-        {{ mensaje }}
-    </div>
-
-</form>
-
-<!-- ================= HISTORIAL ================= -->
-<div class="historial-grid" *ngIf="historial.length > 0">
-
-    <ng-container *ngFor="let cert of historial">
-
-        <!-- CARD -->
+    <!-- HISTORIAL -->
+    <div class="historial-grid"
+        *ngIf="historial.length > 0 && !mostrarFormulario && !certSeleccionado">
+        <ng-container *ngFor="let cert of historial">
         <div class="historial-card">
-
             <div class="historial-header">
-                <div>
-                    <strong>{{ cert.nombreCertificacion }}</strong>
-                </div>
-
-                <span class="badge">{{ cert.fechaObtencion }}</span>
+            <div>
+                <strong>{{ cert.nombreCertificacion }}</strong>
             </div>
-
+            <span class="badge">{{ cert.fechaObtencion }}</span>
+            </div>
             <div class="historial-body">
-                <p>Inicio: {{ cert.fechaInicio }}</p>
-                <p>Fin: {{ cert.fechaFin }}</p>
+            <p>Inicio: {{ cert.fechaInicio }}</p>
+            <p>Fin: {{ cert.fechaFin }}</p>
             </div>
-
             <div class="historial-actions">
+            <button (click)="verDetalle(cert)" class="btn-ver">Ver</button>
+            <button (click)="abrirConfirmacion(cert.idCertificacion)" class="btn-eliminar">
+                Eliminar
+            </button>
+            </div>
+        </div>
+        </ng-container>
+    </div>
 
-                <button *ngIf="certSeleccionado?.idCertificacion !== cert.idCertificacion"
-                        (click)="verDetalle(cert)"
-                        class="btn-ver">
-                    Ver
-                </button>
+    <!-- FORMULARIO EDICIÓN -->
+    <div *ngIf="certSeleccionado" class="detalle-expandido">
+        <form (ngSubmit)="actualizarCertificacion()" class="form-grid">
+        <div class="bloque-formulario">
+            <h3>Editar certificación</h3>
 
-                <button (click)="eliminarCertificacion(cert.idCertificacion)"
-                        class="btn-eliminar">
-                    Eliminar
-                </button>
-
+            <div class="field-group">
+            <label>Nombre <span class="required">*</span></label>
+            <input [(ngModel)]="certSeleccionado.nombreCertificacion"
+                    name="nombreCertificacion"
+                    required #nombreCertificacionEdit="ngModel">
+            <div class="error" *ngIf="nombreCertificacionEdit.invalid && nombreCertificacionEdit.touched">
+                Campo obligatorio
+            </div>
             </div>
 
+            <div class="field-group">
+            <label>Fecha Inicio <span class="required">*</span></label>
+            <input type="date" [(ngModel)]="certSeleccionado.fechaInicio"
+                    name="fechaInicio"
+                    required #fechaInicioEdit="ngModel">
+            <div class="error" *ngIf="fechaInicioEdit.invalid && fechaInicioEdit.touched">Campo obligatorio</div>
+            </div>
+
+            <div class="field-group">
+            <label>Fecha Fin <span class="required">*</span></label>
+            <input type="date" [(ngModel)]="certSeleccionado.fechaFin"
+                    name="fechaFin"
+                    required #fechaFinEdit="ngModel">
+            <div class="error" *ngIf="fechaFinEdit.invalid && fechaFinEdit.touched">Campo obligatorio</div>
+            </div>
+
+            <div class="field-group">
+            <label>Fecha de obtención <span class="required">*</span></label>
+            <input type="date" [(ngModel)]="certSeleccionado.fechaObtencion"
+                    name="fechaObtencion"
+                    required #fechaObtencionEdit="ngModel">
+            <div class="error" *ngIf="fechaObtencionEdit.invalid && fechaObtencionEdit.touched">Campo obligatorio</div>
+            </div>
         </div>
 
-        <!-- DETALLE EDITABLE -->
-        <div *ngIf="certSeleccionado?.idCertificacion === cert.idCertificacion"
-            class="detalle-expandido">
-
-            <form (ngSubmit)="actualizarCertificacion()" class="form-grid">
-
-                <div class="bloque-formulario">
-                    <h3>Editar certificación</h3>
-
-                    <div class="field-group">
-                        <label>Nombre</label>
-                        <input [(ngModel)]="certSeleccionado.nombreCertificacion"
-                                name="nombreCertificacion">
-                    </div>
-
-                    <div class="field-group">
-                        <label>Fecha Inicio</label>
-                        <input type="date"
-                            [(ngModel)]="certSeleccionado.fechaInicio"
-                            name="fechaInicio">
-                    </div>
-
-                    <div class="field-group">
-                        <label>Fecha Fin</label>
-                        <input type="date"
-                            [(ngModel)]="certSeleccionado.fechaFin"
-                            name="fechaFin">
-                    </div>
-
-                    <div class="field-group">
-                        <label>Fecha de obtención</label>
-                        <input type="date"
-                            [(ngModel)]="certSeleccionado.fechaObtencion"
-                            name="fechaObtencion">
-                    </div>
-                </div>
-
-                <div class="acciones-detalle">
-                    <button type="submit" class="btn-guardar">
-                        Guardar cambios
-                    </button>
-
-                    <button type="button"
-                            (click)="cancelarEdicion()"
-                            class="btn-secundario">
-                        Cancelar
-                    </button>
-                </div>
-
-            </form>
-
+        <div class="acciones-detalle">
+            <button type="submit" class="btn-guardar">Guardar cambios</button>
+            <button type="button" (click)="cancelarEdicion()" class="btn-secundario">Cancelar</button>
         </div>
+        </form>
+    </div>
 
-    </ng-container>
+    <!-- MODAL CONFIRMACIÓN -->
+    <div class="modal-overlay" *ngIf="mostrarConfirmacion">
+        <div class="modal-card">
+        <h3>Confirmación</h3>
+        <p>¿Estás seguro que deseas eliminar esta certificación?</p>
+        <div class="acciones-modal">
+            <button class="btn-guardar" (click)="confirmarEliminacion()">Sí, eliminar</button>
+            <button class="btn-secundario" (click)="cerrarConfirmacion()">No, cancelar</button>
+        </div>
+        </div>
+    </div>
 
-</div>
-
-</div>
+    </div>

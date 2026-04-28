@@ -236,3 +236,106 @@
     gap: 15px;
     margin-top: 10px;
 }
+
+/* =========================
+    VALIDACIÓN DE CAMPOS
+========================= */
+
+/* Asterisco obligatorio */
+.required {
+    color: #e74c3c;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+/* Inputs inválidos */
+.field-group input.ng-invalid.ng-touched,
+.field-group select.ng-invalid.ng-touched {
+    border: 1px solid #e74c3c;
+    background-color: #fff5f5;
+}
+
+/* Inputs válidos (opcional pero recomendado) */
+.field-group input.ng-valid.ng-touched,
+.field-group select.ng-valid.ng-touched {
+    border: 1px solid #2ecc71;
+    background-color: #f0fff4;
+}
+
+/* Mensaje de error debajo */
+.error {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+/* Mensaje general arriba del botón */
+.error-global {
+    color: #e74c3c;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Efecto al enfocar (más pro) */
+.field-group input:focus,
+.field-group select:focus {
+    outline: none;
+    border: 1px solid #2f8f83;
+    box-shadow: 0 0 0 2px rgba(47, 143, 131, 0.2);
+}
+
+/* =========================
+    MODAL DE CONFIRMACIÓN
+========================= */
+
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4); /* fondo semi-transparente */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px;
+    width: 320px;
+    max-width: 90%;
+    text-align: center;
+    border: 1px solid #e5e5e5;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-card h3 {
+    margin-bottom: 10px;
+    color: #2f8f83; /* tu verde principal */
+}
+
+.modal-card p {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.acciones-modal {
+    display: flex;
+    justify-content: space-around;
+    gap: 12px;
+}
+
+.acciones-modal .btn-guardar {
+    background: #dc2626; /* rojo para eliminar */
+    color: white;
+}
+
+.acciones-modal .btn-secundario {
+    border: 1px solid #2f8f83;
+    color: #2f8f83;
+    background: white;
+}
