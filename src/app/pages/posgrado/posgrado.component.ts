@@ -17,16 +17,21 @@ export class PosgradoComponent implements OnInit {
 
   usuario = 'Valeria';
 
+  // ===== UI =====
   menuOculto = false;
   mostrarPopup = false;
   mostrarPosgrado = false;
+  mostrarConfirmacion = false;   // 🔥 modal confirmación
   mensaje = '';
 
+  // ===== DATA =====
   historial: any[] = [];
   posgradoSeleccionado: any = null;
+  posgradoAEliminar: number | null = null; // 🔥 id temporal para eliminar
 
   listaBecas: any[] = [];
 
+  // ===== FORM =====
   form: any = {
     nivel: '',
     institucion: '',
@@ -130,7 +135,7 @@ export class PosgradoComponent implements OnInit {
       .subscribe({
         next: () => {
           this.cargarHistorial();
-          this.cargarBecas(); // refresca lista si se creó nueva beca
+          this.cargarBecas();
           this.mostrarMensaje("✓ Posgrado guardado");
           this.mostrarPosgrado = false;
           this.resetForm();
@@ -186,7 +191,7 @@ export class PosgradoComponent implements OnInit {
     ).subscribe({
       next: () => {
         this.cargarHistorial();
-        this.cargarBecas(); // refresca lista si se creó nueva beca
+        this.cargarBecas();
         this.mostrarMensaje("✓ Posgrado actualizado");
         this.posgradoSeleccionado = null;
       },
@@ -194,16 +199,32 @@ export class PosgradoComponent implements OnInit {
     });
   }
 
-  eliminar(id: number) {
-    this.http.delete(`http://localhost:8181/egresado/posgrado/${id}`)
-      .subscribe({
-        next: () => {
-          this.historial = this.historial.filter(item => item.idPosgrado !== id);
-          this.mostrarMensaje("🗑️ Eliminado correctamente");
-          setTimeout(() => this.cargarHistorial(), 300);
-        },
-        error: () => this.mostrarMensaje("❌ Error al eliminar")
-      });
+  // ================= ELIMINAR CON CONFIRMACIÓN =================
+  abrirConfirmacion(id: number) {
+    this.posgradoAEliminar = id;
+    this.mostrarConfirmacion = true;
+  }
+
+  confirmarEliminacion() {
+    if (this.posgradoAEliminar !== null) {
+      this.http.delete(`http://localhost:8181/egresado/posgrado/${this.posgradoAEliminar}`)
+        .subscribe({
+          next: () => {
+            this.mostrarMensaje("🗑️ Posgrado eliminado correctamente");
+            this.cargarHistorial();
+            this.cerrarConfirmacion();
+          },
+          error: () => {
+            this.mostrarMensaje("❌ Error al eliminar");
+            this.cerrarConfirmacion();
+          }
+        });
+    }
+  }
+
+  cerrarConfirmacion() {
+    this.mostrarConfirmacion = false;
+    this.posgradoAEliminar = null;
   }
 
   mostrarMensaje(texto: string) {
