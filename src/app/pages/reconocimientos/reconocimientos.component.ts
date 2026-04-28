@@ -21,8 +21,6 @@ export class ReconocimientosComponent implements OnInit {
   mostrarFormulario = false;
   mensaje = '';
   menuOculto = false;
-
-  // ================= PERFIL =================
   mostrarPopup = false;
   imagenPerfil: string | null = null;
 
@@ -30,10 +28,13 @@ export class ReconocimientosComponent implements OnInit {
   historial: any[] = [];
   reconocimientoSeleccionado: any = null;
 
+  // ================= CONFIRMACIÓN ELIMINAR =================
+  mostrarConfirmacion = false;
+  reconocimientoAEliminar: number | null = null;
+
   // ================= FORM =================
   form: any = {};
 
-  // ================= INIT =================
   ngOnInit() {
     this.resetForm();
     this.cargarHistorial();
@@ -43,7 +44,10 @@ export class ReconocimientosComponent implements OnInit {
   cargarHistorial() {
     this.http.get<any[]>(
       `http://localhost:8181/egresado/reconocimientos/A1234567`
-    ).subscribe(data => this.historial = data);
+    ).subscribe({
+      next: data => this.historial = data,
+      error: () => this.mostrarMensaje("❌ Error al cargar historial")
+    });
   }
 
   // ================= FORM =================
@@ -59,6 +63,12 @@ export class ReconocimientosComponent implements OnInit {
 
   nuevo() {
     this.mostrarFormulario = true;
+    this.resetForm();
+    this.reconocimientoSeleccionado = null;
+  }
+
+  cancelarFormulario() {
+    this.mostrarFormulario = false;
     this.resetForm();
   }
 
@@ -90,20 +100,16 @@ export class ReconocimientosComponent implements OnInit {
     });
   }
 
-  // ================= DETALLE (ACORDEÓN) =================
+  // ================= DETALLE =================
   verDetalle(reco: any) {
     this.reconocimientoSeleccionado = { ...reco };
-  }
-
-  cerrarDetalle() {
-    this.reconocimientoSeleccionado = null;
+    this.mostrarFormulario = false;
   }
 
   cancelarEdicion() {
     this.reconocimientoSeleccionado = null;
   }
 
-  // ================= ACTUALIZAR =================
   actualizarReconocimiento() {
     const reco = this.reconocimientoSeleccionado;
 
@@ -112,35 +118,44 @@ export class ReconocimientosComponent implements OnInit {
       reco
     ).subscribe({
       next: () => {
-        const index = this.historial.findIndex(
-          r => r.idReconocimiento === reco.idReconocimiento
-        );
-
-        if (index !== -1) {
-          this.historial[index] = { ...reco };
-        }
-
         this.mostrarMensaje("✓ Registro actualizado");
-        this.cerrarDetalle();
+        this.reconocimientoSeleccionado = null;
+        this.cargarHistorial();
       },
       error: () => this.mostrarMensaje("❌ Error al actualizar")
     });
   }
 
-  // ================= ELIMINAR =================
-  eliminarReconocimiento(id: number) {
-    this.http.delete(
-      `http://localhost:8181/egresado/reconocimientos/${id}`
-    ).subscribe({
-      next: () => {
-        this.mostrarMensaje("✓ Eliminado correctamente");
-        this.cargarHistorial();
-      },
-      error: () => this.mostrarMensaje("❌ Error al eliminar")
-    });
+  // ================= ELIMINAR CON CONFIRMACIÓN =================
+  abrirConfirmacion(id: number) {
+    this.reconocimientoAEliminar = id;
+    this.mostrarConfirmacion = true;
   }
 
-  // ================= UI =================
+  confirmarEliminacion() {
+    if (this.reconocimientoAEliminar !== null) {
+      this.http.delete(
+        `http://localhost:8181/egresado/reconocimientos/${this.reconocimientoAEliminar}`
+      ).subscribe({
+        next: () => {
+          this.mostrarMensaje("🗑️ Reconocimiento eliminado correctamente");
+          this.cargarHistorial();
+          this.cerrarConfirmacion();
+        },
+        error: () => {
+          this.mostrarMensaje("❌ Error al eliminar");
+          this.cerrarConfirmacion();
+        }
+      });
+    }
+  }
+
+  cerrarConfirmacion() {
+    this.mostrarConfirmacion = false;
+    this.reconocimientoAEliminar = null;
+  }
+
+  // ================= UI EXTRA =================
   toggleMenu() {
     this.menuOculto = !this.menuOculto;
   }
@@ -168,11 +183,5 @@ export class ReconocimientosComponent implements OnInit {
   mostrarMensaje(texto: string) {
     this.mensaje = texto;
     setTimeout(() => this.mensaje = '', 3000);
-  }
-
-  // ================= CANCELAR FORM NUEVO =================
-  cancelarFormulario() {
-    this.mostrarFormulario = false;
-    this.resetForm();
   }
 }
