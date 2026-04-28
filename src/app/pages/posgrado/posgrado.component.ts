@@ -15,20 +15,18 @@ export class PosgradoComponent implements OnInit {
 
   constructor(private router: Router, private http: HttpClient) {}
 
-  // ===== USUARIO =====
   usuario = 'Valeria';
 
-  // ===== UI =====
   menuOculto = false;
   mostrarPopup = false;
   mostrarPosgrado = false;
   mensaje = '';
 
-  // ===== HISTORIAL =====
   historial: any[] = [];
   posgradoSeleccionado: any = null;
 
-  // ===== FORM =====
+  listaBecas: any[] = [];
+
   form: any = {
     nivel: '',
     institucion: '',
@@ -38,39 +36,37 @@ export class PosgradoComponent implements OnInit {
     relacion: '',
     inicio: '',
     fin: '',
-    tieneBeca: false
+    tieneBeca: null,
+    idTipoBeca: null,
+    otroBeca: ''
   };
 
-  // ================= INIT =================
   ngOnInit() {
     this.cargarHistorial();
+    this.cargarBecas();
   }
 
   cargarHistorial() {
     this.http.get<any[]>(`http://localhost:8181/egresado/posgrado/A1234567`)
       .subscribe({
-        next: data => this.historial = data,
-        error: () => this.mostrarMensaje("❌ Error al cargar")
+        next: data => this.historial = data.reverse(),
+        error: () => this.mostrarMensaje("❌ Error al cargar historial")
       });
   }
 
-  // ================= HEADER =================
-  toggleMenu() {
-    this.menuOculto = !this.menuOculto;
+  cargarBecas() {
+    this.http.get<any[]>('http://localhost:8181/tipo-beca')
+      .subscribe({
+        next: data => {
+          this.listaBecas = [...data, { idTipoBeca: 0, nombre: 'Otros' }];
+        },
+        error: () => this.mostrarMensaje("❌ Error al cargar becas")
+      });
   }
 
-  irNotificaciones() {
-    this.router.navigate(['/notificaciones']);
-  }
-
-  togglePopup(event: Event) {
-    event.stopPropagation();
-    this.mostrarPopup = !this.mostrarPopup;
-  }
-
-  // ================= FORMULARIO =================
   abrirFormulario() {
     this.mostrarPosgrado = true;
+    this.posgradoSeleccionado = null;
   }
 
   cancelar() {
@@ -88,65 +84,109 @@ export class PosgradoComponent implements OnInit {
       relacion: '',
       inicio: '',
       fin: '',
-      tieneBeca: false
+      tieneBeca: null,
+      idTipoBeca: null,
+      otroBeca: ''
     };
   }
 
-  // ================= GUARDAR =================
-  guardar() {
+  onBecaChange() {
+    if (!this.form.tieneBeca) {
+      this.form.idTipoBeca = null;
+      this.form.otroBeca = '';
+    }
+  }
+
+  guardar(form: any) {
+    if (form.invalid) {
+      Object.values(form.controls).forEach((c: any) => c.markAsTouched());
+      this.mostrarMensaje("⚠️ Completa todos los campos obligatorios");
+      return;
+    }
+
+    const becaSeleccionada = this.listaBecas.find(b => b.idTipoBeca === this.form.idTipoBeca);
 
     const datos = {
       matricula: "A1234567",
-
       nivelEstudio: this.form.nivel,
       institucion: this.form.institucion,
       nombrePrograma: this.form.programa,
-
       modalidad: this.form.modalidad,
       estatus: this.form.estatus,
       relacionadoCarrera: this.form.relacion,
-
       fechaInicio: this.form.inicio,
       fechaFin: this.form.fin,
-
-      tieneBeca: this.form.tieneBeca
+      tieneBeca: this.form.tieneBeca,
+      tipoBeca: this.form.tieneBeca && becaSeleccionada
+        ? {
+            nombre: this.form.idTipoBeca === 0
+              ? this.form.otroBeca
+              : becaSeleccionada.nombre
+          }
+        : null
     };
 
     this.http.post('http://localhost:8181/egresado/posgrado', datos)
       .subscribe({
         next: () => {
-          this.cargarHistorial(); // 🔥 igual que laboral
+          this.cargarHistorial();
+          this.cargarBecas(); // refresca lista si se creó nueva beca
           this.mostrarMensaje("✓ Posgrado guardado");
           this.mostrarPosgrado = false;
           this.resetForm();
         },
-        error: () => this.mostrarMensaje("❌ Error al guardar posgrado")
+        error: (err) => {
+          console.error("ERROR BACKEND:", err.error);
+          this.mostrarMensaje("❌ Error al guardar posgrado");
+        }
       });
   }
 
-  // ================= VER DETALLE =================
   verDetalle(item: any) {
     this.posgradoSeleccionado = { ...item };
+
+    if (this.posgradoSeleccionado.tieneBeca && this.posgradoSeleccionado.tipoBeca) {
+      this.posgradoSeleccionado.idTipoBeca = this.posgradoSeleccionado.tipoBeca.idTipoBeca;
+
+      const existe = this.listaBecas.find(b => b.nombre === this.posgradoSeleccionado.tipoBeca.nombre);
+      if (!existe) {
+        this.posgradoSeleccionado.idTipoBeca = 0;
+        this.posgradoSeleccionado.otroBeca = this.posgradoSeleccionado.tipoBeca.nombre;
+      }
+    }
   }
 
   cancelarEdicion() {
     this.posgradoSeleccionado = null;
   }
 
-  // ================= ACTUALIZAR =================
-  actualizarPosgrado() {
-
-    if (!this.posgradoSeleccionado?.idPosgrado) {
-      this.mostrarMensaje("❌ Error: ID no definido");
+  actualizarPosgrado(formEdit: any) {
+    if (formEdit.invalid) {
+      Object.values(formEdit.controls).forEach((c: any) => c.markAsTouched());
+      this.mostrarMensaje("⚠️ Completa todos los campos");
       return;
     }
 
+    const becaSeleccionada = this.listaBecas.find(b => b.idTipoBeca === this.posgradoSeleccionado.idTipoBeca);
+
+    const datos = {
+      ...this.posgradoSeleccionado,
+      tipoBeca: this.posgradoSeleccionado.tieneBeca && becaSeleccionada
+        ? {
+            nombre: this.posgradoSeleccionado.idTipoBeca === 0
+              ? this.posgradoSeleccionado.otroBeca
+              : becaSeleccionada.nombre
+          }
+        : null
+    };
+
     this.http.put(
       `http://localhost:8181/egresado/posgrado/${this.posgradoSeleccionado.idPosgrado}`,
-      this.posgradoSeleccionado
+      datos
     ).subscribe({
       next: () => {
-        this.cargarHistorial(); // 🔥 igual que laboral
+        this.cargarHistorial();
+        this.cargarBecas(); // refresca lista si se creó nueva beca
         this.mostrarMensaje("✓ Posgrado actualizado");
         this.posgradoSeleccionado = null;
       },
@@ -154,35 +194,18 @@ export class PosgradoComponent implements OnInit {
     });
   }
 
-  // ================= ELIMINAR =================
   eliminar(id: number) {
+    this.http.delete(`http://localhost:8181/egresado/posgrado/${id}`)
+      .subscribe({
+        next: () => {
+          this.historial = this.historial.filter(item => item.idPosgrado !== id);
+          this.mostrarMensaje("🗑️ Eliminado correctamente");
+          setTimeout(() => this.cargarHistorial(), 300);
+        },
+        error: () => this.mostrarMensaje("❌ Error al eliminar")
+      });
+  }
 
-  this.http.delete(`http://localhost:8181/egresado/posgrado/${id}`)
-    .subscribe({
-      next: () => {
-
-        // 1. actualizar UI primero (rápido)
-        this.historial = this.historial.filter(
-          item => item.idPosgrado !== id
-        );
-
-        // 2. mostrar mensaje
-        this.mostrarMensaje("🗑️ Eliminado correctamente");
-
-        // 3. opcional: sincronizar con backend después
-        setTimeout(() => {
-          this.cargarHistorial();
-        }, 300);
-
-      },
-      error: () => {
-        this.mostrarMensaje("❌ Error al eliminar");
-      }
-    });
-
-}
-
-  // ================= MENSAJE =================
   mostrarMensaje(texto: string) {
     this.mensaje = texto;
     setTimeout(() => this.mensaje = '', 3000);

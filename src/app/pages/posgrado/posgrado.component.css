@@ -243,3 +243,51 @@
     margin-top: 4px;
     display: block;
 }
+
+/* =========================
+   VALIDACIÓN DE CAMPOS
+========================= */
+
+/* Asterisco obligatorio */
+.required {
+    color: #e74c3c;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+/* Inputs inválidos */
+.field-group input.ng-invalid.ng-touched,
+.field-group select.ng-invalid.ng-touched {
+    border: 1px solid #e74c3c;
+    background-color: #fff5f5;
+}
+
+/* Inputs válidos (opcional pero recomendado) */
+.field-group input.ng-valid.ng-touched,
+.field-group select.ng-valid.ng-touched {
+    border: 1px solid #2ecc71;
+    background-color: #f0fff4;
+}
+
+/* Mensaje de error debajo */
+.error {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+/* Mensaje general arriba del botón */
+.error-global {
+    color: #e74c3c;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Efecto al enfocar (más pro) */
+.field-group input:focus,
+.field-group select:focus {
+    outline: none;
+    border: 1px solid #2f8f83;
+    box-shadow: 0 0 0 2px rgba(47, 143, 131, 0.2);
+}
