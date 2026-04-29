@@ -328,6 +328,7 @@
     display: flex;
     justify-content: space-around;
     gap: 12px;
+    margin-top: 24px; 
 }
 
 .acciones-modal .btn-guardar {
@@ -339,4 +340,85 @@
     border: 1px solid #2f8f83;
     color: #2f8f83;
     background: white;
+}
+
+.link-empresa {
+    cursor: pointer;
+    color: #2f8f83;           /* 🔥 verde de tu app */
+    text-decoration: none;    /* quita subrayado */
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+.link-empresa:hover {
+    color: #256f66;           /* verde más oscuro */
+    text-decoration: underline; /* aparece solo al hover */
+}
+
+.modal-detalle {
+    width: 320px;          /* más pequeño */
+    max-width: 90%;
+    border-radius: 16px;
+    padding: 20px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;   /* centra horizontalmente */
+    justify-content: center; /* centra verticalmente */
+    text-align: center;    /* centra el texto */
+}
+
+/* HEADER */
+.modal-header {
+    display: flex;
+    flex-direction: column; /* título y badge uno debajo del otro */
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #2f8f83;
+}
+
+/* GRID */
+.detalle-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* una sola columna */
+    gap: 12px;
+    width: 100%;
+}
+
+.detalle-item {
+    background: #f0fdfc;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #d1fae5;
+}
+
+.detalle-item label {
+    font-size: 12px;
+    color: #2f8f83;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.detalle-item p {
+    margin: 0;
+    font-weight: 500;
+    color: #374151;
+    text-align: center; /* centra el contenido */
+}
+
+/* BADGE */
+.badge {
+    background: #e0f2f0;
+    color: #2f8f83;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    border: 1px solid #bfe7e2;
+    margin-top: 8px;
 }

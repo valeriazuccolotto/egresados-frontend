@@ -184,4 +184,17 @@ export class ReconocimientosComponent implements OnInit {
     this.mensaje = texto;
     setTimeout(() => this.mensaje = '', 3000);
   }
+
+mostrarConsulta = false;
+recoConsulta: any = null;
+
+abrirConsulta(reco: any) {
+  this.recoConsulta = reco;
+  this.mostrarConsulta = true;
+}
+
+cerrarConsulta() {
+  this.mostrarConsulta = false;
+  this.recoConsulta = null;
+}
 }

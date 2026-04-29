@@ -73,10 +73,11 @@
         <div class="historial-card">
             <div class="historial-header">
             <div>
-                <strong>{{ reco.nombreReconocimiento }}</strong>
+                <strong class="link-empresa" (click)="abrirConsulta(reco)">
+                    {{ reco.nombreReconocimiento }}
+                </strong>
                 <p class="puesto">{{ reco.tipoReconocimiento }}</p>
             </div>
-            <span class="badge">{{ reco.fechaEntrega }}</span>
             </div>
 
             <div class="historial-body">
@@ -151,3 +152,45 @@
     </div>
 
     </div>
+
+<!-- MODAL CONSULTA RECONOCIMIENTO -->
+    <div class="modal-overlay" *ngIf="mostrarConsulta">
+        <div class="modal-card modal-detalle">
+
+        <!-- BODY -->
+        <div class="modal-body" *ngIf="recoConsulta">
+        <div class="detalle-grid">
+
+            <div class="detalle-item">
+            <label>Nombre</label>
+            <p>{{ recoConsulta.nombreReconocimiento }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Tipo</label>
+            <p>{{ recoConsulta.tipoReconocimiento }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Fecha</label>
+            <p>{{ recoConsulta.fechaEntrega }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Institución</label>
+            <p>{{ recoConsulta.institucion }}</p>
+            </div>
+
+        </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="acciones-modal">
+        <button class="btn-secundario" (click)="cerrarConsulta()">
+            Cerrar
+        </button>
+        </div>
+
+    </div>
+</div>
+
