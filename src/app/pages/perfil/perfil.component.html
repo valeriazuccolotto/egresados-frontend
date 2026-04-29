@@ -1,0 +1,63 @@
+<div class="perfil-container">
+
+  <!-- TITULO -->
+  <div class="perfil-header">
+    <h1>Mi perfil</h1>
+    <p>Información general del egresado</p>
+  </div>
+
+  <!-- TARJETA PRINCIPAL -->
+  <div class="perfil-card">
+
+    <img [src]="urlFoto" class="perfil-img" />
+
+    <div class="perfil-info">
+      <h2>
+        {{ perfil?.nombre }} {{ perfil?.apellidoPaterno }}
+      </h2>
+      <p class="perfil-sub">Egresado</p>
+
+      <span class="badge">🎓 Egresado</span>
+    </div>
+
+  </div>
+
+  <!-- DETALLES -->
+  <div class="perfil-details">
+
+    <!-- NOMBRE -->
+    <div class="item">
+      <span class="icon">👤</span>
+      <div>
+        <p class="label">Nombre</p>
+        <p class="value">
+          {{ perfil?.nombre }} {{ perfil?.apellidoPaterno }} {{ perfil?.apellidoMaterno }}
+        </p>
+      </div>
+    </div>
+
+    <!-- GENERACIÓN -->
+    <div class="item">
+      <span class="icon">📅</span>
+      <div>
+        <p class="label">Generación</p>
+        <p class="value">
+          {{ perfil?.generacion || 'No definida' }}
+        </p>
+      </div>
+    </div>
+
+    <!-- CAMPUS -->
+    <div class="item">
+      <span class="icon">🏫</span>
+      <div>
+        <p class="label">Campus</p>
+        <p class="value">
+          {{ perfil?.campus }}
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+</div>

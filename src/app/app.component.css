@@ -1,132 +1,317 @@
-:host {
-  display: block;
-  min-height: 100vh;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: #243746;
-}
-
-* {
-  box-sizing: border-box;
-}
-
+/* CONTENEDOR GENERAL */
 .app-shell {
-  min-height: 100vh;
-  background: #f4f6f8;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
+/* TOPBAR */
 .topbar {
-  height: 74px;
-  background: #ffffff;
-  border-bottom: 1px solid #dfe5ea;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 0 28px;
+  align-items: center;
+  padding: 10px 25px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .topbar-left {
   display: flex;
   align-items: center;
-  gap: 18px;
-}
-
-.menu-button {
-  border: none;
-  background: transparent;
-  color: #2f9a8f;
-  font-size: 28px;
-  cursor: pointer;
-  padding: 0;
-  line-height: 1;
+  gap: 15px;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 
 .brand-logo {
-  width: 42px;
-  height: 42px;
-  object-fit: contain;
+  width: 50px;
 }
 
 .brand-title {
   font-size: 20px;
   font-weight: 600;
-  color: #2f9a8f;
+  color: #1f3b5b;
 }
 
+/* RIGHT */
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
 }
 
 .bell {
-  font-size: 18px;
+  font-size: 20px;
 }
 
-.user-name {
-  font-size: 15px;
-  color: #2d3a45;
+/* PROGRESS */
+.progress-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 150px;
+  padding: 8px 12px;
+  border: 1px solid #b7ded8;
+  border-radius: 12px;
 }
 
+.progress-text {
+  font-weight: 700;
+  color: #0f8b7d;
+}
+
+.progress-lines {
+  flex: 1;
+}
+
+.progress-line {
+  height: 6px;
+  border-radius: 10px;
+  background: #cfe7e3;
+  overflow: hidden;
+}
+
+.progress-line.small {
+  margin-bottom: 5px;
+}
+
+.progress-line.small span {
+  display: block;
+  width: 40%;
+  height: 100%;
+  background: #99cbc3;
+}
+
+.progress-line.large span {
+  display: block;
+  width: 76%;
+  height: 100%;
+  background: #0f8b7d;
+}
+
+/* USER */
 .avatar {
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  background: #2f9a8f;
-  color: #ffffff;
+  background: #0f8b7d;
+  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
+  font-weight: bold;
 }
 
+.user-name {
+  font-weight: 500;
+}
+
+/* BODY */
 .app-body {
   display: flex;
-  min-height: calc(100vh - 74px);
+  flex: 1;
 }
 
+/* SIDEBAR */
 .sidebar {
-  width: 250px;
-  background: #31978f;
-  flex-shrink: 0;
-}
-
-.sidebar-menu {
-  display: flex;
-  flex-direction: column;
+  width: 230px;
+  background: linear-gradient(180deg, #0f8b7d, #0b6b60);
+  color: white;
   padding-top: 20px;
 }
 
 .menu-item {
-  display: flex;
-  align-items: center;
-  height: 58px;
-  padding: 0 28px;
-  color: #ffffff;
+  display: block;
+  padding: 14px 20px;
+  color: white;
   text-decoration: none;
-  font-size: 17px;
-  font-weight: 500;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  transition: background 0.2s ease;
 }
 
-.menu-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
+.menu-item:hover,
 .menu-item.active {
-  background: rgba(255, 255, 255, 0.18);
-  border-left: 4px solid #ffffff;
-  padding-left: 24px;
-  font-weight: 700;
+  background: rgba(255, 255, 255, 0.15);
 }
 
+/* CONTENIDO */
 .page-content {
   flex: 1;
-  min-width: 0;
+  padding: 30px;
+  background: #f3f4f6;
+}
+.user-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  background: #0f8b7d;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.foto-panel {
+  position: absolute;
+  top: 65px;
+  right: 0;
+  width: 260px;
+  background: white;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  z-index: 1000;
+}
+
+.foto-panel h3 {
+  margin: 0 0 16px;
+  color: #0f8b7d;
+  font-size: 18px;
+}
+
+.upload-box {
+  display: block;
+  text-align: center;
+  background: #f3f4f6;
+  padding: 18px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.foto-panel p {
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+}
+.user-menu {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  background: #0f8b7d;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.foto-panel {
+  position: absolute;
+  top: 65px;
+  right: 0;
+  width: 260px;
+  background: white;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  z-index: 1000;
+}
+
+.foto-panel h3 {
+  margin: 0 0 16px;
+  color: #0f8b7d;
+  font-size: 18px;
+}
+
+.photo-option {
+  width: 100%;
+  border: none;
+  background: #f3f4f6;
+  padding: 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.photo-option:hover {
+  background: #e6f4f1;
+}
+
+.foto-panel p {
+  text-align: center;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.camera-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.camera-box {
+  width: 420px;
+  max-width: 90vw;
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+}
+
+.camera-box h3 {
+  margin-top: 0;
+  color: #0f8b7d;
+}
+
+.camera-video,
+.camera-preview {
+  width: 100%;
+  max-height: 360px;
+  object-fit: cover;
+  border-radius: 16px;
+  background: #111;
+}
+
+.camera-video {
+  transform: scaleX(-1);
+}
+
+.camera-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.camera-actions button {
+  border: none;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #0f8b7d;
+  color: white;
+  font-weight: 600;
+}
+
+.camera-error {
+  color: #b91c1c;
+  font-size: 14px;
 }

@@ -1,4 +1,6 @@
 <div class="app-shell">
+
+  <!-- TOPBAR -->
   <header class="topbar">
     <div class="topbar-left">
       <button class="menu-button" type="button">☰</button>
@@ -11,12 +13,68 @@
 
     <div class="topbar-right">
       <span class="bell">🔔</span>
-      <span class="user-name">Valeria</span>
-      <div class="avatar">V</div>
+
+      <div class="progress-card">
+        <span class="progress-text">76%</span>
+        <div class="progress-lines">
+          <div class="progress-line small"><span></span></div>
+          <div class="progress-line large"><span></span></div>
+        </div>
+      </div>
+
+      <!-- 🔥 USER MENU -->
+      <div class="user-menu" #photoMenuRoot>
+
+        <!-- AVATAR -->
+        <div class="avatar" (click)="togglePhotoMenu()">
+          <img [src]="fotoGlobal" class="avatar-img" />
+        </div>
+
+        <span class="user-name">Valeria</span>
+        <span class="arrow">⌄</span>
+
+        <!-- PANEL -->
+        <div class="foto-panel" *ngIf="mostrarPanelFoto">
+          <h3>Cambiar foto de perfil</h3>
+
+          <button type="button" class="photo-option" (click)="openCameraPicker()">
+            📸 Tomar foto
+          </button>
+
+          <button type="button" class="photo-option" (click)="openGalleryPicker()">
+            🖼 Seleccionar imagen
+          </button>
+
+          <p>JPG, PNG o WEBP • Máximo 5MB</p>
+        </div>
+
+        <!-- INPUT GALERÍA -->
+        <input
+          #galleryInput
+          type="file"
+          accept="image/png, image/jpeg, image/webp"
+          hidden
+          (change)="seleccionarFoto($event)"
+        />
+
+        <!-- INPUT CÁMARA (fallback móvil) -->
+        <input
+          #cameraInput
+          type="file"
+          accept="image/*"
+          capture="user"
+          hidden
+          (change)="seleccionarFoto($event)"
+        />
+
+      </div>
     </div>
   </header>
 
+  <!-- BODY -->
   <div class="app-body">
+
+    <!-- SIDEBAR -->
     <aside class="sidebar">
       <nav class="sidebar-menu">
         <a routerLink="/perfil" routerLinkActive="active" class="menu-item">Mi perfil</a>
@@ -27,8 +85,53 @@
       </nav>
     </aside>
 
+    <!-- CONTENIDO -->
     <main class="page-content">
       <router-outlet></router-outlet>
     </main>
   </div>
+
+  <!-- 🔥 MODAL CÁMARA -->
+  <div class="camera-modal" *ngIf="cameraModalOpen">
+    <div class="camera-box">
+
+      <h3>Tomar foto</h3>
+
+      <!-- VIDEO -->
+      <video
+        #cameraVideo
+        class="camera-video"
+        autoplay
+        muted
+        playsinline
+        *ngIf="!cameraCapturedPreview"
+      ></video>
+
+      <!-- PREVIEW -->
+      <img
+        *ngIf="cameraCapturedPreview"
+        [src]="cameraCapturedPreview"
+        class="camera-preview"
+      />
+
+      <p class="camera-error" *ngIf="cameraError">
+        {{ cameraError }}
+      </p>
+
+      <!-- BOTONES ANTES DE CAPTURAR -->
+      <div class="camera-actions" *ngIf="!cameraCapturedPreview">
+        <button type="button" (click)="captureFromCamera()">Capturar</button>
+        <button type="button" (click)="closeCameraModal()">Cancelar</button>
+      </div>
+
+      <!-- BOTONES DESPUÉS -->
+      <div class="camera-actions" *ngIf="cameraCapturedPreview">
+        <button type="button" (click)="confirmCapturedPhoto()">Usar foto</button>
+        <button type="button" (click)="retakeCameraPhoto()">Repetir</button>
+        <button type="button" (click)="closeCameraModal()">Cancelar</button>
+      </div>
+
+    </div>
+  </div>
+
 </div>
