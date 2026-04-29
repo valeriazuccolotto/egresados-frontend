@@ -10,4 +10,8 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient()
   ]
+<<<<<<< HEAD
 };
+=======
+};
+>>>>>>> origin/login

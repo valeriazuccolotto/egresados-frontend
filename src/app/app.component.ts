@@ -6,13 +6,18 @@ import { PerfilService } from './services/perfil.service';
 @Component({
   selector: 'app-root',
   standalone: true,
+<<<<<<< HEAD
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
+=======
+  imports: [RouterOutlet],
+>>>>>>> origin/login
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
 
   title = 'egresados-frontend';
+<<<<<<< HEAD
 
   @ViewChild('photoMenuRoot') photoMenuRoot?: ElementRef<HTMLElement>;
   @ViewChild('galleryInput') galleryInput?: ElementRef<HTMLInputElement>;
@@ -202,4 +207,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
     return new File([bytes], filename, { type: mimeType });
   }
+=======
+>>>>>>> origin/login
 }

@@ -1,0 +1,232 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.usuarios-page {
+  padding: 30px;
+  width: 100%;
+  min-height: 100%;
+  /* sin background aquí, lo da el .contenido del layout */
+}
+
+/* ── ENCABEZADO ── */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.section-title h2 {
+  font-size: 20px;
+  color: #2f8f83;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.section-title p {
+  font-size: 13px;
+  color: #888;
+}
+
+.campus-box {
+  background: white;
+  padding: 10px 15px;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.campus-text { font-size: 14px; color: #555; }
+
+.campus-box select {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  outline: none;
+  font-size: 14px;
+}
+
+/* ── MÉTRICAS ── */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+  text-align: center;
+}
+
+.card h3 {
+  font-size: 30px;
+  color: #2f8f83;
+  margin-bottom: 4px;
+}
+
+.card p { font-size: 13px; color: #666; }
+
+/* ── BUSCADOR ── */
+.search-bar { margin-bottom: 16px; }
+
+.search-bar input {
+  width: 100%;
+  padding: 13px 18px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 14px;
+  background: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  outline: none;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.search-bar input:focus {
+  border-color: #2f8f83;
+  box-shadow: 0 0 0 3px rgba(47,143,131,0.12);
+}
+
+/* ── FILTROS PILLS ── */
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.filtro-label { font-size: 13px; color: #666; font-weight: 500; }
+
+.filtro-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  background: white;
+  font-size: 13px;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filtro-btn:hover { border-color: #2f8f83; color: #2f8f83; }
+.filtro-btn.active { background: #2f8f83; color: white; border-color: #2f8f83; }
+
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.dot-si { background: #2f8f83; }
+.dot-no { background: #e0a800; }
+
+/* ── SEPARADORES DE SECCIÓN ── */
+.seccion-titulo { margin: 10px 0 18px; }
+
+.badge {
+  display: inline-block;
+  padding: 5px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.badge-ing { background: #e0f2f0; color: #1a6e78; }
+.badge-lic { background: #e8f4f8; color: #2563a8; }
+.badge-mae { background: #f0ebe8; color: #7a4520; }
+
+/* ── BLOQUES POR CARRERA ── */
+.carrera-block {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+  margin-bottom: 22px;
+  overflow: hidden;
+}
+
+.carrera-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background: #f8fafa;
+  border-bottom: 1px solid #e8eeee;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.carrera-header h3 { font-size: 15px; color: #2f8f83; font-weight: 700; }
+
+.total-badge {
+  font-size: 12px;
+  background: #e0f2f0;
+  color: #1a6e78;
+  padding: 3px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+/* ── TABLAS ── */
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+table { width: 100%; border-collapse: collapse; min-width: 520px; }
+
+thead tr { background: #f4f6f7; }
+
+th {
+  padding: 11px 14px;
+  text-align: left;
+  font-size: 13px;
+  color: #555;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+td {
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #f7fdfc; }
+
+/* ── ESTATUS BADGES ── */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-si { background: #e0f2f0; color: #1a6e78; }
+.status-no { background: #fff8e1; color: #b8860b; }
+
+/* ── SIN DATOS ── */
+.sin-datos { text-align: center; color: #999; padding: 50px 0; font-size: 15px; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .usuarios-page { padding: 15px; }
+  .section-header { flex-direction: column; align-items: flex-start; }
+  .metrics { grid-template-columns: repeat(2, 1fr); }
+  .filtros { gap: 8px; }
+  .filtro-btn { font-size: 12px; padding: 5px 10px; }
+  .carrera-header h3 { font-size: 14px; }
+}

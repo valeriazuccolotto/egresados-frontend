@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .page-section {
   padding: 26px 34px 42px;
   background: #f4f6f8;
@@ -101,4 +102,209 @@
 
 .btn-guardar:hover {
   background: #277f76;
+=======
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.contacto-page {
+  background: #f3f5f7;
+  min-height: 100vh;
+}
+
+/* ── HEADER ── */
+.top-header {
+  background: white;
+  height: 65px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 25px;
+  border-bottom: 1px solid #e3e6e8;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.menu-btn {
+  font-size: 22px;
+  background: none;
+  border: none;
+  color: #2f8f83;
+  cursor: pointer;
+}
+
+.logo { width: 35px; height: 35px; }
+
+.titulo {
+  font-size: 20px;
+  color: #2f8f83;
+  font-weight: 600;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.username { font-size: 15px; color: #333; }
+
+.avatar {
+  width: 35px;
+  height: 35px;
+  background: #2f8f83;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+/* ── LAYOUT ── */
+.layout {
+  display: flex;
+  height: calc(100vh - 65px);
+  overflow: hidden;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  background: #2f8f83;
+  height: 100%;
+  flex-shrink: 0;
+  overflow-y: auto;
+  transition: width 0.3s;
+}
+
+.sidebar.oculto { width: 0; overflow: hidden; }
+
+.sidebar nav { display: flex; flex-direction: column; }
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  padding: 12px 25px;
+  font-size: 15px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  transition: background 0.2s;
+}
+
+.sidebar a:first-child { border-top: 1px solid rgba(255,255,255,0.15); }
+.sidebar a:hover { background: rgba(255,255,255,0.2); }
+
+.sidebar a.active {
+  background: rgba(255,255,255,0.25);
+  font-weight: 600;
+  border-left: 4px solid white;
+  padding-left: 21px;
+}
+
+/* ── MAIN ── */
+.main {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+  background: #f3f5f7;
+}
+
+/* ── ENCABEZADO SECCIÓN ── */
+.section-header { margin-bottom: 30px; }
+
+.section-title h2 {
+  font-size: 20px;
+  color: #2f8f83;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.section-title p { font-size: 13px; color: #888; }
+
+/* ── CARD ── */
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+}
+
+/* ── FORMULARIO ── */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-group label {
+  font-size: 13px;
+  color: #555;
+  font-weight: 600;
+}
+
+.field-group input {
+  padding: 11px 14px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: white;
+}
+
+.field-group input:focus {
+  border-color: #2f8f83;
+  box-shadow: 0 0 0 3px rgba(47,143,131,0.1);
+}
+
+.full { grid-column: 1 / -1; }
+
+.btn-guardar {
+  padding: 12px 24px;
+  background: #2f8f83;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  width: fit-content;
+}
+
+.btn-guardar:hover { background: #267a6f; }
+.btn-guardar:active { transform: scale(0.98); }
+
+.save-msg {
+  grid-column: 1 / -1;
+  background: #e0f2f0;
+  color: #1a6e78;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .full { grid-column: 1; }
+  .main { padding: 15px; }
+>>>>>>> origin/login
 }
