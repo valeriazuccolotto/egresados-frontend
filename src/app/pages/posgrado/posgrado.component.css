@@ -346,3 +346,111 @@
     color: #2f8f83;
     background: white;
 }
+
+.link-empresa {
+    cursor: pointer;
+    color: #2f8f83;           /* 🔥 verde de tu app */
+    text-decoration: none;    /* quita subrayado */
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+.link-empresa:hover {
+    color: #256f66;           /* verde más oscuro */
+    text-decoration: underline; /* aparece solo al hover */
+}
+
+/* MODAL CUADRADO Y RESPONSIVE */
+.modal-detalle {
+    width: 90%;
+    max-width: 520px;
+    aspect-ratio: 1 / 1;
+
+    border-radius: 16px;
+    padding: 20px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* SCROLL INTERNO */
+.modal-body {
+    margin-bottom: 20px; /* 🔥 separa del botón */
+}
+
+/* HEADER */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #2f8f83; /* tu color principal */
+}
+
+/* GRID */
+.detalle-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.detalle-item {
+    background: #f0fdfc; /* verde muy suave */
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #d1fae5;
+}
+
+.detalle-item.full {
+    grid-column: span 2;
+}
+
+.detalle-item label {
+    font-size: 12px;
+    color: #2f8f83;
+    font-weight: 600;
+}
+
+.detalle-item p {
+    margin: 4px 0 0;
+    font-weight: 500;
+    color: #374151;
+}
+
+/* PRESTACIONES INTEGRADO */
+.prestaciones-inline {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* 🔥 centra los elementos */
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.prestaciones-inline span {
+    background: #e0f2f0;     /* verde suave (igual a tu estilo) */
+    color: #2f8f83;
+
+    padding: 6px 12px;
+    border-radius: 20px;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    border: 1px solid #bfe7e2;
+}
+
+/* BADGE */
+.badge {
+    background: #e0f2f0;
+    color: #2f8f83;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    border: 1px solid #bfe7e2;
+}

@@ -167,7 +167,9 @@
 
             <div class="historial-header">
                 <div>
-                    <strong>{{ pos.nombrePrograma }}</strong>
+                    <strong class="link-empresa" (click)="abrirConsulta(pos)">
+                        {{ pos.nombrePrograma }}
+                    </strong>
                     <p>{{ pos.nivelEstudio }}</p>
                 </div>
 
@@ -180,7 +182,7 @@
             </div>
 
             <<div class="historial-actions">
-                <button (click)="verDetalle(pos)" class="btn-ver">Ver</button>
+                <button (click)="verDetalle(pos)" class="btn-ver">Editar</button>
                 <button (click)="abrirConfirmacion(pos.idPosgrado)" class="btn-eliminar">
                     Eliminar
                 </button>
@@ -388,4 +390,77 @@
     </div>
 
 
+</div>
+
+<div class="modal-overlay" *ngIf="mostrarConsulta">
+    <div class="modal-card modal-detalle">
+
+        <!-- HEADER -->
+        <div class="modal-header">
+        <h3>{{ posgradoConsulta?.nombrePrograma }}</h3>
+        <span class="badge">{{ posgradoConsulta?.nivelEstudio }}</span>
+        </div>
+
+        <!-- BODY -->
+        <div class="modal-body" *ngIf="posgradoConsulta">
+
+        <div class="detalle-grid">
+
+            <div class="detalle-item">
+            <label>Institución</label>
+            <p>{{ posgradoConsulta.institucion }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Modalidad</label>
+            <p>{{ posgradoConsulta.modalidad }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Estatus</label>
+            <p>{{ posgradoConsulta.estatus }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Relación</label>
+            <p>{{ posgradoConsulta.relacionadoCarrera }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Inicio</label>
+            <p>{{ posgradoConsulta.fechaInicio }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Fin</label>
+            <p>{{ posgradoConsulta.fechaFin }}</p>
+            </div>
+
+            <!-- Beca -->
+            <div class="detalle-item full">
+            <label>Beca</label>
+            <p>
+                {{ posgradoConsulta.tieneBeca ? 'Sí' : 'No' }}
+            </p>
+            </div>
+
+            <div class="detalle-item full" *ngIf="posgradoConsulta.tieneBeca">
+            <label>Tipo de beca</label>
+            <p>
+                {{ posgradoConsulta.nombreBeca || posgradoConsulta.otroBeca || 'No especificado' }}
+            </p>
+            </div>
+
+        </div>
+
+    </div>
+
+        <!-- FOOTER -->
+        <div class="acciones-modal">
+        <button class="btn-secundario" (click)="cerrarConsulta()">
+            Cerrar
+        </button>
+        </div>
+
+    </div>
 </div>

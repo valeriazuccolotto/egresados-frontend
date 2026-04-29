@@ -231,4 +231,18 @@ export class PosgradoComponent implements OnInit {
     this.mensaje = texto;
     setTimeout(() => this.mensaje = '', 3000);
   }
+
+  // ================= CONSULTA =================
+mostrarConsulta = false;
+posgradoConsulta: any = null;
+
+abrirConsulta(pos: any) {
+  this.posgradoConsulta = pos;
+  this.mostrarConsulta = true;
+}
+
+cerrarConsulta() {
+  this.mostrarConsulta = false;
+  this.posgradoConsulta = null;
+}
 }
