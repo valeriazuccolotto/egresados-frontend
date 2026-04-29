@@ -279,3 +279,323 @@
     font-family: inherit;
     resize: none;
 }
+
+/* =========================
+    VALIDACIÓN DE CAMPOS
+========================= */
+
+/* Asterisco obligatorio */
+.required {
+    color: #e74c3c;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+/* Inputs inválidos */
+.field-group input.ng-invalid.ng-touched,
+.field-group select.ng-invalid.ng-touched {
+    border: 1px solid #e74c3c;
+    background-color: #fff5f5;
+}
+
+/* Inputs válidos (opcional pero recomendado) */
+.field-group input.ng-valid.ng-touched,
+.field-group select.ng-valid.ng-touched {
+    border: 1px solid #2ecc71;
+    background-color: #f0fff4;
+}
+
+/* Mensaje de error debajo */
+.error {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 4px;
+    display: block;
+}
+
+/* Mensaje general arriba del botón */
+.error-global {
+    color: #e74c3c;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Efecto al enfocar (más pro) */
+.field-group input:focus,
+.field-group select:focus {
+    outline: none;
+    border: 1px solid #2f8f83;
+    box-shadow: 0 0 0 2px rgba(47, 143, 131, 0.2);
+}
+
+/* =========================
+    MODAL DE CONFIRMACIÓN
+========================= */
+
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4); /* fondo semi-transparente */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 24px;
+    width: 320px;
+    max-width: 90%;
+    text-align: center;
+    border: 1px solid #e5e5e5;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-card h3 {
+    margin-bottom: 10px;
+    color: #2f8f83; /* tu verde principal */
+}
+
+.modal-card p {
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.acciones-modal {
+    margin-top: 10px; /* opcional, pequeño ajuste */
+}
+
+.acciones-modal .btn-guardar {
+    background: #dc2626; /* rojo para eliminar */
+    color: white;
+}
+
+.acciones-modal .btn-secundario {
+    border: 1px solid #2f8f83;
+    color: #2f8f83;
+    background: white;
+}
+
+/* CONTENEDOR BONITO */
+.prestaciones-wrapper{
+    padding: 14px;
+    border-radius: 12px;
+    background: white;
+    border: 1px solid #e5e5e5;
+}
+
+.prestaciones-wrapper:hover{
+    box-shadow: 0 6px 16px rgba(47, 143, 131, 0.15);
+    border-color: #2f8f83;
+}
+
+/* CHIPS */
+.chip{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    background: #e0f2f0;   /* ✅ verde bonito */
+    color: #2f8f83;
+
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+
+    border: 1px solid #bfe7e2;
+    margin: 4px;
+}
+
+.chip-close{
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    color: #2f8f83;
+}
+
+.chip-close:hover{
+    color: #dc2626;
+}
+
+/* INPUT SEPARADO */
+.prestaciones-wrapper input{
+    margin-top: 8px;
+}
+
+.btn-add {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: #2f8f83;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    transition: 0.2s;
+}
+
+/* hover */
+.btn-add:hover {
+    background: #256f66;
+    transform: scale(1.1);
+}
+
+/* click */
+.btn-add:active {
+    transform: scale(0.95);
+}
+
+.otro-container {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.otro-container input {
+    flex: 1;
+}
+
+/* Botón + moderno */
+.btn-add {
+  background: #22c55e; /* verde bonito */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-add:hover {
+    background: #16a34a;
+    transform: scale(1.1);
+}
+
+.btn-add:active {
+    transform: scale(0.95);
+}
+
+.link-empresa {
+    cursor: pointer;
+    color: #2f8f83;           /* 🔥 verde de tu app */
+    text-decoration: none;    /* quita subrayado */
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+.link-empresa:hover {
+    color: #256f66;           /* verde más oscuro */
+    text-decoration: underline; /* aparece solo al hover */
+}
+
+/* MODAL CUADRADO Y RESPONSIVE */
+.modal-detalle {
+    width: 90%;
+    max-width: 520px;
+    aspect-ratio: 1 / 1;
+
+    border-radius: 16px;
+    padding: 20px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* SCROLL INTERNO */
+.modal-body {
+    margin-bottom: 20px; /* 🔥 separa del botón */
+}
+
+/* HEADER */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #2f8f83; /* tu color principal */
+}
+
+/* GRID */
+.detalle-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.detalle-item {
+    background: #f0fdfc; /* verde muy suave */
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #d1fae5;
+}
+
+.detalle-item.full {
+    grid-column: span 2;
+}
+
+.detalle-item label {
+    font-size: 12px;
+    color: #2f8f83;
+    font-weight: 600;
+}
+
+.detalle-item p {
+    margin: 4px 0 0;
+    font-weight: 500;
+    color: #374151;
+}
+
+/* PRESTACIONES INTEGRADO */
+.prestaciones-inline {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* 🔥 centra los elementos */
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.prestaciones-inline span {
+    background: #e0f2f0;     /* verde suave (igual a tu estilo) */
+    color: #2f8f83;
+
+    padding: 6px 12px;
+    border-radius: 20px;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    border: 1px solid #bfe7e2;
+}
+
+/* BADGE */
+.badge {
+    background: #e0f2f0;
+    color: #2f8f83;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    border: 1px solid #bfe7e2;
+}

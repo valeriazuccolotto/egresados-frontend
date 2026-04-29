@@ -17,42 +17,55 @@ export class LaboralComponent implements OnInit {
 
   usuario = 'Valeria';
 
-  // UI
+  // ================= UI =================
   mostrarFormulario = false;
   mostrarOtro = false;
+  mostrarOtroEdit = false;
   mensaje = '';
   menuOculto = false;
-
-  // Perfil
   mostrarPopup = false;
   imagenPerfil: string | null = null;
   otroTexto = '';
 
-  // Historial
+  // ================= HISTORIAL =================
   historial: any[] = [];
   laboralSeleccionado: any = null;
 
-  listaPrestaciones = [
-    'Infonavit',
-    'Seguro Social',
-    'Seguro Médico',
-    'Fondo Ahorro',
-    'Despensa',
-    'Vacaciones'
-  ];
+  // ================= CONFIRMACIÓN =================
+  mostrarConfirmacion = false;
+  laboralAEliminar: number | null = null;
 
+  // ================= CONSULTA =================
+  mostrarConsulta = false;
+  laboralConsulta: any = null;
+
+  // ================= FORM =================
+  listaPrestaciones: any[] = [];
   form: any = {};
 
   // ================= INIT =================
   ngOnInit() {
     this.resetForm();
     this.cargarHistorial();
+    this.cargarPrestacionesCatalogo();
   }
 
   // ================= HISTORIAL =================
   cargarHistorial() {
     this.http.get<any[]>(`http://localhost:8181/egresado/laboral/A1234567`)
-      .subscribe(data => this.historial = data);
+      .subscribe({
+        next: data => this.historial = data.reverse(),
+        error: () => this.mostrarMensaje("❌ Error al cargar historial")
+      });
+  }
+
+  // ================= CATALOGO =================
+  cargarPrestacionesCatalogo() {
+    this.http.get<any[]>(`http://localhost:8181/egresado/prestaciones`)
+      .subscribe({
+        next: data => this.listaPrestaciones = data,
+        error: () => this.mostrarMensaje("❌ Error al cargar catálogo")
+      });
   }
 
   // ================= FORM =================
@@ -67,24 +80,24 @@ export class LaboralComponent implements OnInit {
       contrato: '',
       modalidad: '',
       salario: '',
-      prestaciones: '',
-      listaSeleccionada: [],
-      relacion: ''
+      prestacionesSeleccionadas: [],
+      relacion: '',
+      comentarios: ''
     };
   }
 
   nuevoTrabajo() {
     this.mostrarFormulario = true;
     this.resetForm();
+    this.laboralSeleccionado = null;
+  }
+
+  cancelarFormulario() {
+    this.mostrarFormulario = false;
+    this.resetForm();
   }
 
   construirDatos() {
-    const prestacionesFinal = [...this.form.listaSeleccionada];
-
-    if (this.mostrarOtro && this.otroTexto) {
-      prestacionesFinal.push(this.otroTexto);
-    }
-
     return {
       matricula: this.form.matricula,
       empresa: this.form.empresa,
@@ -95,128 +108,211 @@ export class LaboralComponent implements OnInit {
       tipoContrato: this.form.contrato,
       modalidadTrabajo: this.form.modalidad,
       salario: this.form.salario,
-      prestaciones: this.form.prestaciones === 'si',
-      detallePrestaciones: prestacionesFinal.join(", "),
       relacionCarrera: this.form.relacion,
-      comentarios: this.form.comentarios 
+      comentarios: this.form.comentarios,
+      prestaciones: this.form.prestacionesSeleccionadas
     };
   }
 
   guardar() {
     const datos = this.construirDatos();
-
     this.http.post("http://localhost:8181/egresado/laboral", datos)
       .subscribe({
         next: () => {
           this.mostrarMensaje("✓ Guardado correctamente");
           this.mostrarFormulario = false;
-          this.cargarHistorial(); // 🔥 importante
+          this.cargarHistorial();
         },
         error: () => this.mostrarMensaje("❌ Error al guardar")
       });
   }
 
-  // ================= MODAL =================
+  // ================= DETALLE =================
   verDetalle(laboral: any) {
     this.laboralSeleccionado = { ...laboral };
-  }
-
-  cerrarModal() {
-    this.laboralSeleccionado = null;
-  }
-
-  actualizarLaboral() {
-  const laboral = this.laboralSeleccionado;
-
-  this.http.put(`http://localhost:8181/egresado/laboral/${laboral.idLaboral}`, laboral)
-    .subscribe({
-      next: () => {
-        const index = this.historial.findIndex(l => l.idLaboral === laboral.idLaboral);
-        if (index !== -1) {
-          this.historial[index] = { ...laboral };
-        }
-        this.mostrarMensaje("✓ Registro actualizado");
-        this.cerrarModal();
-      },
-      error: () => this.mostrarMensaje("❌ Error al actualizar")
-    });
-}
-
-  eliminarLaboral(id: number) {
-    this.http.delete(`http://localhost:8181/egresado/laboral/${id}`)
-      .subscribe({
-        next: () => {
-          this.mostrarMensaje("✓ Eliminado correctamente");
-          this.cargarHistorial(); // 🔥 no hagas filter manual
-        },
-        error: () => this.mostrarMensaje("❌ Error al eliminar")
-      });
-  }
-
-  // ================= PRESTACIONES =================
-  onPrestacionesChange() {
-    if (this.form.prestaciones !== 'si') {
-      this.form.listaSeleccionada = [];
-      this.mostrarOtro = false;
-      this.otroTexto = '';
+    if (!this.laboralSeleccionado.prestaciones) {
+      this.laboralSeleccionado.prestaciones = [];
     }
-  }
-
-  togglePrestacion(event: any) {
-    const value = event.target.value;
-
-    if (event.target.checked) {
-      this.form.listaSeleccionada.push(value);
-    } else {
-      this.form.listaSeleccionada =
-        this.form.listaSeleccionada.filter((p: string) => p !== value);
-    }
-  }
-
-  toggleOtro(event: any) {
-    this.mostrarOtro = event.target.checked;
-
-    if (!this.mostrarOtro) {
-      this.otroTexto = '';
-    }
-  }
-
-  // ================= UI =================
-  toggleMenu() {
-    this.menuOculto = !this.menuOculto;
-  }
-
-  irNotificaciones() {
-    this.router.navigate(['/notificaciones']);
-  }
-
-  togglePopup(event: Event) {
-    event.stopPropagation();
-    this.mostrarPopup = !this.mostrarPopup;
-  }
-
-  onFileSelected(event: any) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      this.imagenPerfil = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  mostrarMensaje(texto: string) {
-    this.mensaje = texto;
-    setTimeout(() => this.mensaje = '', 3000);
-  }
-
-  cancelarFormulario() {
     this.mostrarFormulario = false;
-    this.resetForm();
   }
 
   cancelarEdicion() {
     this.laboralSeleccionado = null;
   }
+
+  actualizarLaboral() {
+    const laboral = this.laboralSeleccionado;
+    this.http.put(`http://localhost:8181/egresado/laboral/${laboral.idLaboral}`, laboral)
+      .subscribe({
+        next: () => {
+          const index = this.historial.findIndex(l => l.idLaboral === laboral.idLaboral);
+          if (index !== -1) {
+            this.historial[index] = { ...laboral };
+          }
+          this.mostrarMensaje("✓ Registro actualizado");
+          this.cancelarEdicion();
+        },
+        error: () => this.mostrarMensaje("❌ Error al actualizar")
+      });
+  }
+
+  // ================= ELIMINAR =================
+  abrirConfirmacion(id: number) {
+    this.laboralAEliminar = id;
+    this.mostrarConfirmacion = true;
+  }
+
+  confirmarEliminacion() {
+    if (this.laboralAEliminar !== null) {
+      this.http.delete(`http://localhost:8181/egresado/laboral/${this.laboralAEliminar}`)
+        .subscribe({
+          next: () => {
+            this.mostrarMensaje("🗑️ Eliminado correctamente");
+            this.cargarHistorial();
+            this.cerrarConfirmacion();
+          },
+          error: () => this.mostrarMensaje("❌ Error al eliminar")
+        });
+    }
+  }
+
+  cerrarConfirmacion() {
+    this.mostrarConfirmacion = false;
+    this.laboralAEliminar = null;
+  }
+
+  // ================= PRESTACIONES (FORM) =================
+  togglePrestacionById(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const value = select.value;
+
+    if (!value) return;
+
+    if (value === 'otro') {
+      this.mostrarOtro = true;
+    } else {
+      this.mostrarOtro = false;
+
+      const prestacion = this.listaPrestaciones.find(p => p.idPrestaciones == value);
+
+      if (prestacion && !this.form.prestacionesSeleccionadas.some(
+        (p: any) => p.idPrestaciones === prestacion.idPrestaciones
+      )) {
+        this.form.prestacionesSeleccionadas.push(prestacion);
+      }
+
+      this.otroTexto = '';
+    }
+
+    select.value = '';
+  }
+
+  agregarOtroPrestacion() {
+  if (!this.otroTexto.trim()) return;
+
+  this.http.post<any>("http://localhost:8181/egresado/prestaciones", { nombre: this.otroTexto })
+    .subscribe({
+      next: (resp) => {
+        this.form.prestacionesSeleccionadas.push(resp);
+
+        this.listaPrestaciones.push(resp); // ✅ AQUÍ VA
+
+        this.otroTexto = '';
+        this.mostrarOtro = false;
+      }
+    });
+}
+
+  quitarPrestacion(prestacion: any) {
+    this.form.prestacionesSeleccionadas =
+      this.form.prestacionesSeleccionadas.filter((p: any) => p.idPrestaciones !== prestacion.idPrestaciones);
+  }
+
+  // ================= PRESTACIONES (EDIT) =================
+  get prestacionesDisponiblesEdit() {
+    if (!this.listaPrestaciones || !this.laboralSeleccionado) return [];
+
+    return this.listaPrestaciones.filter(p =>
+      !this.laboralSeleccionado.prestaciones?.some(
+        (sel: any) => sel.idPrestaciones === p.idPrestaciones
+      )
+    );
+  }
+
+  onSelectPrestacionEdit(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const value = select.value;
+
+    if (!value) return;
+
+    if (value === 'otro') {
+      this.mostrarOtroEdit = true;
+    } else {
+      this.mostrarOtroEdit = false;
+
+      const prestacion = this.listaPrestaciones.find(p => p.idPrestaciones == value);
+
+      if (!this.laboralSeleccionado.prestaciones) {
+        this.laboralSeleccionado.prestaciones = [];
+      }
+
+      if (prestacion && !this.laboralSeleccionado.prestaciones.some(
+        (p: any) => p.idPrestaciones === prestacion.idPrestaciones
+      )) {
+        this.laboralSeleccionado.prestaciones.push(prestacion);
+      }
+
+      this.otroTexto = '';
+    }
+
+    select.value = '';
+  }
+
+  agregarPrestacionNuevaEdit() {
+  if (!this.otroTexto.trim()) return;
+
+  this.http.post<any>("http://localhost:8181/egresado/prestaciones", { nombre: this.otroTexto })
+    .subscribe({
+      next: (resp) => {
+
+        // 1. Asegura array
+        if (!this.laboralSeleccionado.prestaciones) {
+          this.laboralSeleccionado.prestaciones = [];
+        }
+
+        // 2. Agrega al chip (UI)
+        this.laboralSeleccionado.prestaciones.push(resp);
+
+        // 3. 🔥 AGREGA AQUÍ (catálogo)
+        this.listaPrestaciones.push(resp);
+
+        // 4. Limpieza
+        this.otroTexto = '';
+        this.mostrarOtroEdit = false;
+      }
+    });
+}
+
+  quitarPrestacionEdit(prestacion: any) {
+    this.laboralSeleccionado.prestaciones =
+      this.laboralSeleccionado.prestaciones.filter(
+        (p: any) => p.idPrestaciones !== prestacion.idPrestaciones
+      );
+  }
+
+  // ================= UI EXTRA =================
+  mostrarMensaje(texto: string) {
+    this.mensaje = texto;
+    setTimeout(() => this.mensaje = '', 3000);
+  }
+
+  abrirConsulta(laboral: any) {
+  this.laboralConsulta = laboral;
+  this.mostrarConsulta = true;
+}
+
+cerrarConsulta() {
+  this.mostrarConsulta = false;
+  this.laboralConsulta = null;
+}
 }
