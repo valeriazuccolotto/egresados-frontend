@@ -35,7 +35,8 @@ export class CertificacionesComponent implements OnInit {
     certNombre: '',
     certInicio: '',
     certFin: '',
-    certObtencion: ''
+    certObtencion: '',
+    certInstitucion: ''   // 🔥 nuevo campo
   };
 
   ngOnInit() {
@@ -79,7 +80,8 @@ export class CertificacionesComponent implements OnInit {
       nombreCertificacion: this.form.certNombre,
       fechaInicio: this.form.certInicio,
       fechaFin: this.form.certFin,
-      fechaObtencion: this.form.certObtencion
+      fechaObtencion: this.form.certObtencion,
+      institucionCertificacion: this.form.certInstitucion   // 🔥 nuevo campo
     };
 
     this.http.post('http://localhost:8181/egresado/certificaciones', datos)
@@ -107,7 +109,8 @@ export class CertificacionesComponent implements OnInit {
       nombreCertificacion: this.certSeleccionado.nombreCertificacion,
       fechaInicio: this.certSeleccionado.fechaInicio,
       fechaFin: this.certSeleccionado.fechaFin,
-      fechaObtencion: this.certSeleccionado.fechaObtencion
+      fechaObtencion: this.certSeleccionado.fechaObtencion,
+      institucionCertificacion: this.certSeleccionado.institucionCertificacion   // 🔥 nuevo campo
     };
 
     this.http.put(
@@ -168,7 +171,8 @@ export class CertificacionesComponent implements OnInit {
       certNombre: '',
       certInicio: '',
       certFin: '',
-      certObtencion: ''
+      certObtencion: '',
+      certInstitucion: ''   // 🔥 nuevo campo
     };
   }
 
@@ -176,4 +180,17 @@ export class CertificacionesComponent implements OnInit {
     this.mensaje = texto;
     setTimeout(() => this.mensaje = '', 3000);
   }
+
+mostrarConsulta = false;
+certificacionConsulta: any = null;
+
+abrirConsulta(cert: any) {
+  this.certificacionConsulta = cert;
+  this.mostrarConsulta = true;
+}
+
+cerrarConsulta() {
+  this.mostrarConsulta = false;
+  this.certificacionConsulta = null;
+}
 }

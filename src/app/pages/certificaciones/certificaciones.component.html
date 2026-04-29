@@ -33,6 +33,13 @@
         </div>
 
         <div class="field-group">
+            <label>Institución que otorga <span class="required">*</span></label>
+            <input [(ngModel)]="form.certInstitucion" name="certInstitucion" required #certInstitucion="ngModel">
+            <div class="error" *ngIf="certInstitucion.invalid && certInstitucion.touched">Campo obligatorio</div>
+        </div>
+
+
+        <div class="field-group">
             <label>Fecha de inicio <span class="required">*</span></label>
             <input type="date" [(ngModel)]="form.certInicio" name="certInicio" required #certInicio="ngModel">
             <div class="error" *ngIf="certInicio.invalid && certInicio.touched">Campo obligatorio</div>
@@ -64,7 +71,9 @@
         <div class="historial-card">
             <div class="historial-header">
             <div>
-                <strong>{{ cert.nombreCertificacion }}</strong>
+                <strong class="link-empresa" (click)="abrirConsulta(cert)">
+                    {{ cert.nombreCertificacion }}
+                </strong>
             </div>
             <span class="badge">{{ cert.fechaObtencion }}</span>
             </div>
@@ -73,7 +82,7 @@
             <p>Fin: {{ cert.fechaFin }}</p>
             </div>
             <div class="historial-actions">
-            <button (click)="verDetalle(cert)" class="btn-ver">Ver</button>
+            <button (click)="verDetalle(cert)" class="btn-ver">Editar</button>
             <button (click)="abrirConfirmacion(cert.idCertificacion)" class="btn-eliminar">
                 Eliminar
             </button>
@@ -97,6 +106,17 @@
                 Campo obligatorio
             </div>
             </div>
+
+            <div class="field-group">
+                <label>Institución que otorga <span class="required">*</span></label>
+                <input [(ngModel)]="certSeleccionado.institucionCertificacion"
+                        name="institucionCertificacion"
+                        required #institucionCertificacionEdit="ngModel">
+                <div class="error" *ngIf="institucionCertificacionEdit.invalid && institucionCertificacionEdit.touched">
+                    Campo obligatorio
+                </div>
+            </div>
+
 
             <div class="field-group">
             <label>Fecha Inicio <span class="required">*</span></label>
@@ -143,3 +163,49 @@
     </div>
 
     </div>
+
+<!-- MODAL CONSULTA CERTIFICACIÓN -->
+<div class="modal-overlay" *ngIf="mostrarConsulta">
+    <div class="modal-card modal-detalle">
+
+        <!-- BODY -->
+        <div class="modal-body" *ngIf="certificacionConsulta">
+        <div class="detalle-grid">
+
+            <div class="detalle-item full">
+            <label>Nombre de la certificación</label>
+            <p>{{ certificacionConsulta.nombreCertificacion }}</p>
+            </div>
+
+            <div class="detalle-item full">
+            <label>Fecha de obtención</label>
+            <p>{{ certificacionConsulta.fechaObtencion }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Institución que otorga</label>
+            <p>{{ certificacionConsulta.institucionCertificacion }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Fecha de inicio</label>
+            <p>{{ certificacionConsulta.fechaInicio }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Fecha de término</label>
+            <p>{{ certificacionConsulta.fechaFin }}</p>
+            </div>
+
+        </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="acciones-modal">
+        <button class="btn-secundario" (click)="cerrarConsulta()">
+            Cerrar
+        </button>
+        </div>
+
+    </div>
+</div>
