@@ -33,18 +33,27 @@ export class PosgradoComponent implements OnInit {
 
   // ===== FORM =====
   form: any = {
-    nivel: '',
-    institucion: '',
-    programa: '',
-    modalidad: '',
-    estatus: '',
-    relacion: '',
-    inicio: '',
-    fin: '',
-    tieneBeca: null,
-    idTipoBeca: null,
-    otroBeca: ''
-  };
+  nivel: '',
+  institucion: '',
+  programa: '',
+  modalidad: '',
+  estatus: '',
+  relacion: '',
+  inicio: this.getFechaHoy(),  // 👈 aquí
+  fin: this.getFechaHoy(),     // 👈 aquí (opcional)
+  tieneBeca: null,
+  idTipoBeca: null,
+  otroBeca: ''
+};
+
+getFechaHoy(): string {
+  const hoy = new Date();
+
+  // 👇 ajusta con offset de zona horaria
+  const local = new Date(hoy.getTime() - (hoy.getTimezoneOffset() * 60000));
+
+  return local.toISOString().split('T')[0];
+}
 
   ngOnInit() {
     this.cargarHistorial();
@@ -80,20 +89,20 @@ export class PosgradoComponent implements OnInit {
   }
 
   resetForm() {
-    this.form = {
-      nivel: '',
-      institucion: '',
-      programa: '',
-      modalidad: '',
-      estatus: '',
-      relacion: '',
-      inicio: '',
-      fin: '',
-      tieneBeca: null,
-      idTipoBeca: null,
-      otroBeca: ''
-    };
-  }
+  this.form = {
+    nivel: '',
+    institucion: '',
+    programa: '',
+    modalidad: '',
+    estatus: '',
+    relacion: '',
+    inicio: this.getFechaHoy(),  // 👈 aquí
+    fin: this.getFechaHoy(),     // 👈 aquí
+    tieneBeca: null,
+    idTipoBeca: null,
+    otroBeca: ''
+  };
+}
 
   onBecaChange() {
     if (!this.form.tieneBeca) {
