@@ -1,3 +1,7 @@
+/* =========================
+    FORMULARIO GENERAL
+========================= */
+
 .form-grid{
     display:flex;
     flex-direction:column;
@@ -127,7 +131,7 @@
 }
 
 /* =========================
-    HISTORIAL (LIMPIO)
+    HISTORIAL
 ========================= */
 
 .historial-grid {
@@ -169,7 +173,6 @@
     color: #555;
 }
 
-/* BOTONES HISTORIAL */
 .historial-actions {
     display: flex;
     gap: 12px;
@@ -238,31 +241,27 @@
 }
 
 /* =========================
-    VALIDACIÓN DE CAMPOS
+    VALIDACIÓN
 ========================= */
 
-/* Asterisco obligatorio */
 .required {
     color: #e74c3c;
     font-weight: bold;
     margin-left: 4px;
 }
 
-/* Inputs inválidos */
 .field-group input.ng-invalid.ng-touched,
 .field-group select.ng-invalid.ng-touched {
     border: 1px solid #e74c3c;
     background-color: #fff5f5;
 }
 
-/* Inputs válidos (opcional pero recomendado) */
 .field-group input.ng-valid.ng-touched,
 .field-group select.ng-valid.ng-touched {
     border: 1px solid #2ecc71;
     background-color: #f0fff4;
 }
 
-/* Mensaje de error debajo */
 .error {
     color: #e74c3c;
     font-size: 12px;
@@ -270,14 +269,12 @@
     display: block;
 }
 
-/* Mensaje general arriba del botón */
 .error-global {
     color: #e74c3c;
     font-weight: bold;
     margin-bottom: 10px;
 }
 
-/* Efecto al enfocar (más pro) */
 .field-group input:focus,
 .field-group select:focus {
     outline: none;
@@ -286,14 +283,13 @@
 }
 
 /* =========================
-    MODAL DE CONFIRMACIÓN
+    MODAL CONFIRMACIÓN (GENÉRICO)
 ========================= */
 
 .modal-overlay {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.4); /* fondo semi-transparente */
+    inset: 0;
+    background: rgba(0,0,0,0.4);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -314,7 +310,7 @@
 
 .modal-card h3 {
     margin-bottom: 10px;
-    color: #2f8f83; /* tu verde principal */
+    color: #2f8f83;
 }
 
 .modal-card p {
@@ -323,103 +319,244 @@
     margin-bottom: 20px;
 }
 
-/* FOOTER DEL MODAL */
 .acciones-modal {
     display: flex;
     justify-content: center;
-    margin-top: 32px;   /* 🔥 más espacio arriba */
-    padding-top: 12px;  /* aire adicional */
-    border-top: 1px solid #e5e7eb; /* opcional, línea divisoria */
+    margin-top: 32px;
+    padding-top: 12px;
+    border-top: 1px solid #e5e7eb;
 }
 
-.acciones-modal .btn-guardar {
-    background: #dc2626; /* rojo para eliminar */
+/* =========================
+    MODAL CERTIFICACIÓN (FIX)
+========================= */
+
+.cert-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    z-index: 3000;
+}
+
+.cert-modal {
+    width: 100%;
+    max-width: 980px;
+    background: #ffffff;
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 25px 70px rgba(0,0,0,.25);
+    animation: fadeInUp .3s ease;
+}
+
+@keyframes fadeInUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* cerrar */
+.cert-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: #f3f7f6;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 26px;
+    transition: background .2s ease;
+}
+.cert-close:hover { background: #e0e5e4; }
+
+/* header */
+.cert-header {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    padding: 30px 40px;
+    border-bottom: 1px solid #e5e7eb;
+}
+.cert-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #E5F3F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: #007D68;
+}
+
+/* body */
+.cert-body {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 40px;
+    padding: 35px 40px;
+}
+
+/* info */
+.cert-info {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid #eef2f1;
+    padding: 14px 0;
+}
+
+.info-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #E5F3F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #007D68;
+    flex-shrink: 0;
+}
+
+.info-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.info-content label {
+    color: #6b7280;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.info-content span {
+    font-weight: 600;
+    color: #00332A;
+    font-size: 18px;
+}
+
+.info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+/* preview */
+.cert-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.certificate-card {
+    width: 300px;
+    height: 340px;
+    border-radius: 20px;
+    background: #f4f8f7;
+    border: 2px solid #cfe5df;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+.certificate-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #007D68;
     color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    margin-bottom: 15px;
+}
+.cert-label {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+}
+.cert-value {
+    font-size: 20px;
+    font-weight: 600;
+    color: #00332A;
+    margin-top: 6px;
 }
 
-.acciones-modal .btn-secundario {
-    border: 1px solid #2f8f83;
-    color: #2f8f83;
-    background: white;
+/* footer */
+.cert-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 20px 40px;
+    border-top: 1px solid #e5e7eb;
 }
+.cert-btn-secondary {
+    background: #eee;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+.cert-btn-secondary:hover { background: #ddd; }
+.cert-btn-primary {
+    background: #007D68;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+.cert-btn-primary:hover { background: #005f50; }
+
+/* RESPONSIVE */
+@media (max-width:850px) {
+    .cert-body { 
+        grid-template-columns: 1fr; 
+    }
+
+    .info-row { 
+        grid-template-columns: 1fr; 
+    }
+}
+
+
+/* =========================
+    LINK EMPRESA (CLICKABLE)
+========================= */
 
 .link-empresa {
     cursor: pointer;
-    color: #2f8f83;           /* 🔥 verde de tu app */
-    text-decoration: none;    /* quita subrayado */
+    color: #2f8f83;           /* verde principal */
+    text-decoration: none;
     font-weight: 600;
-
-    transition: 0.2s ease;
+    transition: .2s ease;
 }
 
 .link-empresa:hover {
     color: #256f66;           /* verde más oscuro */
-    text-decoration: underline; /* aparece solo al hover */
+    text-decoration: underline;
 }
 
-.modal-detalle {
-    width: 320px;          /* más pequeño */
-    max-width: 90%;
-    border-radius: 16px;
-    padding: 20px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;   /* centra horizontalmente */
-    justify-content: center; /* centra verticalmente */
-    text-align: center;    /* centra el texto */
+/* Íconos en labels de formularios */
+.field-group label i {
+  color: #256f66;        /* verde oscuro */
+  margin-right: 6px;     /* separación con el texto */
+  font-size: 1rem;       /* tamaño ajustable */
+  vertical-align: middle; /* alineación con el texto */
 }
 
-/* HEADER */
-.modal-header {
-    display: flex;
-    flex-direction: column; /* título y badge uno debajo del otro */
-    align-items: center;
-    margin-bottom: 16px;
-}
-
-.modal-header h3 {
-    margin: 0;
-    color: #2f8f83;
-}
-
-/* GRID */
-.detalle-grid {
-    display: grid;
-    grid-template-columns: 1fr; /* una sola columna */
-    gap: 12px;
-    width: 100%;
-}
-
-.detalle-item {
-    background: #f0fdfc;
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #d1fae5;
-}
-
-.detalle-item label {
-    font-size: 12px;
-    color: #2f8f83;
-    font-weight: 600;
-    display: block;
-    margin-bottom: 4px;
-}
-
-.detalle-item p {
-    margin: 0;
-    font-weight: 500;
-    color: #374151;
-    text-align: center; /* centra el contenido */
-}
-
-/* BADGE */
-.badge {
-    background: #e0f2f0;
-    color: #2f8f83;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    border: 1px solid #bfe7e2;
-    margin-top: 8px;
-}

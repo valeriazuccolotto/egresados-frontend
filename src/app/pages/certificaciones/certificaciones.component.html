@@ -27,38 +27,53 @@
         <h3>Certificación</h3>
 
         <div class="field-group">
-            <label>Nombre de la certificación <span class="required">*</span></label>
+            <label>
+                <i class="fas fa-certificate"></i>
+                Nombre de la certificación <span class="required">*</span>
+            </label>
             <input [(ngModel)]="form.certNombre" name="certNombre" required #certNombre="ngModel">
             <div class="error" *ngIf="certNombre.invalid && certNombre.touched">Campo obligatorio</div>
-        </div>
+            </div>
 
-        <div class="field-group">
-            <label>Institución que otorga <span class="required">*</span></label>
+            <div class="field-group">
+            <label>
+                <i class="fas fa-building"></i>
+                Institución que otorga <span class="required">*</span>
+            </label>
             <input [(ngModel)]="form.certInstitucion" name="certInstitucion" required #certInstitucion="ngModel">
             <div class="error" *ngIf="certInstitucion.invalid && certInstitucion.touched">Campo obligatorio</div>
-        </div>
+            </div>
 
-
-        <div class="field-group">
-            <label>Fecha de inicio <span class="required">*</span></label>
+            <div class="field-group">
+            <label>
+                <i class="fas fa-calendar-day"></i>
+                Fecha de inicio <span class="required">*</span>
+            </label>
             <input type="date" [(ngModel)]="form.certInicio" name="certInicio" required #certInicio="ngModel">
             <div class="error" *ngIf="certInicio.invalid && certInicio.touched">Campo obligatorio</div>
-        </div>
+            </div>
 
-        <div class="field-group">
-            <label>Fecha de término <span class="required">*</span></label>
+            <div class="field-group">
+            <label>
+                <i class="fas fa-calendar-times"></i>
+                Fecha de término <span class="required">*</span>
+            </label>
             <input type="date" [(ngModel)]="form.certFin" name="certFin" required #certFin="ngModel">
             <div class="error" *ngIf="certFin.invalid && certFin.touched">Campo obligatorio</div>
-        </div>
+            </div>
 
-        <div class="field-group">
-            <label>Fecha de obtención <span class="required">*</span></label>
+            <div class="field-group">
+            <label>
+                <i class="fas fa-calendar-check"></i>
+                Fecha de obtención <span class="required">*</span>
+            </label>
             <input type="date" [(ngModel)]="form.certObtencion" name="certObtencion" required #certObtencion="ngModel">
             <div class="error" *ngIf="certObtencion.invalid && certObtencion.touched">Campo obligatorio</div>
-        </div>
+            </div>
+
         </div>
 
-        <div class="full">
+        <div class="acciones-detalle">
         <button type="button" (click)="guardar()" class="btn-guardar">Guardar certificación</button>
         <button type="button" (click)="cancelarFormulario()" class="btn-secundario">Cancelar</button>
         </div>
@@ -75,7 +90,6 @@
                     {{ cert.nombreCertificacion }}
                 </strong>
             </div>
-            <span class="badge">{{ cert.fechaObtencion }}</span>
             </div>
             <div class="historial-body">
             <p>Inicio: {{ cert.fechaInicio }}</p>
@@ -92,63 +106,84 @@
     </div>
 
     <!-- FORMULARIO EDICIÓN -->
-    <div *ngIf="certSeleccionado" class="detalle-expandido">
-        <form (ngSubmit)="actualizarCertificacion()" class="form-grid">
+<div *ngIf="certSeleccionado" class="detalle-expandido">
+    <form (ngSubmit)="actualizarCertificacion()" class="form-grid">
         <div class="bloque-formulario">
-            <h3>Editar certificación</h3>
+        <h3>Editar certificación</h3>
 
-            <div class="field-group">
-            <label>Nombre <span class="required">*</span></label>
+        <div class="field-group">
+            <label>
+            <i class="fas fa-certificate"></i>
+            Nombre <span class="required">*</span>
+            </label>
             <input [(ngModel)]="certSeleccionado.nombreCertificacion"
-                    name="nombreCertificacion"
-                    required #nombreCertificacionEdit="ngModel">
+                name="nombreCertificacion"
+                required #nombreCertificacionEdit="ngModel">
             <div class="error" *ngIf="nombreCertificacionEdit.invalid && nombreCertificacionEdit.touched">
-                Campo obligatorio
+            Campo obligatorio
             </div>
+        </div>
+
+        <div class="field-group">
+            <label>
+            <i class="fas fa-building"></i>
+            Institución que otorga <span class="required">*</span>
+            </label>
+            <input [(ngModel)]="certSeleccionado.institucionCertificacion"
+                name="institucionCertificacion"
+                required #institucionCertificacionEdit="ngModel">
+            <div class="error" *ngIf="institucionCertificacionEdit.invalid && institucionCertificacionEdit.touched">
+            Campo obligatorio
             </div>
+        </div>
 
-            <div class="field-group">
-                <label>Institución que otorga <span class="required">*</span></label>
-                <input [(ngModel)]="certSeleccionado.institucionCertificacion"
-                        name="institucionCertificacion"
-                        required #institucionCertificacionEdit="ngModel">
-                <div class="error" *ngIf="institucionCertificacionEdit.invalid && institucionCertificacionEdit.touched">
-                    Campo obligatorio
-                </div>
-            </div>
-
-
-            <div class="field-group">
-            <label>Fecha Inicio <span class="required">*</span></label>
+        <div class="field-group">
+            <label>
+            <i class="fas fa-calendar-day"></i>
+            Fecha Inicio <span class="required">*</span>
+            </label>
             <input type="date" [(ngModel)]="certSeleccionado.fechaInicio"
-                    name="fechaInicio"
-                    required #fechaInicioEdit="ngModel">
-            <div class="error" *ngIf="fechaInicioEdit.invalid && fechaInicioEdit.touched">Campo obligatorio</div>
+                name="fechaInicio"
+                required #fechaInicioEdit="ngModel">
+            <div class="error" *ngIf="fechaInicioEdit.invalid && fechaInicioEdit.touched">
+            Campo obligatorio
             </div>
+        </div>
 
-            <div class="field-group">
-            <label>Fecha Fin <span class="required">*</span></label>
+        <div class="field-group">
+            <label>
+            <i class="fas fa-calendar-times"></i>
+            Fecha Fin <span class="required">*</span>
+            </label>
             <input type="date" [(ngModel)]="certSeleccionado.fechaFin"
-                    name="fechaFin"
-                    required #fechaFinEdit="ngModel">
-            <div class="error" *ngIf="fechaFinEdit.invalid && fechaFinEdit.touched">Campo obligatorio</div>
+                name="fechaFin"
+                required #fechaFinEdit="ngModel">
+            <div class="error" *ngIf="fechaFinEdit.invalid && fechaFinEdit.touched">
+            Campo obligatorio
             </div>
+        </div>
 
-            <div class="field-group">
-            <label>Fecha de obtención <span class="required">*</span></label>
+        <div class="field-group">
+            <label>
+            <i class="fas fa-calendar-check"></i>
+            Fecha de obtención <span class="required">*</span>
+            </label>
             <input type="date" [(ngModel)]="certSeleccionado.fechaObtencion"
-                    name="fechaObtencion"
-                    required #fechaObtencionEdit="ngModel">
-            <div class="error" *ngIf="fechaObtencionEdit.invalid && fechaObtencionEdit.touched">Campo obligatorio</div>
+                name="fechaObtencion"
+                required #fechaObtencionEdit="ngModel">
+            <div class="error" *ngIf="fechaObtencionEdit.invalid && fechaObtencionEdit.touched">
+            Campo obligatorio
             </div>
+        </div>
         </div>
 
         <div class="acciones-detalle">
-            <button type="submit" class="btn-guardar">Guardar cambios</button>
-            <button type="button" (click)="cancelarEdicion()" class="btn-secundario">Cancelar</button>
+        <button type="submit" class="btn-guardar">Guardar cambios</button>
+        <button type="button" (click)="cancelarEdicion()" class="btn-secundario">Cancelar</button>
         </div>
-        </form>
+    </form>
     </div>
+
 
     <!-- MODAL CONFIRMACIÓN -->
     <div class="modal-overlay" *ngIf="mostrarConfirmacion">
@@ -165,46 +200,83 @@
     </div>
 
 <!-- MODAL CONSULTA CERTIFICACIÓN -->
-<div class="modal-overlay" *ngIf="mostrarConsulta">
-    <div class="modal-card modal-detalle">
+<div class="cert-backdrop" *ngIf="mostrarConsulta">
+    <div class="cert-modal">
+
+        <!-- BOTÓN CERRAR -->
+        <button class="cert-close" (click)="cerrarConsulta()">&times;</button>
+
+        <!-- HEADER -->
+        <div class="cert-header">
+        <div class="cert-icon"><i class="fas fa-medal"></i></div>
+        <div>
+            <h2>Detalles de la certificación</h2>
+            <p>Información de la certificación obtenida por el colaborador.</p>
+        </div>
+        </div>
 
         <!-- BODY -->
-        <div class="modal-body" *ngIf="certificacionConsulta">
-        <div class="detalle-grid">
+        <div class="cert-body" *ngIf="certificacionConsulta">
 
-            <div class="detalle-item full">
-            <label>Nombre de la certificación</label>
-            <p>{{ certificacionConsulta.nombreCertificacion }}</p>
+        <!-- IZQUIERDA -->
+        <div class="cert-info">
+
+            <div class="info-item">
+            <div class="info-icon"><i class="fas fa-certificate"></i></div>
+            <div class="info-content">
+                <label>Nombre de la certificación</label>
+                <span>{{ certificacionConsulta.nombreCertificacion }}</span>
+            </div>
             </div>
 
-            <div class="detalle-item full">
-            <label>Fecha de obtención</label>
-            <p>{{ certificacionConsulta.fechaObtencion }}</p>
+            <div class="info-item">
+            <div class="info-icon"><i class="fas fa-building"></i></div>
+            <div class="info-content">
+                <label>Empresa que lo otorga</label>
+                <span>{{ certificacionConsulta.institucionCertificacion }}</span>
+            </div>
             </div>
 
-            <div class="detalle-item">
-            <label>Institución que otorga</label>
-            <p>{{ certificacionConsulta.institucionCertificacion }}</p>
+            <div class="info-item">
+            <div class="info-icon"><i class="fas fa-calendar-check"></i></div>
+            <div class="info-content">
+                <label>Fecha de obtención</label>
+                <span>{{ certificacionConsulta.fechaObtencion }}</span>
+            </div>
             </div>
 
-            <div class="detalle-item">
-            <label>Fecha de inicio</label>
-            <p>{{ certificacionConsulta.fechaInicio }}</p>
+            <div class="info-item">
+            <div class="info-icon"><i class="fas fa-calendar-day"></i></div>
+            <div class="info-content">
+                <label>Fecha de inicio</label>
+                <span>{{ certificacionConsulta.fechaInicio }}</span>
+            </div>
             </div>
 
-            <div class="detalle-item">
-            <label>Fecha de término</label>
-            <p>{{ certificacionConsulta.fechaFin }}</p>
+            <div class="info-item">
+            <div class="info-icon"><i class="fas fa-calendar-times"></i></div>
+            <div class="info-content">
+                <label>Fecha de caducidad</label>
+                <span>{{ certificacionConsulta.fechaFin }}</span>
+            </div>
             </div>
 
         </div>
+
+        <!-- DERECHA -->
+        <div class="cert-preview">
+            <div class="certificate-card">
+            <div class="certificate-icon"><i class="fas fa-trophy"></i></div>
+            <h4 class="cert-label">Nombre de la certificación</h4>
+            <p class="cert-value">{{ certificacionConsulta.nombreCertificacion }}</p>
+            </div>
+        </div>
+
         </div>
 
         <!-- FOOTER -->
-        <div class="acciones-modal">
-        <button class="btn-secundario" (click)="cerrarConsulta()">
-            Cerrar
-        </button>
+        <div class="cert-footer">
+        <button class="cert-btn-secondary" (click)="cerrarConsulta()">Cerrar</button>
         </div>
 
     </div>
