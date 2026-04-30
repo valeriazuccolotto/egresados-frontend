@@ -178,7 +178,7 @@
                 <p>{{ pos.institucion }}</p>
             </div>
 
-            <<div class="historial-actions">
+            <div class="historial-actions">
                 <button (click)="verDetalle(pos)" class="btn-ver">Editar</button>
                 <button (click)="abrirConfirmacion(pos.idPosgrado)" class="btn-eliminar">
                     Eliminar
@@ -374,7 +374,27 @@
 
 </div>
 
-<!-- MODAL CONFIRMACIÓN -->
+    <!-- MODAL CONFIRMACIÓN ELIMINAR -->
+    <div class="modal-overlay" *ngIf="mostrarConfirmacion">
+    <div class="modal-card">
+
+        <h3>¿Eliminar posgrado?</h3>
+        <p>Esta acción no se puede deshacer.</p>
+
+        <div class="modal-actions">
+        <button class="btn-eliminar" (click)="confirmarEliminacion()">
+            Sí, eliminar
+        </button>
+
+        <button class="btn-secundario" (click)="cerrarConfirmacion()">
+            Cancelar
+        </button>
+        </div>
+
+    </div>
+    </div>
+
+<!-- MODAL CONSULTAS -->
     <div class="modal-overlay" *ngIf="mostrarConsulta">
     <div class="modal-card modal-detalle">
 
