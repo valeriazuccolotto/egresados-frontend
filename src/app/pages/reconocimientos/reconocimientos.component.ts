@@ -35,6 +35,13 @@ export class ReconocimientosComponent implements OnInit {
   // ================= FORM =================
   form: any = {};
 
+  // 🔥 FUNCIÓN FECHA CORRECTA (SIN ERROR DE ZONA HORARIA)
+  getFechaHoy(): string {
+    const hoy = new Date();
+    const local = new Date(hoy.getTime() - (hoy.getTimezoneOffset() * 60000));
+    return local.toISOString().split('T')[0];
+  }
+
   ngOnInit() {
     this.resetForm();
     this.cargarHistorial();
@@ -45,7 +52,7 @@ export class ReconocimientosComponent implements OnInit {
     this.http.get<any[]>(
       `http://localhost:8181/egresado/reconocimientos/A1234567`
     ).subscribe({
-      next: data => this.historial = data,
+      next: data => this.historial = data.reverse(),
       error: () => this.mostrarMensaje("❌ Error al cargar historial")
     });
   }
@@ -56,14 +63,14 @@ export class ReconocimientosComponent implements OnInit {
       matricula: "A1234567",
       recoNombre: '',
       recoTipo: '',
-      recoFecha: '',
+      recoFecha: this.getFechaHoy(), // 👈 AQUÍ LA MAGIA
       recoInstitucion: ''
     };
   }
 
   nuevo() {
     this.mostrarFormulario = true;
-    this.resetForm();
+    this.resetForm(); // 👈 asegura fecha actual cada vez
     this.reconocimientoSeleccionado = null;
   }
 
@@ -126,7 +133,7 @@ export class ReconocimientosComponent implements OnInit {
     });
   }
 
-  // ================= ELIMINAR CON CONFIRMACIÓN =================
+  // ================= ELIMINAR =================
   abrirConfirmacion(id: number) {
     this.reconocimientoAEliminar = id;
     this.mostrarConfirmacion = true;
@@ -185,16 +192,17 @@ export class ReconocimientosComponent implements OnInit {
     setTimeout(() => this.mensaje = '', 3000);
   }
 
-mostrarConsulta = false;
-recoConsulta: any = null;
+  // ================= CONSULTA =================
+  mostrarConsulta = false;
+  recoConsulta: any = null;
 
-abrirConsulta(reco: any) {
-  this.recoConsulta = reco;
-  this.mostrarConsulta = true;
-}
+  abrirConsulta(reco: any) {
+    this.recoConsulta = reco;
+    this.mostrarConsulta = true;
+  }
 
-cerrarConsulta() {
-  this.mostrarConsulta = false;
-  this.recoConsulta = null;
-}
+  cerrarConsulta() {
+    this.mostrarConsulta = false;
+    this.recoConsulta = null;
+  }
 }
