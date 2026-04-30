@@ -403,88 +403,135 @@
     </div>
     </div>
 
-    <!-- MODAL CONSULTA -->
+<!-- MODAL CONSULTA LABORAL -->
 <div class="modal-overlay" *ngIf="mostrarConsulta">
     <div class="modal-card modal-detalle">
 
-        <!-- HEADER -->
+        <!-- BOTÓN CERRAR -->
+        <button class="modal-close" (click)="cerrarConsulta()">&times;</button>
+
+        <!-- HEADER (igual estilo cert) -->
         <div class="modal-header">
-        <h3>{{ laboralConsulta?.empresa }}</h3>
-        <span class="badge">{{ laboralConsulta?.modalidadTrabajo }}</span>
+            <div class="modal-icon">
+                <i class="fas fa-briefcase"></i>
+            </div>
+            <div>
+                <h3>Empresa: {{ laboralConsulta?.empresa }}</h3>
+                <p>Información laboral del egresado</p>
+            </div>
         </div>
 
-        <!-- BODY -->
+        <!-- BODY (2 COLUMNAS) -->
         <div class="modal-body" *ngIf="laboralConsulta">
 
-        <div class="detalle-grid">
+            <!-- 🔹 IZQUIERDA (INFO) -->
+            <div class="detalle-grid">
 
-            <div class="detalle-item">
-            <label>Puesto</label>
-            <p>{{ laboralConsulta.puesto }}</p>
+                <div class="detalle-item">
+                    <div class="info-icon"><i class="fas fa-user-tie"></i></div>
+                    <div>
+                        <label>Puesto</label>
+                        <p>{{ laboralConsulta.puesto }}</p>
+                    </div>
+                </div>
+
+                <div class="detalle-item">
+                    <div class="info-icon"><i class="fas fa-industry"></i></div>
+                    <div>
+                        <label>Sector</label>
+                        <p>{{ laboralConsulta.sector }}</p>
+                    </div>
+                </div>
+
+                <div class="detalle-item">
+                    <div class="info-icon"><i class="fas fa-file-contract"></i></div>
+                    <div>
+                        <label>Contrato</label>
+                        <p>{{ laboralConsulta.tipoContrato }}</p>
+                    </div>
+                </div>
+
+                <div class="detalle-item">
+                    <div class="info-icon"><i class="fas fa-money-bill-wave"></i></div>
+                    <div>
+                        <label>Salario</label>
+                        <p>{{ laboralConsulta.salario }}</p>
+                    </div>
+                </div>
+
+                <!-- FILA DOBLE -->
+                <div class="info-row">
+
+                    <div class="detalle-item">
+                        <div class="info-icon"><i class="fas fa-search"></i></div>
+                        <div>
+                            <label>Cómo consiguió empleo</label>
+                            <p>{{ laboralConsulta.comoConsiguio }}</p>
+                        </div>
+                    </div>
+
+                    <div class="detalle-item">
+                        <div class="info-icon"><i class="fas fa-clock"></i></div>
+                        <div>
+                            <label>Tiempo en conseguir</label>
+                            <p>{{ laboralConsulta.tiempoConseguir }}</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="detalle-item">
+                    <div class="info-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <div>
+                        <label>Relación con la carrera</label>
+                        <p>{{ laboralConsulta.relacionCarrera }}</p>
+                    </div>
+                </div>
+
+                <div class="detalle-item">
+                    <div class="info-icon"><i class="fas fa-comment"></i></div>
+                    <div>
+                        <label>Comentarios</label>
+                        <p>{{ laboralConsulta.comentarios || 'Sin comentarios' }}</p>
+                    </div>
+                </div>
+
+                <!-- 🔥 PRESTACIONES -->
+                <div class="detalle-item">
+                    <div class="info-icon"><i class="fas fa-gift"></i></div>
+                    <div>
+                        <label>Prestaciones</label>
+
+                        <p *ngIf="!laboralConsulta.prestaciones?.length">
+                            No cuenta con prestaciones
+                        </p>
+
+                        <div class="prestaciones-inline" *ngIf="laboralConsulta.prestaciones?.length">
+                            <span *ngFor="let p of laboralConsulta.prestaciones">
+                                {{ p.nombre }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="detalle-item">
-            <label>Sector</label>
-            <p>{{ laboralConsulta.sector }}</p>
+            <!-- 🔹 DERECHA (PREVIEW) -->
+            <div class="laboral-preview">
+                <div class="laboral-card">
+                    <div class="laboral-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h4 class="laboral-label">Empresa</h4>
+                    <p class="laboral-value">{{ laboralConsulta?.empresa }}</p>
+                </div>
             </div>
-
-            <div class="detalle-item">
-            <label>Contrato</label>
-            <p>{{ laboralConsulta.tipoContrato }}</p>
-            </div>
-
-            <div class="detalle-item">
-            <label>Salario</label>
-            <p>{{ laboralConsulta.salario }}</p>
-            </div>
-
-            <div class="detalle-item">
-            <label>Cómo consiguió empleo</label>
-            <p>{{ laboralConsulta.comoConsiguio }}</p>
-            </div>
-
-            <div class="detalle-item">
-            <label>Tiempo en conseguir</label>
-            <p>{{ laboralConsulta.tiempoConseguir }}</p>
-            </div>
-
-            <div class="detalle-item full">
-            <label>Relación con la carrera</label>
-            <p>{{ laboralConsulta.relacionCarrera }}</p>
-            </div>
-
-            <div class="detalle-item full">
-            <label>Comentarios</label>
-            <p>{{ laboralConsulta.comentarios || 'Sin comentarios' }}</p>
-            </div>
-
-            <!-- 🔥 PRESTACIONES INTEGRADO -->
-            <div class="detalle-item full">
-            <label>Prestaciones</label>
-
-            <p *ngIf="!laboralConsulta.prestaciones?.length">
-                No cuenta con prestaciones
-            </p>
-
-            <div class="prestaciones-inline"
-                *ngIf="laboralConsulta.prestaciones?.length">
-
-                <span *ngFor="let p of laboralConsulta.prestaciones">
-                {{ p.nombre }}
-                </span>
-
-            </div>
-            </div>
-
-        </div>
 
         </div>
 
         <!-- FOOTER -->
-        <div class="acciones-modal">
-        <button class="btn-secundario" (click)="cerrarConsulta()">
-            Cerrar
-        </button>
+        <div class="cert-footer">
+        <button class="cert-btn-secondary" (click)="cerrarConsulta()">Cerrar</button>
         </div>
 
     </div>
