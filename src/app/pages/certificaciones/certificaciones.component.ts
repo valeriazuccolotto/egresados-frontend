@@ -47,7 +47,7 @@ export class CertificacionesComponent implements OnInit {
     this.http.get<any[]>(
       'http://localhost:8181/egresado/certificaciones/A1234567'
     ).subscribe({
-      next: (data) => this.historial = data,
+      next: data => this.historial = data.reverse(),
       error: () => {
         this.historial = [];
         this.mostrarMensaje("❌ Error al cargar historial");
