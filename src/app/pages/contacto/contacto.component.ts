@@ -15,12 +15,8 @@ import { Usuario } from '../../models/usuario';
 })
 export class ContactoComponent implements OnInit {
 
-  mensajeExito = false;
-
-  menuAbierto = true;
-  guardado = false;
-  nombreUsuario = '';
-  inicial = '';
+  mensajeExito = '';
+  mensajeError = '';
 
   contacto: Contacto = {
     matricula: '',
@@ -37,54 +33,98 @@ export class ContactoComponent implements OnInit {
   ngOnInit(): void {
     const raw = sessionStorage.getItem('usuario');
 
-    if (raw) {
-      const usuario: Usuario = JSON.parse(raw);
-
-      this.contacto.matricula = usuario.matricula;
-      this.nombreUsuario = usuario.matricula;
-      this.inicial = usuario.matricula.charAt(0).toUpperCase();
+    if (!raw) {
+      this.mensajeError = 'No hay sesión activa. Inicia sesión nuevamente.';
+      return;
     }
-  }
 
-  toggleMenu(): void {
-    this.menuAbierto = !this.menuAbierto;
+    const usuario: Usuario = JSON.parse(raw);
+    this.contacto.matricula = usuario.matricula;
+      this.cargarContacto();
+
   }
 
   guardar(): void {
+    this.mensajeExito = '';
+    this.mensajeError = '';
+
+    if (!this.contacto.matricula) {
+      this.mensajeError = 'No se encontró la matrícula del usuario en sesión.';
+      return;
+    }
+
+    if (!this.validarCorreo(this.contacto.correoPersonal)) {
+      this.mensajeError = 'El correo personal no tiene un formato válido.';
+      return;
+    }
+
+    if (this.contacto.telefono && !this.validarTelefono(this.contacto.telefono)) {
+      this.mensajeError = 'El teléfono debe tener exactamente 10 dígitos.';
+      return;
+    }
+
     this.contactoService.obtenerPorMatricula(this.contacto.matricula).subscribe({
-
       next: () => {
-        this.contactoService.actualizar(this.contacto.matricula, this.contacto)
-          .subscribe({
-            next: (respuesta) => {
-              console.log('Contacto actualizado:', respuesta);
-              this.mensajeExito = true;
-              this.guardado = true;
-              setTimeout(() => this.guardado = false, 3000);
-            },
-            error: (error) => {
-              console.error('Error al actualizar:', error);
-              alert('Error al actualizar contacto');
-            }
-          });
+        this.actualizarContacto();
       },
-
       error: () => {
-        this.contactoService.guardar(this.contacto)
-          .subscribe({
-            next: (respuesta) => {
-              console.log('Contacto guardado:', respuesta);
-              this.mensajeExito = true;
-              this.guardado = true;
-              setTimeout(() => this.guardado = false, 3000);
-            },
-            error: (error) => {
-              console.error('Error al guardar:', error);
-              alert('Error al guardar contacto');
-            }
-          });
+        this.guardarContactoNuevo();
       }
-
     });
+  }
+
+  private guardarContactoNuevo(): void {
+    this.contactoService.guardar(this.contacto).subscribe({
+      next: () => {
+        this.mensajeExito = '✓ Información guardada correctamente.';
+        this.mensajeError = '';
+      },
+      error: () => {
+        this.mensajeExito = '';
+        this.mensajeError = 'Error al guardar contacto.';
+      }
+    });
+  }
+
+  cargarContacto(): void {
+  this.contactoService.obtenerPorMatricula(this.contacto.matricula).subscribe({
+    next: (data) => {
+      this.contacto = {
+        matricula: data.matricula,
+        correoPersonal: data.correoPersonal || '',
+        telefono: data.telefono || '',
+        ciudad: data.ciudad || '',
+        estadoResidencia: data.estadoResidencia || '',
+        instagram: data.instagram || '',
+        facebook: data.facebook || ''
+      };
+    },
+    error: () => {
+      console.log('No hay contacto guardado todavía.');
+    }
+  });
+}
+
+  private actualizarContacto(): void {
+    this.contactoService.actualizar(this.contacto.matricula, this.contacto).subscribe({
+      next: () => {
+        this.mensajeExito = '✓ Información actualizada correctamente.';
+        this.mensajeError = '';
+      },
+      error: () => {
+        this.mensajeExito = '';
+        this.mensajeError = 'Error al actualizar contacto.';
+      }
+    });
+  }
+
+  private validarCorreo(correo: string): boolean {
+    const regex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+    return regex.test(correo);
+  }
+
+  private validarTelefono(telefono: string): boolean {
+    const regex = /^[0-9]{10}$/;
+    return regex.test(telefono);
   }
 }

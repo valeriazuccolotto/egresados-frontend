@@ -2,22 +2,20 @@ import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } fro
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { PerfilService } from './services/perfil.service';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-<<<<<<< HEAD
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
-=======
-  imports: [RouterOutlet],
->>>>>>> origin/login
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
 
+  esLogin = false;
   title = 'egresados-frontend';
-<<<<<<< HEAD
 
   @ViewChild('photoMenuRoot') photoMenuRoot?: ElementRef<HTMLElement>;
   @ViewChild('galleryInput') galleryInput?: ElementRef<HTMLInputElement>;
@@ -32,17 +30,28 @@ export class AppComponent implements OnInit, OnDestroy {
 
   fotoGlobal: string = 'assets/default-user.png';
 
-  constructor(private perfilService: PerfilService) {}
+  constructor(
+  private perfilService: PerfilService,
+  private router: Router
+) {
+  this.esLogin = this.router.url === '/login';
 
-  ngOnInit(): void {
-    this.perfilService.foto$.subscribe(url => {
-      this.fotoGlobal = url;
+  this.router.events
+    .pipe(filter(event => event instanceof NavigationEnd))
+    .subscribe((event: NavigationEnd) => {
+      this.esLogin = event.urlAfterRedirects === '/login';
     });
   }
 
-  ngOnDestroy(): void {
-    this.stopCameraStream();
-  }
+ngOnInit(): void {
+  this.perfilService.foto$.subscribe(url => {
+    this.fotoGlobal = url;
+  });
+}
+
+ngOnDestroy(): void {
+  this.stopCameraStream();
+}
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
@@ -207,6 +216,4 @@ export class AppComponent implements OnInit, OnDestroy {
 
     return new File([bytes], filename, { type: mimeType });
   }
-=======
->>>>>>> origin/login
 }

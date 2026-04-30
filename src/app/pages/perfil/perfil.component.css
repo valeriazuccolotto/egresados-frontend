@@ -1,3 +1,6 @@
+:host {
+  font-family: 'Roboto', sans-serif;
+}
 .perfil-container {
   max-width: 1100px;
   margin: auto;
@@ -7,12 +10,12 @@
 .perfil-header h1 {
   font-size: 32px;
   margin: 0;
-  color: #1f3b5b;
+  color: #007D68;
 }
 
 .perfil-header p {
   color: #6b7280;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 
 /* CARD PRINCIPAL */
@@ -25,6 +28,7 @@
   border-radius: 20px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.05);
   margin-bottom: 20px;
+  color:#0e5247;
 }
 
 .perfil-img {
@@ -37,17 +41,15 @@
 .perfil-info h2 {
   margin: 0;
   font-size: 24px;
+  color: #0e5247;
 }
 
-.perfil-sub {
-  color: #6b7280;
-}
 
 .badge {
   display: inline-block;
   margin-top: 10px;
   background: #d1f0ea;
-  color: #0f8b7d;
+  color: #007D68;
   padding: 6px 14px;
   border-radius: 20px;
 }
@@ -63,18 +65,6 @@
   box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 
-.item {
-  display: flex;
-  gap: 15px;
-  align-items: center;
-}
-
-.icon {
-  font-size: 22px;
-  background: #e6f4f1;
-  padding: 10px;
-  border-radius: 50%;
-}
 
 .label {
   margin: 0;
@@ -91,3 +81,35 @@
   grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
+.item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.icon-circle {
+  width: 54px;
+  height: 54px;
+  background: #e4f3f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon-circle .material-icons {
+  font-size: 28px;
+  color: #007D68;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-icon {
+  font-size: 20px;
+}
+

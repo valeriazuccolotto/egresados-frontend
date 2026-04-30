@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PerfilService } from '../../services/perfil.service';
 import { Perfil } from '../../models/perfil';
+import { Usuario } from '../../models/usuario';
+import { AcademicoService } from '../../services/academico.service';
+import { Carrera } from '../../models/carrera';
 
 @Component({
   selector: 'app-perfil',
@@ -14,12 +17,15 @@ export class PerfilComponent implements OnInit {
 
   perfil?: Perfil;
   urlFoto: string = 'assets/default-user.png';
+  carrera: string = '';
+  carreras: Carrera[] = [];
 
-  constructor(private perfilService: PerfilService) {}
+  constructor(
+    private perfilService: PerfilService,
+    private academicoService: AcademicoService
+  ) {}
 
   ngOnInit(): void {
-
-    // Escucha la foto global para que también cambie abajo
     this.perfilService.foto$.subscribe(url => {
       this.urlFoto = url;
     });
@@ -28,10 +34,18 @@ export class PerfilComponent implements OnInit {
   }
 
   cargarPerfil(): void {
-    const matricula = localStorage.getItem('matricula') || '21010048';
+    const raw = sessionStorage.getItem('usuario');
+
+    if (!raw) {
+      console.error('No hay usuario en sesión.');
+      return;
+    }
+
+    const usuario: Usuario = JSON.parse(raw);
+    const matricula = usuario.matricula;
 
     this.perfilService.obtenerPerfil(matricula).subscribe({
-      next: (data) => {
+      next: (data: Perfil) => {
         this.perfil = data;
 
         const foto = data.urlFoto
@@ -39,13 +53,50 @@ export class PerfilComponent implements OnInit {
           : 'assets/default-user.png';
 
         this.urlFoto = foto;
-
-        // Actualiza también el header
         this.perfilService.setFoto(foto);
+
+        this.cargarAcademico(matricula);
       },
       error: (err) => {
         console.error('Error al cargar perfil:', err);
       }
     });
   }
+
+  cargarAcademico(matricula: string): void {
+  this.academicoService.obtenerPorMatricula(matricula).subscribe({
+    next: (academico: any) => {
+      console.log('ACADÉMICO:', academico);
+
+      this.academicoService.obtenerCarreras().subscribe({
+        next: (carreras: Carrera[]) => {
+          console.log('CARRERAS:', carreras);
+
+          const claveAcademico =
+            academico?.claveCarrera ||
+            academico?.carrera?.claveCarrera ||
+            academico?.carrera;
+
+          const carreraEncontrada = carreras.find(
+            c => c.claveCarrera === claveAcademico
+          );
+
+          this.carrera =
+            carreraEncontrada?.nombreCarrera ||
+            academico?.nombreCarrera ||
+            academico?.carrera?.nombreCarrera ||
+            'Sin registrar';
+        },
+        error: (err) => {
+          console.error('Error al cargar carreras:', err);
+          this.carrera = 'Sin registrar';
+        }
+      });
+    },
+    error: (err) => {
+      console.error('Error al cargar académico:', err);
+      this.carrera = 'Sin registrar';
+    }
+  });
+}
 }

@@ -47,6 +47,18 @@ export class AcademicoComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarCarreras();
+    const raw = sessionStorage.getItem('usuario');
+
+  if (!raw) {
+    console.error('No hay usuario en sesión');
+    return;
+  }
+
+  const usuario = JSON.parse(raw);
+  this.academico.matricula = usuario.matricula;
+        this.cargarAcademico();
+
+
   }
 
   cargarCarreras(): void {
@@ -152,7 +164,77 @@ export class AcademicoComponent implements OnInit {
     });
   }
 
-  private actualizarAcademico(): void {
+  cargarAcademico(): void {
+  this.academicoService.obtenerPorMatricula(this.academico.matricula).subscribe({
+    next: (data: any) => {
+      console.log('ACADEMICO RECIBIDO:', data);
+
+      const clave = String(
+        data.claveCarrera ??
+        data.clave_carrera ??
+        data.carrera?.claveCarrera ??
+        ''
+      );
+
+      this.academico = {
+  ...this.academico,
+  ...data,
+
+  matricula: this.academico.matricula,
+  claveCarrera: clave,
+
+  nombreTesis:
+    data.nombreTesis ??
+    data.tituloTesis ??
+    data.tesis?.nombreTesis ??
+    data.tesis?.tituloTesis ??
+    '',
+
+  director:
+    data.director ??
+    data.directorTesis ??
+    data.tesis?.director ??
+    data.tesis?.directorTesis ??
+    '',
+
+  codirector:
+    data.codirector ??
+    data.codirectorTesis ??
+    data.tesis?.codirector ??
+    data.tesis?.codirectorTesis ??
+    '',
+
+  fechaExamen:
+    data.fechaExamen ??
+    data.ceneval?.fechaExamen ??
+    data.memoria?.fechaExamen ??
+    null,
+
+  puntajeCeneval:
+    data.puntajeCeneval ??
+    data.ceneval?.puntajeCeneval ??
+    null,
+
+  tituloMemoria:
+    data.tituloMemoria ??
+    data.memoria?.tituloMemoria ??
+    '',
+
+  asesor:
+    data.asesor ??
+    data.memoria?.asesor ??
+    ''
+};
+      console.log('CLAVE CARRERA FINAL:', this.academico.claveCarrera);
+      console.log('ACADEMICO MAPEADO:', this.academico);
+    },
+    error: (err) => {
+      console.error('Error al cargar académico:', err);
+    }
+  });
+}
+
+private actualizarAcademico(): void {
     this.academicoService.actualizar(this.academico.matricula, this.academico).subscribe({
       next: () => {
         this.mensajeExito = '✓ Información académica actualizada correctamente.';

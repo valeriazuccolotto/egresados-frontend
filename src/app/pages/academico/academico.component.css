@@ -1,3 +1,6 @@
+:host {
+  font-family: 'Roboto', sans-serif;
+}
 .page-section {
   padding: 26px 34px 42px;
   background: #f4f6f8;

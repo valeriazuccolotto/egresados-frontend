@@ -1,4 +1,6 @@
 export interface Usuario {
   matricula: string;
-  rol: 'ADMIN' | 'EGRESADO';
+  password: string;
+  rol?: string;       // 👈 OPCIONAL
+  activo?: boolean;   // 👈 OPCIONAL (recomendado)
 }

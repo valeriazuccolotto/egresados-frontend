@@ -2,7 +2,9 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+
+import { UsuarioService } from '../../services/usuario.service';
+import { Usuario } from '../../models/usuario';
 
 @Component({
   selector: 'app-login',
@@ -13,40 +15,45 @@ import { HttpClient } from '@angular/common/http';
 })
 export class LoginComponent {
 
-  matricula    = '';
-  password     = '';
+  matricula = '';
+  password = '';
   mostrarPassword = false;
-  cargando     = false;
-  errorMsg     = '';
+  cargando = false;
+  errorMsg = '';
   errorMatricula = false;
-  errorPassword  = false;
+  errorPassword = false;
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(
+    private usuarioService: UsuarioService,
+    private router: Router
+  ) {}
 
   togglePassword() {
     this.mostrarPassword = !this.mostrarPassword;
   }
 
   limpiarErrores() {
-    this.errorMsg      = '';
+    this.errorMsg = '';
     this.errorMatricula = false;
-    this.errorPassword  = false;
+    this.errorPassword = false;
   }
 
   iniciarSesion() {
 
-    // Validaciones vacío
+    // 🔴 Validaciones
     if (!this.matricula && !this.password) {
       this.errorMatricula = true;
-      this.errorPassword  = true;
+      this.errorPassword = true;
       this.errorMsg = 'Por favor completa todos los campos.';
       return;
     }
+
     if (!this.matricula) {
       this.errorMatricula = true;
       this.errorMsg = 'Ingresa tu matrícula.';
       return;
     }
+
     if (!this.password) {
       this.errorPassword = true;
       this.errorMsg = 'Ingresa tu contraseña.';
@@ -56,36 +63,38 @@ export class LoginComponent {
     this.cargando = true;
     this.errorMsg = '';
 
-    // Llamada al backend
-    this.http.post<any>('http://localhost:8080/usuarios/login', {
-      matricula: this.matricula,
-      password:  this.password
-    }).subscribe({
-      next: (usuario) => {
+    // 🚀 LOGIN usando service
+    const usuario: Usuario = {
+      matricula: this.matricula.trim(),
+      password: this.password.trim()
+    };
+
+    this.usuarioService.login(usuario).subscribe({
+      next: (res) => {
         this.cargando = false;
 
-        if (!usuario) {
+        if (!res) {
           this.errorMsg = 'Matrícula o contraseña incorrectos.';
           this.errorMatricula = true;
-          this.errorPassword  = true;
+          this.errorPassword = true;
           return;
         }
 
-        // Guardar en sessionStorage para uso posterior
-        sessionStorage.setItem('usuario', JSON.stringify(usuario));
+        // 💾 Guardar sesión
+        sessionStorage.setItem('usuario', JSON.stringify(res));
 
-        // Redirigir según rol
-        if (usuario.rol === 'ADMIN') {
-          this.router.navigate(['/usuarios']);     // vista administrador
+        // 🔀 Redirección
+        if (res.rol === 'ADMIN') {
+          this.router.navigate(['/usuarios']);
         } else {
-          this.router.navigate(['/contacto']);     // vista egresado
+          this.router.navigate(['/perfil']);
         }
       },
       error: () => {
         this.cargando = false;
         this.errorMsg = 'Matrícula o contraseña incorrectos.';
         this.errorMatricula = true;
-        this.errorPassword  = true;
+        this.errorPassword = true;
       }
     });
   }

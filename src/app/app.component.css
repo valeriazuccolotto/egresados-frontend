@@ -1,3 +1,6 @@
+:host {
+  font-family: 'Roboto', sans-serif;
+}
 /* CONTENEDOR GENERAL */
 .app-shell {
   display: flex;
@@ -34,7 +37,7 @@
 .brand-title {
   font-size: 20px;
   font-weight: 600;
-  color: #1f3b5b;
+  color: #007D68;
 }
 
 /* RIGHT */
@@ -314,4 +317,22 @@
 .camera-error {
   color: #b91c1c;
   font-size: 14px;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+}
+
+.menu-item .material-icons {
+  font-size: 22px;
+}
+
+.menu-item.active {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
 }
