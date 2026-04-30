@@ -1,0 +1,466 @@
+<div class="section-header">
+    <div class="section-title">
+        <h2>Información de Posgrado</h2>
+        <p>Registra estudios posteriores a tu licenciatura</p>
+    </div>
+</div>
+
+<div class="card">
+
+<!-- ================= BOTÓN AÑADIR ================= -->
+<div class="acciones-posgrado full"
+     *ngIf="!posgradoSeleccionado && !mostrarPosgrado">
+
+    <button type="button"
+            class="btn-secundario"
+            (click)="abrirFormulario()">
+
+        + Agregar Posgrado
+    </button>
+
+</div>
+
+<!-- MENSAJE VACÍO -->
+<div class="estado-vacio full" *ngIf="!mostrarPosgrado && historial.length === 0">
+    No se han registrado posgrados.
+</div>
+
+<!-- ================= FORMULARIO ================= -->
+<form #formPosgrado="ngForm" class="form-grid" *ngIf="mostrarPosgrado">
+
+    <div class="full">
+
+        <div class="bloque-formulario">
+            <h3>Formación de Posgrado</h3>
+
+            <div class="field-group">
+                <label>Nivel <span class="required">*</span></label>
+                <select [(ngModel)]="form.nivel" name="nivel" required #nivel="ngModel">
+                    <option value="">Seleccione</option>
+                    <option>Maestria</option>
+                    <option>Doctorado</option>
+                </select>
+                <div class="error" *ngIf="nivel.invalid && nivel.touched">Campo obligatorio</div>
+            </div>
+
+            <div class="field-group">
+                <label>Institución <span class="required">*</span></label>
+                <input [(ngModel)]="form.institucion" name="institucion" required #institucion="ngModel">
+                <div class="error" *ngIf="institucion.invalid && institucion.touched">Campo obligatorio</div>
+            </div>
+
+            <div class="field-group full">
+                <label>Programa <span class="required">*</span></label>
+                <input [(ngModel)]="form.programa" name="programa" required #programa="ngModel">
+                <div class="error" *ngIf="programa.invalid && programa.touched">Campo obligatorio</div>
+            </div>
+
+            <div class="field-group">
+                <label>Modalidad <span class="required">*</span></label>
+                <select [(ngModel)]="form.modalidad" name="modalidad" required #modalidad="ngModel">
+                    <option value="">Seleccione</option>
+                    <option>Presencial</option>
+                    <option>Virtual</option>
+                    <option>Hibrido</option>
+                </select>
+                <div class="error" *ngIf="modalidad.invalid && modalidad.touched">Campo obligatorio</div>
+            </div>
+        </div>
+
+        <div class="bloque-formulario">
+            <h3>Estado Académico</h3>
+
+            <div class="field-group">
+                <label>Estatus <span class="required">*</span></label>
+                <select [(ngModel)]="form.estatus" name="estatus" required #estatus="ngModel">
+                    <option value="">Seleccione</option>
+                    <option>En curso</option>
+                    <option>Finalizado</option>
+                    <option>Pausado</option>
+                </select>
+                <div class="error" *ngIf="estatus.invalid && estatus.touched">Campo obligatorio</div>
+            </div>
+
+            <div class="field-group">
+                <label>Relación <span class="required">*</span></label>
+                <select [(ngModel)]="form.relacion" name="relacion" required #relacion="ngModel">
+                    <option value="">Seleccione</option>
+                    <option>Si</option>
+                    <option>No</option>
+                    <option>Un poco</option>
+                </select>
+                <div class="error" *ngIf="relacion.invalid && relacion.touched">Campo obligatorio</div>
+            </div>
+
+            <div class="field-group">
+                <label>Inicio <span class="required">*</span></label>
+                <input type="date" [(ngModel)]="form.inicio" name="inicio" required #inicio="ngModel">
+                <div class="error" *ngIf="inicio.invalid && inicio.touched">Campo obligatorio</div>
+            </div>
+
+            <div class="field-group">
+                <label>Fin <span class="required">*</span></label>
+                <input type="date" [(ngModel)]="form.fin" name="fin" required #fin="ngModel">
+                <div class="error" *ngIf="fin.invalid && fin.touched">Campo obligatorio</div>
+            </div>
+        </div>
+
+            <!-- ================= BECAS ================= -->
+            <!-- APOYOS -->
+            <div class="bloque-formulario">
+                <h3>Apoyos</h3>
+
+                <div class="field-group">
+                    <label>Beca <span class="required">*</span></label>
+                    <select [(ngModel)]="form.tieneBeca"
+                            name="tieneBeca"
+                            required
+                            (change)="onBecaChange()"
+                            #beca="ngModel">
+                    <option [ngValue]="null">Seleccione</option>
+                    <option [ngValue]="true">Sí</option>
+                    <option [ngValue]="false">No</option>
+                    </select>
+                </div>
+
+                <div class="field-group" *ngIf="form.tieneBeca === true">
+                    <label>Tipo de beca <span class="required">*</span></label>
+                    <select [(ngModel)]="form.idTipoBeca"
+                            name="idTipoBeca"
+                            required
+                            #tipoBeca="ngModel">
+                    <option [ngValue]="null">Seleccione</option>
+                    <option *ngFor="let b of listaBecas" [ngValue]="b.idTipoBeca">
+                        {{ b.nombre }}
+                    </option>
+                    </select>
+                </div>
+
+                <div class="field-group" *ngIf="form.idTipoBeca === 0">
+                    <label>Especifica la beca <span class="required">*</span></label>
+                    <input [(ngModel)]="form.otroBeca"
+                        name="otroBeca"
+                        required
+                        #otroBeca="ngModel">
+                </div>
+            </div>
+
+        <div class="full">
+            <button type="button" (click)="guardar(formPosgrado)" class="btn-guardar">
+                Guardar posgrado
+            </button>
+
+            <button type="button" (click)="cancelar()" class="btn-secundario">
+                Cancelar
+            </button>
+        </div>
+    </div>
+
+</form>
+
+<!-- ================= HISTORIAL ================= -->
+<div class="historial-grid" *ngIf="historial.length > 0 && !posgradoSeleccionado && !mostrarPosgrado">
+
+    <ng-container *ngFor="let pos of historial">
+
+        <div class="historial-card">
+
+            <div class="historial-header">
+                <div>
+                    <strong class="link-empresa" (click)="abrirConsulta(pos)">
+                        {{ pos.nombrePrograma }}
+                    </strong>
+                    <p>{{ pos.nivelEstudio }}</p>
+                </div>
+
+                <span class="badge">{{ pos.fechaInicio }}</span>
+            </div>
+
+            <div class="historial-body">
+                <p>{{ pos.institucion }}</p>
+                <p>{{ pos.modalidad }}</p>
+            </div>
+
+            <<div class="historial-actions">
+                <button (click)="verDetalle(pos)" class="btn-ver">Editar</button>
+                <button (click)="abrirConfirmacion(pos.idPosgrado)" class="btn-eliminar">
+                    Eliminar
+                </button>
+            </div>
+
+        </div>
+
+    </ng-container>
+
+</div>
+
+<!-- ================= FORMULARIO EDICIÓN ================= -->
+<div *ngIf="posgradoSeleccionado" class="detalle-expandido">
+
+    <form (ngSubmit)="actualizarPosgrado(formEdit)" #formEdit="ngForm" class="form-grid">
+
+        <div class="full">
+
+            <!-- ================= FORMACIÓN ================= -->
+            <div class="bloque-formulario">
+                <h3>Formación de Posgrado</h3>
+
+                <div class="field-group">
+                    <label>Nivel <span class="required">*</span></label>
+                    <select [(ngModel)]="posgradoSeleccionado.nivelEstudio"
+                            name="nivelEstudio"
+                            required
+                            #nivelEdit="ngModel">
+                        <option value="">Seleccione</option>
+                        <option>Licenciatura</option>
+                        <option>Maestria</option>
+                        <option>Doctorado</option>
+                    </select>
+                    <div class="error" *ngIf="nivelEdit.invalid && nivelEdit.touched">
+                        Campo obligatorio
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Institución <span class="required">*</span></label>
+                    <input [(ngModel)]="posgradoSeleccionado.institucion"
+                            name="institucion"
+                            required
+                            #instEdit="ngModel">
+                    <div class="error" *ngIf="instEdit.invalid && instEdit.touched">
+                        Campo obligatorio
+                    </div>
+                </div>
+
+                <div class="field-group full">
+                    <label>Programa <span class="required">*</span></label>
+                    <input [(ngModel)]="posgradoSeleccionado.nombrePrograma"
+                            name="nombrePrograma"
+                            required
+                            #progEdit="ngModel">
+                    <div class="error" *ngIf="progEdit.invalid && progEdit.touched">
+                        Campo obligatorio
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Modalidad <span class="required">*</span></label>
+                    <select [(ngModel)]="posgradoSeleccionado.modalidad"
+                            name="modalidad"
+                            required
+                            #modEdit="ngModel">
+                        <option value="">Seleccione</option>
+                        <option>Presencial</option>
+                        <option>Virtual</option>
+                        <option>Hibrido</option>
+                    </select>
+                    <div class="error" *ngIf="modEdit.invalid && modEdit.touched">
+                        Campo obligatorio
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= ESTADO ================= -->
+            <div class="bloque-formulario">
+                <h3>Estado Académico</h3>
+
+                <div class="field-group">
+                    <label>Estatus <span class="required">*</span></label>
+                    <select [(ngModel)]="posgradoSeleccionado.estatus"
+                            name="estatus"
+                            required
+                            #estEdit="ngModel">
+                        <option value="">Seleccione</option>
+                        <option>En curso</option>
+                        <option>Finalizado</option>
+                        <option>Pausado</option>
+                    </select>
+                    <div class="error" *ngIf="estEdit.invalid && estEdit.touched">
+                        Campo obligatorio
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Relación <span class="required">*</span></label>
+                    <select [(ngModel)]="posgradoSeleccionado.relacionadoCarrera"
+                            name="relacionadoCarrera"
+                            required
+                            #relEdit="ngModel">
+                        <option value="">Seleccione</option>
+                        <option>Si</option>
+                        <option>No</option>
+                        <option>Un poco</option>
+                    </select>
+                    <div class="error" *ngIf="relEdit.invalid && relEdit.touched">
+                        Campo obligatorio
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Inicio <span class="required">*</span></label>
+                    <input type="date"
+                            [(ngModel)]="posgradoSeleccionado.fechaInicio"
+                            name="fechaInicio"
+                            required
+                            #iniEdit="ngModel">
+                    <div class="error" *ngIf="iniEdit.invalid && iniEdit.touched">
+                        Campo obligatorio
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label>Fin <span class="required">*</span></label>
+                    <input type="date"
+                            [(ngModel)]="posgradoSeleccionado.fechaFin"
+                            name="fechaFin"
+                            required
+                            #finEdit="ngModel">
+                    <div class="error" *ngIf="finEdit.invalid && finEdit.touched">
+                        Campo obligatorio
+                    </div>
+                </div>
+            </div>
+
+                <!-- ================= APOYOS EDICIÓN ================= -->
+                <!-- APOYOS EDICIÓN -->
+                <div class="bloque-formulario">
+                <h3>Apoyos</h3>
+
+                    <div class="field-group">
+                        <label>Beca <span class="required">*</span></label>
+                        <select [(ngModel)]="posgradoSeleccionado.tieneBeca"
+                                name="tieneBeca"
+                                required
+                                #becaEdit="ngModel">
+                        <option [ngValue]="null">Seleccione</option>
+                        <option [ngValue]="true">Sí</option>
+                        <option [ngValue]="false">No</option>
+                        </select>
+                    </div>
+
+                    <div class="field-group" *ngIf="posgradoSeleccionado.tieneBeca === true">
+                        <label>Tipo de beca <span class="required">*</span></label>
+                        <select [(ngModel)]="posgradoSeleccionado.idTipoBeca"
+                                name="idTipoBeca"
+                                required>
+                        <option [ngValue]="null">Seleccione</option>
+                        <option *ngFor="let b of listaBecas" [ngValue]="b.idTipoBeca">
+                            {{ b.nombre }}
+                        </option>
+                        </select>
+                    </div>
+
+                    <div class="field-group" *ngIf="posgradoSeleccionado.idTipoBeca === 0">
+                        <label>Especifica la beca <span class="required">*</span></label>
+                        <input [(ngModel)]="posgradoSeleccionado.otroBeca"
+                            name="otroBeca"
+                            required>
+                    </div>
+                </div>
+
+            </div> 
+
+        <!-- BOTONES -->
+        <div class="acciones-detalle">
+            <button type="submit" class="btn-guardar">
+                Guardar cambios
+            </button>
+
+            <button type="button"
+                    (click)="cancelarEdicion()"
+                    class="btn-secundario">
+                Cancelar
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+<!-- MODAL CONFIRMACIÓN -->
+    <div class="modal-overlay" *ngIf="mostrarConfirmacion">
+    <div class="modal-card">
+        <h3>Confirmación</h3>
+        <p>¿Estás seguro que deseas eliminar este posgrado?</p>
+        <div class="acciones-modal">
+        <button class="btn-guardar" (click)="confirmarEliminacion()">Sí, eliminar</button>
+        <button class="btn-secundario" (click)="cerrarConfirmacion()">No, cancelar</button>
+        </div>
+    </div>
+    </div>
+
+
+</div>
+
+<div class="modal-overlay" *ngIf="mostrarConsulta">
+    <div class="modal-card modal-detalle">
+
+        <!-- HEADER -->
+        <div class="modal-header">
+        <h3>{{ posgradoConsulta?.nombrePrograma }}</h3>
+        <span class="badge">{{ posgradoConsulta?.nivelEstudio }}</span>
+        </div>
+
+        <!-- BODY -->
+        <div class="modal-body" *ngIf="posgradoConsulta">
+
+        <div class="detalle-grid">
+
+            <div class="detalle-item">
+            <label>Institución</label>
+            <p>{{ posgradoConsulta.institucion }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Modalidad</label>
+            <p>{{ posgradoConsulta.modalidad }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Estatus</label>
+            <p>{{ posgradoConsulta.estatus }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Relación</label>
+            <p>{{ posgradoConsulta.relacionadoCarrera }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Inicio</label>
+            <p>{{ posgradoConsulta.fechaInicio }}</p>
+            </div>
+
+            <div class="detalle-item">
+            <label>Fin</label>
+            <p>{{ posgradoConsulta.fechaFin }}</p>
+            </div>
+
+            <!-- Beca -->
+            <div class="detalle-item full">
+            <label>Beca</label>
+            <p>
+                {{ posgradoConsulta.tieneBeca ? 'Sí' : 'No' }}
+            </p>
+            </div>
+
+            <div class="detalle-item full" *ngIf="posgradoConsulta.tieneBeca">
+            <label>Tipo de beca</label>
+            <p>
+                {{ posgradoConsulta.nombreBeca || posgradoConsulta.otroBeca || 'No especificado' }}
+            </p>
+            </div>
+
+        </div>
+
+    </div>
+
+        <!-- FOOTER -->
+        <div class="acciones-modal">
+        <button class="btn-secundario" (click)="cerrarConsulta()">
+            Cerrar
+        </button>
+        </div>
+
+    </div>
+</div>

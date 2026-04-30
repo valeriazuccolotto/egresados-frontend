@@ -5,6 +5,7 @@ import { PerfilService } from './services/perfil.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 
+
 @Component({
   selector: 'app-root',
   standalone: true,
