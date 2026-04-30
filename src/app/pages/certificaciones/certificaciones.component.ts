@@ -2,12 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { Usuario } from '../../models/usuario';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-certificaciones',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, HttpClientModule,RouterModule],
+
   templateUrl: './certificaciones.component.html',
   styleUrls: ['./certificaciones.component.css']
 })
@@ -15,8 +18,8 @@ export class CertificacionesComponent implements OnInit {
 
   constructor(private router: Router, private http: HttpClient) {}
 
-  // ===== USER =====
-  usuario = 'Valeria';
+  matriculaUsuario: string = '';
+
 
   // ===== UI =====
   menuOculto = false;
@@ -40,20 +43,29 @@ export class CertificacionesComponent implements OnInit {
   };
 
   ngOnInit() {
-    this.cargarHistorial();
+  const raw = sessionStorage.getItem('usuario');
+
+  if (!raw) {
+    this.mostrarMensaje("❌ No hay sesión activa");
+    return;
   }
 
+  const usuario = JSON.parse(raw);
+  this.matriculaUsuario = usuario.matricula;
+
+  this.cargarHistorial();
+}
   cargarHistorial() {
-    this.http.get<any[]>(
-      'http://localhost:8181/egresado/certificaciones/A1234567'
-    ).subscribe({
-      next: (data) => this.historial = data,
-      error: () => {
-        this.historial = [];
-        this.mostrarMensaje("❌ Error al cargar historial");
-      }
-    });
-  }
+  this.http.get<any[]>(
+    `http://localhost:8189/egresado/certificaciones/${this.matriculaUsuario}`
+  ).subscribe({
+    next: (data) => this.historial = data,
+    error: () => {
+      this.historial = [];
+      this.mostrarMensaje("❌ Error al cargar historial");
+    }
+  });
+}
 
   // ================= HEADER =================
   toggleMenu() { this.menuOculto = !this.menuOculto; }
@@ -87,31 +99,31 @@ export class CertificacionesComponent implements OnInit {
 
 
   guardar() {
-    if (this.certSeleccionado) {
-      this.actualizarCertificacion();
-      return;
-    }
-
-    const datos = {
-      matricula: "A1234567",
-      nombreCertificacion: this.form.certNombre,
-      fechaInicio: this.form.certInicio,
-      fechaFin: this.form.certFin,
-      fechaObtencion: this.form.certObtencion,
-      institucionCertificacion: this.form.certInstitucion   // 🔥 nuevo campo
-    };
-
-    this.http.post('http://localhost:8181/egresado/certificaciones', datos)
-      .subscribe({
-        next: () => {
-          this.mostrarMensaje("✓ Certificación guardada");
-          this.resetForm();
-          this.mostrarFormulario = false; // 🔥 volver a mostrar historial
-          this.cargarHistorial();
-        },
-        error: () => this.mostrarMensaje("❌ Error al guardar")
-      });
+  if (this.certSeleccionado) {
+    this.actualizarCertificacion();
+    return;
   }
+
+  const datos = {
+    matricula: this.matriculaUsuario,  // ✅ AQUÍ EL CAMBIO
+    nombreCertificacion: this.form.certNombre,
+    fechaInicio: this.form.certInicio,
+    fechaFin: this.form.certFin,
+    fechaObtencion: this.form.certObtencion,
+    institucionCertificacion: this.form.certInstitucion
+  };
+
+  this.http.post('http://localhost:8189/egresado/certificaciones', datos)
+    .subscribe({
+      next: () => {
+        this.mostrarMensaje("✓ Certificación guardada");
+        this.resetForm();
+        this.mostrarFormulario = false;
+        this.cargarHistorial();
+      },
+      error: () => this.mostrarMensaje("❌ Error al guardar")
+    });
+}
 
   // ================= EDITAR =================
   verDetalle(item: any) {
@@ -131,7 +143,7 @@ export class CertificacionesComponent implements OnInit {
     };
 
     this.http.put(
-      `http://localhost:8181/egresado/certificaciones/${this.certSeleccionado.idCertificacion}`,
+      `http://localhost:8189/egresado/certificaciones/${this.certSeleccionado.idCertificacion}`,
       datosActualizados
     ).subscribe({
       next: () => {
@@ -161,7 +173,7 @@ export class CertificacionesComponent implements OnInit {
   confirmarEliminacion() {
     if (this.certAEliminar !== null) {
       this.http.delete(
-        `http://localhost:8181/egresado/certificaciones/${this.certAEliminar}`
+        `http://localhost:8189/egresado/certificaciones/${this.certAEliminar}`
       ).subscribe({
         next: () => {
           this.mostrarMensaje("🗑️ Certificación eliminada correctamente");

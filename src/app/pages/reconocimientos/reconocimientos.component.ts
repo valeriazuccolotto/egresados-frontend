@@ -15,8 +15,7 @@ export class ReconocimientosComponent implements OnInit {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  usuario = 'Valeria';
-
+matriculaUsuario: string = '';
   // ================= UI =================
   mostrarFormulario = false;
   mensaje = '';
@@ -36,31 +35,39 @@ export class ReconocimientosComponent implements OnInit {
   form: any = {};
 
   ngOnInit() {
-    this.resetForm();
-    this.cargarHistorial();
+  const raw = sessionStorage.getItem('usuario');
+
+  if (!raw) {
+    this.mostrarMensaje("❌ No hay sesión activa");
+    return;
   }
+
+  const usuario = JSON.parse(raw);
+  this.matriculaUsuario = usuario.matricula;
+
+  this.resetForm();
+  this.cargarHistorial();
+}
 
   // ================= HISTORIAL =================
   cargarHistorial() {
-    this.http.get<any[]>(
-      `http://localhost:8181/egresado/reconocimientos/A1234567`
-    ).subscribe({
-      next: data => this.historial = data,
-      error: () => this.mostrarMensaje("❌ Error al cargar historial")
-    });
-  }
-
+  this.http.get<any[]>(
+    `http://localhost:8189/egresado/reconocimientos/${this.matriculaUsuario}`
+  ).subscribe({
+    next: data => this.historial = data,
+    error: () => this.mostrarMensaje("❌ Error al cargar historial")
+  });
+}
   // ================= FORM =================
   resetForm() {
-    this.form = {
-      matricula: "A1234567",
-      recoNombre: '',
-      recoTipo: '',
-      recoFecha: '',
-      recoInstitucion: ''
-    };
-  }
-
+  this.form = {
+    matricula: this.matriculaUsuario,
+    recoNombre: '',
+    recoTipo: '',
+    recoFecha: '',
+    recoInstitucion: ''
+  };
+}
   nuevo() {
     this.mostrarFormulario = true;
     this.resetForm();
@@ -87,7 +94,7 @@ export class ReconocimientosComponent implements OnInit {
     const datos = this.construirDatos();
 
     this.http.post(
-      "http://localhost:8181/egresado/reconocimientos",
+      "http://localhost:8189/egresado/reconocimientos",
       datos
     ).subscribe({
       next: () => {
@@ -114,7 +121,7 @@ export class ReconocimientosComponent implements OnInit {
     const reco = this.reconocimientoSeleccionado;
 
     this.http.put(
-      `http://localhost:8181/egresado/reconocimientos/${reco.idReconocimiento}`,
+      `http://localhost:8189/egresado/reconocimientos/${reco.idReconocimiento}`,
       reco
     ).subscribe({
       next: () => {
@@ -135,7 +142,7 @@ export class ReconocimientosComponent implements OnInit {
   confirmarEliminacion() {
     if (this.reconocimientoAEliminar !== null) {
       this.http.delete(
-        `http://localhost:8181/egresado/reconocimientos/${this.reconocimientoAEliminar}`
+        `http://localhost:8189/egresado/reconocimientos/${this.reconocimientoAEliminar}`
       ).subscribe({
         next: () => {
           this.mostrarMensaje("🗑️ Reconocimiento eliminado correctamente");

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Usuario } from '../../models/usuario';
+
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 
 @Component({
@@ -15,7 +17,7 @@ export class PosgradoComponent implements OnInit {
 
   constructor(private router: Router, private http: HttpClient) {}
 
-  usuario = 'Valeria';
+  matriculaUsuario: string = '';
 
   // ===== UI =====
   menuOculto = false;
@@ -47,20 +49,29 @@ export class PosgradoComponent implements OnInit {
   };
 
   ngOnInit() {
-    this.cargarHistorial();
-    this.cargarBecas();
+  const raw = sessionStorage.getItem('usuario');
+
+  if (!raw) {
+    this.mostrarMensaje("❌ No hay sesión activa");
+    return;
   }
+
+  const usuario = JSON.parse(raw);
+  this.matriculaUsuario = usuario.matricula;
+
+  this.cargarHistorial();
+  this.cargarBecas();
+}
 
   cargarHistorial() {
-    this.http.get<any[]>(`http://localhost:8181/egresado/posgrado/A1234567`)
-      .subscribe({
-        next: data => this.historial = data.reverse(),
-        error: () => this.mostrarMensaje("❌ Error al cargar historial")
-      });
-  }
-
+  this.http.get<any[]>(`http://localhost:8189/egresado/posgrado/${this.matriculaUsuario}`)
+    .subscribe({
+      next: data => this.historial = data.reverse(),
+      error: () => this.mostrarMensaje("❌ Error al cargar historial")
+    });
+}
   cargarBecas() {
-    this.http.get<any[]>('http://localhost:8181/tipo-beca')
+    this.http.get<any[]>('http://localhost:8189/tipo-beca')
       .subscribe({
         next: data => {
           this.listaBecas = [...data, { idTipoBeca: 0, nombre: 'Otros' }];
@@ -112,26 +123,26 @@ export class PosgradoComponent implements OnInit {
     const becaSeleccionada = this.listaBecas.find(b => b.idTipoBeca === this.form.idTipoBeca);
 
     const datos = {
-      matricula: "A1234567",
-      nivelEstudio: this.form.nivel,
-      institucion: this.form.institucion,
-      nombrePrograma: this.form.programa,
-      modalidad: this.form.modalidad,
-      estatus: this.form.estatus,
-      relacionadoCarrera: this.form.relacion,
-      fechaInicio: this.form.inicio,
-      fechaFin: this.form.fin,
-      tieneBeca: this.form.tieneBeca,
-      tipoBeca: this.form.tieneBeca && becaSeleccionada
-        ? {
-            nombre: this.form.idTipoBeca === 0
-              ? this.form.otroBeca
-              : becaSeleccionada.nombre
-          }
-        : null
-    };
+  matricula: this.matriculaUsuario,
+  nivelEstudio: this.form.nivel,
+  institucion: this.form.institucion,
+  nombrePrograma: this.form.programa,
+  modalidad: this.form.modalidad,
+  estatus: this.form.estatus,
+  relacionadoCarrera: this.form.relacion,
+  fechaInicio: this.form.inicio,
+  fechaFin: this.form.fin,
+  tieneBeca: this.form.tieneBeca,
+  tipoBeca: this.form.tieneBeca && becaSeleccionada
+    ? {
+        nombre: this.form.idTipoBeca === 0
+          ? this.form.otroBeca
+          : becaSeleccionada.nombre
+      }
+    : null
+};
 
-    this.http.post('http://localhost:8181/egresado/posgrado', datos)
+    this.http.post('http://localhost:8189/egresado/posgrado', datos)
       .subscribe({
         next: () => {
           this.cargarHistorial();
@@ -186,7 +197,7 @@ export class PosgradoComponent implements OnInit {
     };
 
     this.http.put(
-      `http://localhost:8181/egresado/posgrado/${this.posgradoSeleccionado.idPosgrado}`,
+      `http://localhost:8189/egresado/posgrado/${this.posgradoSeleccionado.idPosgrado}`,
       datos
     ).subscribe({
       next: () => {
@@ -207,7 +218,7 @@ export class PosgradoComponent implements OnInit {
 
   confirmarEliminacion() {
     if (this.posgradoAEliminar !== null) {
-      this.http.delete(`http://localhost:8181/egresado/posgrado/${this.posgradoAEliminar}`)
+      this.http.delete(`http://localhost:8189/egresado/posgrado/${this.posgradoAEliminar}`)
         .subscribe({
           next: () => {
             this.mostrarMensaje("🗑️ Posgrado eliminado correctamente");

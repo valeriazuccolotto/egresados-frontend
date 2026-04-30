@@ -15,7 +15,7 @@ export class LaboralComponent implements OnInit {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  usuario = 'Valeria';
+  matriculaUsuario: string = '';
 
   // ================= UI =================
   mostrarFormulario = false;
@@ -45,23 +45,32 @@ export class LaboralComponent implements OnInit {
 
   // ================= INIT =================
   ngOnInit() {
-    this.resetForm();
-    this.cargarHistorial();
-    this.cargarPrestacionesCatalogo();
-  }
+  const raw = sessionStorage.getItem('usuario');
 
+if (!raw) {
+  this.mostrarMensaje('No hay sesión activa. Inicia sesión nuevamente.');
+  return;
+}
+
+const usuario = JSON.parse(raw);
+this.matriculaUsuario = usuario.matricula;
+
+  this.resetForm();
+  this.cargarHistorial();
+  this.cargarPrestacionesCatalogo();
+}
   // ================= HISTORIAL =================
   cargarHistorial() {
-    this.http.get<any[]>(`http://localhost:8181/egresado/laboral/A1234567`)
-      .subscribe({
-        next: data => this.historial = data.reverse(),
-        error: () => this.mostrarMensaje("❌ Error al cargar historial")
-      });
-  }
+  this.http.get<any[]>(`http://localhost:8189/egresado/laboral/${this.matriculaUsuario}`)
+    .subscribe({
+      next: data => this.historial = data.reverse(),
+      error: () => this.mostrarMensaje("❌ Error al cargar historial")
+    });
+}
 
   // ================= CATALOGO =================
   cargarPrestacionesCatalogo() {
-    this.http.get<any[]>(`http://localhost:8181/egresado/prestaciones`)
+    this.http.get<any[]>(`http://localhost:8189/egresado/prestaciones`)
       .subscribe({
         next: data => this.listaPrestaciones = data,
         error: () => this.mostrarMensaje("❌ Error al cargar catálogo")
@@ -70,21 +79,21 @@ export class LaboralComponent implements OnInit {
 
   // ================= FORM =================
   resetForm() {
-    this.form = {
-      matricula: "A1234567",
-      empresa: '',
-      puesto: '',
-      sector: '',
-      medio: '',
-      tiempo: '',
-      contrato: '',
-      modalidad: '',
-      salario: '',
-      prestacionesSeleccionadas: [],
-      relacion: '',
-      comentarios: ''
-    };
-  }
+  this.form = {
+    matricula: this.matriculaUsuario,
+    empresa: '',
+    puesto: '',
+    sector: '',
+    medio: '',
+    tiempo: '',
+    contrato: '',
+    modalidad: '',
+    salario: '',
+    prestacionesSeleccionadas: [],
+    relacion: '',
+    comentarios: ''
+  };
+}
 
   nuevoTrabajo() {
     this.mostrarFormulario = true;
@@ -116,7 +125,7 @@ export class LaboralComponent implements OnInit {
 
   guardar() {
     const datos = this.construirDatos();
-    this.http.post("http://localhost:8181/egresado/laboral", datos)
+    this.http.post("http://localhost:8189/egresado/laboral", datos)
       .subscribe({
         next: () => {
           this.mostrarMensaje("✓ Guardado correctamente");
@@ -142,7 +151,7 @@ export class LaboralComponent implements OnInit {
 
   actualizarLaboral() {
     const laboral = this.laboralSeleccionado;
-    this.http.put(`http://localhost:8181/egresado/laboral/${laboral.idLaboral}`, laboral)
+    this.http.put(`http://localhost:8189/egresado/laboral/${laboral.idLaboral}`, laboral)
       .subscribe({
         next: () => {
           const index = this.historial.findIndex(l => l.idLaboral === laboral.idLaboral);
@@ -164,7 +173,7 @@ export class LaboralComponent implements OnInit {
 
   confirmarEliminacion() {
     if (this.laboralAEliminar !== null) {
-      this.http.delete(`http://localhost:8181/egresado/laboral/${this.laboralAEliminar}`)
+      this.http.delete(`http://localhost:8189/egresado/laboral/${this.laboralAEliminar}`)
         .subscribe({
           next: () => {
             this.mostrarMensaje("🗑️ Eliminado correctamente");
@@ -210,7 +219,7 @@ export class LaboralComponent implements OnInit {
   agregarOtroPrestacion() {
   if (!this.otroTexto.trim()) return;
 
-  this.http.post<any>("http://localhost:8181/egresado/prestaciones", { nombre: this.otroTexto })
+  this.http.post<any>("http://localhost:8189/egresado/prestaciones", { nombre: this.otroTexto })
     .subscribe({
       next: (resp) => {
         this.form.prestacionesSeleccionadas.push(resp);
@@ -271,7 +280,7 @@ export class LaboralComponent implements OnInit {
   agregarPrestacionNuevaEdit() {
   if (!this.otroTexto.trim()) return;
 
-  this.http.post<any>("http://localhost:8181/egresado/prestaciones", { nombre: this.otroTexto })
+  this.http.post<any>("http://localhost:8189/egresado/prestaciones", { nombre: this.otroTexto })
     .subscribe({
       next: (resp) => {
 
