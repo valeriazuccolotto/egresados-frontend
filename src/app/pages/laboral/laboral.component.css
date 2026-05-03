@@ -708,3 +708,24 @@
     align-items: center;
     gap: 10px;
 }
+
+.label-icon {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.label-icon i {
+    width: 26px;
+    height: 26px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: #E5F3F0;
+    color: #007D68;
+
+    font-size: 12px;
+}

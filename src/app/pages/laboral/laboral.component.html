@@ -260,106 +260,136 @@
     <!-- FORMULARIO EDICIÓN -->
     <div *ngIf="laboralSeleccionado" class="detalle-expandido">
     <form (ngSubmit)="actualizarLaboral()" class="form-grid">
-        <div class="bloque-formulario">
+
+    <!-- ================= INFO EMPLEO ================= -->
+    <div class="bloque-formulario">
         <h3>Editar información laboral</h3>
 
         <div class="field-group">
-            <label>Empresa <span class="required">*</span></label>
+            <label class="label-icon">
+                <i class="fas fa-building"></i>
+                Empresa <span class="required">*</span>
+            </label>
             <input [(ngModel)]="laboralSeleccionado.empresa" name="empresa" required #empresaEdit="ngModel">
             <div class="error" *ngIf="empresaEdit.invalid && empresaEdit.touched">Campo obligatorio</div>
         </div>
 
         <div class="field-group">
-            <label>Puesto <span class="required">*</span></label>
+            <label class="label-icon">
+                <i class="fas fa-user-tie"></i>
+                Puesto <span class="required">*</span>
+            </label>
             <input [(ngModel)]="laboralSeleccionado.puesto" name="puesto" required #puestoEdit="ngModel">
             <div class="error" *ngIf="puestoEdit.invalid && puestoEdit.touched">Campo obligatorio</div>
         </div>
 
         <div class="field-group">
-            <label>Sector <span class="required">*</span></label>
+            <label class="label-icon">
+                <i class="fas fa-industry"></i>
+                Sector <span class="required">*</span>
+            </label>
             <select [(ngModel)]="laboralSeleccionado.sector" name="sector" required #sectorEdit="ngModel">
-            <option value="">Seleccione</option>
-            <option>Tecnologico</option>
-            <option>Industria</option>
-            <option>Agricola</option>
-            <option>Educacion</option>
-            <option>Servicios</option>
-            <option>Otro</option>
+                <option value="">Seleccione</option>
+                <option>Tecnologico</option>
+                <option>Industria</option>
+                <option>Agricola</option>
+                <option>Educacion</option>
+                <option>Servicios</option>
+                <option>Otro</option>
             </select>
             <div class="error" *ngIf="sectorEdit.invalid && sectorEdit.touched">Campo obligatorio</div>
         </div>
-        </div>
+    </div>
 
-        <div class="bloque-formulario">
+    <!-- ================= INSERCIÓN ================= -->
+    <div class="bloque-formulario">
         <h3>Inserción laboral</h3>
 
         <div class="field-group">
-            <label>¿Cómo consiguió empleo? <span class="required">*</span></label>
+            <label class="label-icon">
+                <i class="fas fa-search"></i>
+                ¿Cómo consiguió empleo? <span class="required">*</span>
+            </label>
             <select [(ngModel)]="laboralSeleccionado.comoConsiguio" name="comoConsiguio" required #medioEdit="ngModel">
-            <option value="">Seleccione</option>
-            <option>Bolsa de trabajo</option>
-            <option>Internet</option>
-            <option>Recomendacion</option>
-            <option>Entrevista</option>
+                <option value="">Seleccione</option>
+                <option>Bolsa de trabajo</option>
+                <option>Internet</option>
+                <option>Recomendacion</option>
+                <option>Entrevista</option>
             </select>
             <div class="error" *ngIf="medioEdit.invalid && medioEdit.touched">Campo obligatorio</div>
         </div>
 
         <div class="field-group">
-            <label>Tiempo en conseguir empleo <span class="required">*</span></label>
+            <label class="label-icon">
+                <i class="fas fa-clock"></i>
+                Tiempo en conseguir empleo <span class="required">*</span>
+            </label>
             <select [(ngModel)]="laboralSeleccionado.tiempoConseguir" name="tiempoConseguir" required #tiempoEdit="ngModel">
-            <option value="">Seleccione</option>
-            <option>Menos de 3 meses</option>
-            <option>3-6 meses</option>
-            <option>6-12 meses</option>
-            <option>Mas de un año</option>
+                <option value="">Seleccione</option>
+                <option>Menos de 3 meses</option>
+                <option>3-6 meses</option>
+                <option>6-12 meses</option>
+                <option>Mas de un año</option>
             </select>
             <div class="error" *ngIf="tiempoEdit.invalid && tiempoEdit.touched">Campo obligatorio</div>
         </div>
-        </div>
+    </div>
 
-        <div class="bloque-formulario">
+    <!-- ================= CONDICIONES ================= -->
+    <div class="bloque-formulario">
         <h3>Condiciones laborales</h3>
 
         <div class="field-group">
-            <label>Tipo de contrato <span class="required">*</span></label>
+            <label class="label-icon">
+                <i class="fas fa-file-contract"></i>
+                Tipo de contrato <span class="required">*</span>
+            </label>
             <select [(ngModel)]="laboralSeleccionado.tipoContrato" name="tipoContrato" required #contratoEdit="ngModel">
-            <option value="">Seleccione</option>
-            <option>Tiempo completo</option>
-            <option>Freelance</option>
+                <option value="">Seleccione</option>
+                <option>Tiempo completo</option>
+                <option>Freelance</option>
             </select>
             <div class="error" *ngIf="contratoEdit.invalid && contratoEdit.touched">Campo obligatorio</div>
         </div>
 
         <div class="field-group">
-            <label>Modalidad <span class="required">*</span></label>
+            <label class="label-icon">
+                <i class="fas fa-laptop-house"></i>
+                Modalidad <span class="required">*</span>
+            </label>
             <select [(ngModel)]="laboralSeleccionado.modalidadTrabajo" name="modalidadTrabajo" required #modalidadEdit="ngModel">
-            <option value="">Seleccione</option>
-            <option>Presencial</option>
-            <option>Remoto</option>
-            <option>Hibrido</option>
+                <option value="">Seleccione</option>
+                <option>Presencial</option>
+                <option>Remoto</option>
+                <option>Hibrido</option>
             </select>
             <div class="error" *ngIf="modalidadEdit.invalid && modalidadEdit.touched">Campo obligatorio</div>
         </div>
 
         <div class="field-group">
-            <label>Salario <span class="required">*</span></label>
+            <label class="label-icon">
+                <i class="fas fa-money-bill-wave"></i>
+                Salario <span class="required">*</span>
+            </label>
             <select [(ngModel)]="laboralSeleccionado.salario" name="salario" required #salarioEdit="ngModel">
-            <option value="">Seleccione</option>
-            <option>$5,000 - $12,000</option>
-            <option>$12,000 - $20,000</option>
-            <option>$20,000 - $30,000</option>
-            <option>Más de $30,000</option>
-            <option>Prefiero no responder</option>
+                <option value="">Seleccione</option>
+                <option>$5,000 - $12,000</option>
+                <option>$12,000 - $20,000</option>
+                <option>$20,000 - $30,000</option>
+                <option>Más de $30,000</option>
+                <option>Prefiero no responder</option>
             </select>
             <div class="error" *ngIf="salarioEdit.invalid && salarioEdit.touched">Campo obligatorio</div>
         </div>
 
-        <!-- Prestaciones -->
+        <!-- PRESTACIONES -->
         <div class="field-group">
-            <label>Prestaciones</label>
+            <label class="label-icon">
+                <i class="fas fa-gift"></i>
+                Prestaciones
+            </label>
 
-            <!-- Chips -->
             <div *ngIf="laboralSeleccionado.prestaciones?.length > 0">
                 <span class="chip" *ngFor="let sel of laboralSeleccionado.prestaciones">
                     {{ sel.nombre }}
@@ -367,68 +397,65 @@
                 </span>
             </div>
 
-            <!-- Sin prestaciones -->
             <div *ngIf="!laboralSeleccionado.prestaciones?.length">
                 <p>No cuenta con prestaciones</p>
             </div>
 
-            <!-- Select -->
             <select (change)="onSelectPrestacionEdit($event)">
                 <option value="">Añadir prestación</option>
-
-                <option *ngFor="let p of prestacionesDisponiblesEdit"
-                        [value]="p.idPrestaciones">
+                <option *ngFor="let p of prestacionesDisponiblesEdit" [value]="p.idPrestaciones">
                     {{ p.nombre }}
                 </option>
-
                 <option value="otro">Otro</option>
             </select>
 
-            <!-- 🔥 SOLO SI ELIGE "OTRO" -->
-            <div *ngIf="mostrarOtroEdit" style="display:flex; gap:8px; margin-top:8px;">
-
-                <input
-                    [(ngModel)]="otroTexto"
-                    name="otroPrestacionEdit"
-                    placeholder="Nueva prestación"
-                    (keydown.enter)="$event.preventDefault(); agregarPrestacionNuevaEdit()"
-                >
-
-                <button type="button" class="btn-add" (click)="agregarPrestacionNuevaEdit()">
-                    +
-                </button>
-
+            <div *ngIf="mostrarOtroEdit" class="otro-container">
+                <input [(ngModel)]="otroTexto"
+                        name="otroPrestacionEdit"
+                        placeholder="Nueva prestación">
+                <button type="button" class="btn-add" (click)="agregarPrestacionNuevaEdit()">+</button>
             </div>
         </div>
-        </div>
+    </div>
 
-        <div class="bloque-formulario">
+    <!-- ================= EXTRA ================= -->
+    <div class="bloque-formulario">
         <h3>Información adicional</h3>
 
         <div class="field-group">
-            <label>Relación con la carrera <span class="required">*</span></label>
+            <label class="label-icon">
+                <i class="fas fa-graduation-cap"></i>
+                Relación con la carrera <span class="required">*</span>
+            </label>
             <select [(ngModel)]="laboralSeleccionado.relacionCarrera" name="relacionCarrera" required #relacionEdit="ngModel">
-            <option value="">Seleccione</option>
-            <option>Totalmente relacionada</option>
-            <option>Parcialmente relacionada</option>
-            <option>Poco relacionada</option>
-            <option>Totalmente diferente</option>
+                <option value="">Seleccione</option>
+                <option>Totalmente relacionada</option>
+                <option>Parcialmente relacionada</option>
+                <option>Poco relacionada</option>
+                <option>Totalmente diferente</option>
             </select>
             <div class="error" *ngIf="relacionEdit.invalid && relacionEdit.touched">Campo obligatorio</div>
         </div>
 
         <div class="field-group full">
-            <label>Comentarios</label>
-            <textarea [(ngModel)]="laboralSeleccionado.comentarios" name="comentarios" rows="2" class="input-textarea"></textarea>
+            <label class="label-icon">
+                <i class="fas fa-comment"></i>
+                Comentarios
+            </label>
+            <textarea [(ngModel)]="laboralSeleccionado.comentarios"
+                        name="comentarios"
+                        rows="2"
+                        class="input-textarea"></textarea>
         </div>
-        </div>
+    </div>
 
-        <!-- BOTONES -->
-        <div class="acciones-detalle">
+    <!-- BOTONES -->
+    <div class="acciones-detalle">
         <button type="submit" class="btn-guardar">Guardar cambios</button>
         <button type="button" (click)="cancelarEdicion()" class="btn-secundario">Cancelar</button>
-        </div>
-    </form>
+    </div>
+
+</form>
 
     </div>
 
