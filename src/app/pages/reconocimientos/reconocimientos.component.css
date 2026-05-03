@@ -568,3 +568,27 @@
         grid-template-columns: 1fr;
     }
 }
+
+.field-group label{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:500;
+    color:#374151;
+}
+
+/* 🔥 CÍRCULO VERDE */
+.field-group label i{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    width:28px;
+    height:28px;
+    border-radius:50%;
+
+    background:#E5F3F0;   /* verde clarito */
+    color:#2f8f83;        /* verde fuerte */
+
+    font-size:13px;
+}
