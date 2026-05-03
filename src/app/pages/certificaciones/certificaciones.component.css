@@ -552,11 +552,23 @@
     text-decoration: underline;
 }
 
-/* Íconos en labels de formularios */
-.field-group label i {
-  color: #256f66;        /* verde oscuro */
-  margin-right: 6px;     /* separación con el texto */
-  font-size: 1rem;       /* tamaño ajustable */
-  vertical-align: middle; /* alineación con el texto */
+.field-group label{
+    display:flex;
+    align-items:center;
+    gap:10px;
 }
 
+.field-group label i{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    width:26px;
+    height:26px;
+    border-radius:50%;
+
+    background:#E5F3F0;   /* 🔥 verde clarito */
+    color:#2f8f83;        /* 🔥 verde principal */
+
+    font-size:12px;
+}
