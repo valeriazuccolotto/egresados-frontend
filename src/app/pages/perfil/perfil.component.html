@@ -7,80 +7,83 @@
   </div>
 
   <!-- TARJETA PRINCIPAL -->
-<div class="perfil-card">
+  <div class="perfil-card">
 
-  <img [src]="urlFoto" class="perfil-img" />
+    <img [src]="urlFoto" class="perfil-img" />
 
-  <div class="perfil-info">
-    <h2>
-      {{ perfil?.nombre }} {{ perfil?.apellidoPaterno }} {{perfil?.apellidoMaterno}}
-    </h2>
-
-    <span class="badge">
-      <span class="material-icons badge-icon">school</span>
-      Egresado
-    </span>
-  </div>
-
-</div>
-
-<!-- DETALLES -->
-<div class="perfil-details">
-
-  <!-- NOMBRE -->
-  <div class="item">
-    <div class="icon-circle">
-      <span class="material-icons">person</span>
-    </div>
-
-    <div>
-      <p class="label">Nombre</p>
-      <p class="value">
+    <div class="perfil-info">
+      <h2>
         {{ perfil?.nombre }} {{ perfil?.apellidoPaterno }} {{ perfil?.apellidoMaterno }}
-      </p>
-    </div>
-  </div>
+      </h2>
 
-  <!-- GENERACIÓN -->
-  <div class="item">
-    <div class="icon-circle">
-      <span class="material-icons">calendar_month</span>
-    </div>
+      <span class="badge">
+        <span class="material-icons badge-icon">school</span>
+        Egresado
+      </span>
 
-    <div>
-      <p class="label">Generación</p>
-      <p class="value">
-        {{ perfil?.generacion || '' }}
-      </p>
-    </div>
-  </div>
-
-  <!-- CAMPUS -->
-  <div class="item">
-    <div class="icon-circle">
-      <span class="material-icons">location_city</span>
+      <button class="btn-editar-perfil" routerLink="/datos-personales">
+        <span class="material-icons">edit</span>
+        Editar perfil
+      </button>
     </div>
 
-    <div>
-      <p class="label">Campus</p>
-      <p class="value">
-        {{ perfil?.campus }}
-      </p>
+  </div>
+
+  <!-- DETALLES -->
+  <div class="perfil-details">
+
+    <div class="item">
+      <div class="icon-circle">
+        <span class="material-icons">person</span>
+      </div>
+
+      <div>
+        <p class="label">Nombre</p>
+        <p class="value">
+          {{ perfil?.nombre }} {{ perfil?.apellidoPaterno }} {{ perfil?.apellidoMaterno }}
+        </p>
+      </div>
     </div>
+
+    <div class="item">
+      <div class="icon-circle">
+        <span class="material-icons">calendar_month</span>
+      </div>
+
+      <div>
+        <p class="label">Generación</p>
+        <p class="value">
+          {{ perfil?.generacion || '' }}
+        </p>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="icon-circle">
+        <span class="material-icons">location_city</span>
+      </div>
+
+      <div>
+        <p class="label">Campus</p>
+        <p class="value">
+          {{ perfil?.campus }}
+        </p>
+      </div>
+    </div>
+
+    <div class="item">
+      <div class="icon-circle">
+        <span class="material-icons">school</span>
+      </div>
+
+      <div>
+        <p class="label">Carrera</p>
+        <p class="value">
+          {{ carrera }}
+        </p>
+      </div>
+    </div>
+
   </div>
 
-  <div class="item">
-  <div class="icon-circle">
-    <span class="material-icons">school</span>
-  </div>
-
-  <div>
-    <p class="label">Carrera</p>
-    <p class="value">
-      {{ carrera }}
-    </p>
-  </div>
-</div>
-
-</div>
 </div>

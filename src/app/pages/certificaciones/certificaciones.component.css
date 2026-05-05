@@ -8,19 +8,23 @@
     gap:18px;
 }
 
+
+
 /* BLOQUES */
 .bloque-formulario{
     width:100%;
-    padding:20px;
+    padding: 10px 30px;
     border:1px solid #e5e5e5;
     border-radius:14px;
-    background:#fafafa;
+    background:#ffffff;
 
     display:grid;
     grid-template-columns:repeat(2,1fr);
     gap:18px;
     margin-bottom:20px;
 }
+
+
 
 .bloque-formulario h3{
     grid-column:1/-1;

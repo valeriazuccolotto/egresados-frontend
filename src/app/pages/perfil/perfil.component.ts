@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+
 import { PerfilService } from '../../services/perfil.service';
 import { Perfil } from '../../models/perfil';
 import { Usuario } from '../../models/usuario';
@@ -9,7 +11,7 @@ import { Carrera } from '../../models/carrera';
 @Component({
   selector: 'app-perfil',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './perfil.component.html',
   styleUrls: ['./perfil.component.css']
 })
@@ -85,17 +87,17 @@ export class PerfilComponent implements OnInit {
             carreraEncontrada?.nombreCarrera ||
             academico?.nombreCarrera ||
             academico?.carrera?.nombreCarrera ||
-            'Sin registrar';
+            '';
         },
         error: (err) => {
           console.error('Error al cargar carreras:', err);
-          this.carrera = 'Sin registrar';
+          this.carrera = '';
         }
       });
     },
     error: (err) => {
       console.error('Error al cargar académico:', err);
-      this.carrera = 'Sin registrar';
+      this.carrera = '';
     }
   });
 }

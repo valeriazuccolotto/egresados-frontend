@@ -1,9 +1,14 @@
 :host {
   font-family: 'Roboto', sans-serif;
+  display: block;
+  width: 100%;
 }
+
+/* CONTENEDOR GENERAL */
 .perfil-container {
-  max-width: 1100px;
-  margin: auto;
+  width: 100%;
+  padding: 40px 60px;
+  box-sizing: border-box;
 }
 
 /* HEADER */
@@ -20,6 +25,8 @@
 
 /* CARD PRINCIPAL */
 .perfil-card {
+  width: 100%;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   gap: 25px;
@@ -28,7 +35,7 @@
   border-radius: 20px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.05);
   margin-bottom: 20px;
-  color:#0e5247;
+  color: #0e5247;
 }
 
 .perfil-img {
@@ -44,9 +51,10 @@
   color: #0e5247;
 }
 
-
 .badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   margin-top: 10px;
   background: #d1f0ea;
   color: #007D68;
@@ -54,8 +62,40 @@
   border-radius: 20px;
 }
 
+.badge-icon {
+  font-size: 20px;
+}
+
+.btn-editar-perfil {
+  margin-top: 18px;
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border: none;
+  border-radius: 12px;
+  background: #00796b;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-editar-perfil:hover {
+  background: #00695c;
+  transform: translateY(-1px);
+}
+
+.btn-editar-perfil .material-icons {
+  font-size: 15px;
+}
+
 /* DETALLES */
 .perfil-details {
+  width: 100%;
+  box-sizing: border-box;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
@@ -65,22 +105,6 @@
   box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 
-
-.label {
-  margin: 0;
-  color: #6b7280;
-  font-size: 14px;
-}
-
-.value {
-  margin: 0;
-  font-weight: 600;
-}
-.perfil-details {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
 .item {
   display: flex;
   align-items: center;
@@ -103,13 +127,14 @@
   color: #007D68;
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+.label {
+  margin: 0;
+  color: #6b7280;
+  font-size: 14px;
 }
 
-.badge-icon {
-  font-size: 20px;
+.value {
+  margin: 0;
+  font-weight: 600;
 }
 

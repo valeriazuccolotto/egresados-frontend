@@ -116,17 +116,22 @@
 /* BODY */
 .app-body {
   display: flex;
-  flex: 1;
+  background: #f4f5f8; /* mismo fondo general */
 }
 
 /* SIDEBAR */
 .sidebar {
-  width: 230px;
-  background: linear-gradient(180deg, #0f8b7d, #0b6b60);
-  color: white;
-  padding-top: 20px;
+  width: 280px;
+  min-width: 280px;
+  background: linear-gradient(180deg, #178a7a, #0b7a6b);
+  transition: transform 0.3s ease;
+  position: relative;
+  z-index: 2;
 }
 
+.sidebar.closed {
+  transform: translateX(-100%);
+}
 .menu-item {
   display: block;
   padding: 14px 20px;
@@ -142,8 +147,8 @@
 /* CONTENIDO */
 .page-content {
   flex: 1;
-  padding: 30px;
-  background: #f3f4f6;
+  padding: 0;
+  background: #f4f5f8;
 }
 .user-menu {
   position: relative;

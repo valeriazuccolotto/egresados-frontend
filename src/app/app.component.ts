@@ -4,6 +4,7 @@ import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { PerfilService } from './services/perfil.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 
 
 @Component({
@@ -12,11 +13,13 @@ import { filter } from 'rxjs';
   imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
+  
 })
 export class AppComponent implements OnInit, OnDestroy {
-
+  porcentajePerfil = 0;
   esLogin = false;
   title = 'egresados-frontend';
+  sidebarHidden = false;
 
   @ViewChild('photoMenuRoot') photoMenuRoot?: ElementRef<HTMLElement>;
   @ViewChild('galleryInput') galleryInput?: ElementRef<HTMLInputElement>;
@@ -33,7 +36,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
   private perfilService: PerfilService,
-  private router: Router
+  private router: Router,
+  private http: HttpClient
 ) {
   this.esLogin = this.router.url === '/login';
 
@@ -41,17 +45,26 @@ export class AppComponent implements OnInit, OnDestroy {
     .pipe(filter(event => event instanceof NavigationEnd))
     .subscribe((event: NavigationEnd) => {
       this.esLogin = event.urlAfterRedirects === '/login';
-    });
-  }
 
+      if (!this.esLogin) {
+        this.calcularProgreso();
+      }
+    });
+}
 ngOnInit(): void {
   this.perfilService.foto$.subscribe(url => {
     this.fotoGlobal = url;
   });
+
+  this.calcularProgreso();
 }
 
 ngOnDestroy(): void {
   this.stopCameraStream();
+}
+
+toggleSidebar(): void {
+  this.sidebarHidden = !this.sidebarHidden;
 }
 
   @HostListener('document:click', ['$event'])
@@ -217,4 +230,111 @@ ngOnDestroy(): void {
 
     return new File([bytes], filename, { type: mimeType });
   }
+  
+  calcularProgreso() {
+  const raw = sessionStorage.getItem('usuario');
+
+  if (!raw) return;
+
+  const usuario = JSON.parse(raw);
+  const matricula = usuario.matricula;
+
+  let completados = 0;
+  const total = 7;
+
+  this.http.get<any>(`http://localhost:8189/egresados/${matricula}`)
+    .subscribe({
+      next: (data: any) => {
+        if (
+          data?.nombre &&
+          data?.apellidoPaterno &&
+          data?.apellidoMaterno &&
+          data?.campus &&
+          data?.generacion
+        ) {
+          completados++;
+        }
+
+        this.actualizarPorcentaje(completados, total);
+      },
+      error: () => this.actualizarPorcentaje(completados, total)
+    });
+
+  this.http.get<any>(`http://localhost:8189/egresados/contacto/${matricula}`)
+    .subscribe({
+      next: (data: any) => {
+        if (data?.correoPersonal && data?.telefono) {
+          completados++;
+        }
+
+        this.actualizarPorcentaje(completados, total);
+      },
+      error: () => this.actualizarPorcentaje(completados, total)
+    });
+
+  this.http.get<any>(`http://localhost:8189/egresados/academico/${matricula}`)
+    .subscribe({
+      next: (data: any) => {
+        if (data?.claveCarrera) {
+          completados++;
+        }
+
+        this.actualizarPorcentaje(completados, total);
+      },
+      error: () => this.actualizarPorcentaje(completados, total)
+    });
+
+  this.http.get<any[]>(`http://localhost:8189/egresado/laboral/${matricula}`)
+    .subscribe({
+      next: (data: any[]) => {
+        if (data && data.length > 0) {
+          completados++;
+        }
+
+        this.actualizarPorcentaje(completados, total);
+      },
+      error: () => this.actualizarPorcentaje(completados, total)
+    });
+
+  this.http.get<any[]>(`http://localhost:8189/egresado/posgrado/${matricula}`)
+    .subscribe({
+      next: (data: any[]) => {
+        if (data && data.length > 0) {
+          completados++;
+        }
+
+        this.actualizarPorcentaje(completados, total);
+      },
+      error: () => this.actualizarPorcentaje(completados, total)
+    });
+
+  this.http.get<any[]>(`http://localhost:8189/egresado/certificaciones/${matricula}`)
+    .subscribe({
+      next: (data: any[]) => {
+        if (data && data.length > 0) {
+          completados++;
+        }
+
+        this.actualizarPorcentaje(completados, total);
+      },
+      error: () => this.actualizarPorcentaje(completados, total)
+    });
+
+  this.http.get<any[]>(`http://localhost:8189/egresado/reconocimientos/${matricula}`)
+    .subscribe({
+      next: (data: any[]) => {
+        if (data && data.length > 0) {
+          completados++;
+        }
+
+        this.actualizarPorcentaje(completados, total);
+      },
+      error: () => this.actualizarPorcentaje(completados, total)
+    });
+}
+
+actualizarPorcentaje(completados: number, total: number) {
+  this.porcentajePerfil = Math.round((completados / total) * 100);
+}
+  
 }
