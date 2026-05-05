@@ -25,7 +25,7 @@
     </div>
     <div class="card">
       <h3>{{ totalContestadas }}</h3>
-      <p>Encuestas contestadas</p>
+      <p>Datos completos</p>
     </div>
     <div class="card">
       <h3>{{ totalPendientes }}</h3>
@@ -37,24 +37,60 @@
     </div>
   </section>
 
-  <!-- BUSCADOR -->
-  <div class="search-bar">
-    <input
-      type="text"
-      id="buscador"
-      [(ngModel)]="busqueda"
-      placeholder="🔍  Buscar usuario por nombre, matrícula o carrera..."
-    >
+  <!-- BARRA DE CONTROLES -->
+  <div class="controles-bar">
+
+    <!-- BUSCADOR -->
+    <div class="search-bar">
+      <input
+        type="text"
+        [(ngModel)]="busqueda"
+        placeholder="🔍  Buscar por nombre, matrícula o carrera..."
+      >
+    </div>
+
+    <!-- FILTRO DE CARRERAS -->
+    <div class="carrera-filtro-wrap">
+      <button class="btn-carrera-filtro" (click)="toggleFiltroCarreras()">
+        🎓 {{ labelCarrerasFiltro }}
+        <span class="chevron" [class.abierto]="mostrarFiltroCarreras">▾</span>
+      </button>
+
+      <div class="carrera-dropdown" *ngIf="mostrarFiltroCarreras">
+        <div class="carrera-opcion todas" (click)="seleccionarTodas()">
+          <span class="check-icon" [class.activo]="carrerasSeleccionadas.length === 0">✓</span>
+          Todas las carreras
+        </div>
+        <div class="carrera-separador"></div>
+        <div
+          class="carrera-opcion"
+          *ngFor="let c of todasLasCarreras"
+          (click)="toggleCarrera(c)"
+        >
+          <span class="check-icon" [class.activo]="isCarreraSeleccionada(c)">✓</span>
+          {{ c }}
+        </div>
+      </div>
+    </div>
+
+    <!-- TOGGLE CONCENTRADO -->
+    <div class="concentrado-toggle" (click)="toggleConcentrado()">
+      <span class="toggle-label">Concentrado completo</span>
+      <div class="toggle-switch" [class.on]="concentradoActivo">
+        <div class="toggle-thumb"></div>
+      </div>
+    </div>
+
   </div>
 
-  <!-- FILTROS PILLS -->
+  <!-- FILTROS PILLS DE ESTATUS -->
   <div class="filtros">
     <span class="filtro-label">Filtrar por estatus:</span>
     <button class="filtro-btn" [class.active]="estatusFiltro==='todos'"
             (click)="setEstatus('todos')">Todos</button>
     <button class="filtro-btn" [class.active]="estatusFiltro==='Contestada'"
             (click)="setEstatus('Contestada')">
-      <span class="dot dot-si"></span> Encuesta contestada
+      <span class="dot dot-si"></span> Datos completos
     </button>
     <button class="filtro-btn" [class.active]="estatusFiltro==='Pendiente'"
             (click)="setEstatus('Pendiente')">
@@ -77,7 +113,12 @@
     <div class="carrera-block" *ngFor="let grupo of seccion.carreras">
       <div class="carrera-header">
         <h3>{{ grupo.nombre }}</h3>
-        <span class="total-badge">{{ grupo.usuarios.length }} usuario(s)</span>
+        <div class="carrera-header-right">
+          <span class="total-badge">{{ grupo.usuarios.length }} usuario(s)</span>
+          <span class="mostrando-badge" *ngIf="hayMas(grupo.usuarios)">
+            Mostrando 5 de {{ grupo.usuarios.length }}
+          </span>
+        </div>
       </div>
       <div class="table-wrap">
         <table>
@@ -92,7 +133,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let u of grupo.usuarios">
+            <tr *ngFor="let u of usuariosMostrados(grupo.usuarios)">
               <td>{{ u.matricula }}</td>
               <td>{{ u.nombre }}</td>
               <td>{{ u.apellidoPaterno }}</td>
@@ -102,12 +143,15 @@
                 <span class="status-badge"
                   [class.status-si]="u.estatusEncuesta==='Contestada'"
                   [class.status-no]="u.estatusEncuesta==='Pendiente'">
-                  {{ u.estatusEncuesta === 'Contestada' ? '✓ Contestada' : '✗ Pendiente' }}
+                  {{ u.estatusEncuesta === 'Contestada' ? '✓ Datos completos' : '✗ Pendiente' }}
                 </span>
               </td>
             </tr>
           </tbody>
         </table>
+      </div>
+      <div class="ver-mas-hint" *ngIf="hayMas(grupo.usuarios)">
+        Activa "Concentrado completo" para ver todos los alumnos
       </div>
     </div>
 

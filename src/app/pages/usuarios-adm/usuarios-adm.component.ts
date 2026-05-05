@@ -31,6 +31,26 @@ export class UsuariosAdmComponent implements OnInit {
   campusFiltro = '';
   estatusFiltro = 'todos';
 
+  // ── Concentrado (mostrar todos o solo 5) ──────────────────
+  concentradoActivo = false;
+
+  // ── Filtro por carreras ───────────────────────────────────
+  carrerasSeleccionadas: string[] = [];
+  mostrarFiltroCarreras = false;
+
+  readonly todasLasCarreras = [
+    'Ingeniería en Agronomía',
+    'Ingeniería en Ciencia de Datos y Matemáticas',
+    'Ingeniería en Computación',
+    'Ingeniería en Diseño',
+    'Ingeniería en Mecatrónica',
+    'Licenciatura en Biología Sostenible',
+    'Licenciatura en Medicina Veterinaria y Zootecnia',
+    'Maestría en Optimización y Control de Sistemas',
+    'Maestría en Producción y Procesamiento Agrícola',
+    'Maestría en Producción y Procesamiento Pecuario',
+  ];
+
   constructor(private service: EgresadoVistaService) {}
 
   ngOnInit(): void {
@@ -53,7 +73,40 @@ export class UsuariosAdmComponent implements OnInit {
     return Math.round((this.totalContestadas / this.lista.length) * 100) + '%';
   }
 
-  // ── Filtrado ──────────────────────────────────────────────
+  // ── Toggle concentrado ────────────────────────────────────
+  toggleConcentrado() {
+    this.concentradoActivo = !this.concentradoActivo;
+  }
+
+  // ── Filtro de carreras ────────────────────────────────────
+  toggleFiltroCarreras() {
+    this.mostrarFiltroCarreras = !this.mostrarFiltroCarreras;
+  }
+
+  toggleCarrera(carrera: string) {
+    const idx = this.carrerasSeleccionadas.indexOf(carrera);
+    if (idx === -1) {
+      this.carrerasSeleccionadas.push(carrera);
+    } else {
+      this.carrerasSeleccionadas.splice(idx, 1);
+    }
+  }
+
+  seleccionarTodas() {
+    this.carrerasSeleccionadas = [];
+  }
+
+  isCarreraSeleccionada(carrera: string): boolean {
+    return this.carrerasSeleccionadas.includes(carrera);
+  }
+
+  get labelCarrerasFiltro(): string {
+    if (this.carrerasSeleccionadas.length === 0) return 'Todas las carreras';
+    if (this.carrerasSeleccionadas.length === 1) return this.carrerasSeleccionadas[0];
+    return `${this.carrerasSeleccionadas.length} carreras seleccionadas`;
+  }
+
+  // ── Filtrado general ──────────────────────────────────────
   get listaFiltrada(): EgresadoVista[] {
     const texto = this.busqueda.toLowerCase().trim();
     return this.lista.filter(u => {
@@ -65,7 +118,9 @@ export class UsuariosAdmComponent implements OnInit {
       );
       const coincideCampus  = !this.campusFiltro || u.campus === this.campusFiltro;
       const coincideEstatus = this.estatusFiltro === 'todos' || u.estatusEncuesta === this.estatusFiltro;
-      return coincideTexto && coincideCampus && coincideEstatus;
+      const coincideCarrera = this.carrerasSeleccionadas.length === 0 ||
+                              this.carrerasSeleccionadas.includes(u.carrera);
+      return coincideTexto && coincideCampus && coincideEstatus && coincideCarrera;
     });
   }
 
@@ -88,6 +143,15 @@ export class UsuariosAdmComponent implements OnInit {
         .map(([nombre, usuarios]) => ({ nombre, usuarios }));
       return { ...sec, carreras };
     }).filter(sec => sec.carreras.length > 0);
+  }
+
+  // ── Usuarios a mostrar según concentrado ──────────────────
+  usuariosMostrados(usuarios: EgresadoVista[]): EgresadoVista[] {
+    return this.concentradoActivo ? usuarios : usuarios.slice(0, 5);
+  }
+
+  hayMas(usuarios: EgresadoVista[]): boolean {
+    return !this.concentradoActivo && usuarios.length > 5;
   }
 
   setEstatus(filtro: string) { this.estatusFiltro = filtro; }
