@@ -1,0 +1,84 @@
+.sidebar {
+  width: 220px;
+  background: #2f8f83;
+  height: 100%;
+  flex-shrink: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  transition: width 0.3s;
+}
+
+.sidebar.oculto {
+  width: 0;
+  overflow: hidden;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+}
+
+a, .menu-item {
+  color: white;
+  text-decoration: none;
+  padding: 13px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+a:first-child, .menu-item:first-child {
+  border-top: 1px solid rgba(255,255,255,0.15);
+}
+
+a:hover, .menu-item:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+a.activo {
+  background: rgba(255,255,255,0.2);
+  font-weight: 600;
+}
+
+.material-icons {
+  font-size: 20px;
+}
+
+.flecha {
+  margin-left: auto;
+  transition: transform 0.3s;
+}
+
+.menu-item.abierto .flecha {
+  transform: rotate(180deg);
+}
+
+.submenu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: rgba(0,0,0,0.15);
+}
+
+.submenu.visible {
+  max-height: 300px;
+}
+
+.submenu a {
+  padding: 11px 20px 11px 38px;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-top: none;
+}
+
+.submenu a:first-child {
+  border-top: none;
+}
+
+.submenu .material-icons {
+  font-size: 17px;
+}

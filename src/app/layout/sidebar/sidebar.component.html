@@ -1,0 +1,50 @@
+<aside class="sidebar" [class.oculto]="!abierto">
+  <nav>
+
+    <a routerLink="/dashboard" routerLinkActive="activo">
+      <span class="material-icons">dashboard</span>
+      Dashboard
+    </a>
+
+    <a routerLink="/encuestas" routerLinkActive="activo">
+      <span class="material-icons">assignment</span>
+      Encuestas
+    </a>
+
+    <a routerLink="/empresas" routerLinkActive="activo">
+      <span class="material-icons">business</span>
+      Empresas
+    </a>
+
+    <div class="menu-item" [class.abierto]="reportesAbierto" (click)="toggleReportes()">
+      <span class="material-icons">bar_chart</span>
+      Reportes
+      <span class="material-icons flecha">expand_more</span>
+    </div>
+
+    <div class="submenu" [class.visible]="reportesAbierto">
+      <a routerLink="/reportes/laboral" routerLinkActive="activo">
+        <span class="material-icons">work</span>
+        Laboral
+      </a>
+      <a routerLink="/reportes/academico" routerLinkActive="activo">
+        <span class="material-icons">school</span>
+        Académico
+      </a>
+      <a routerLink="/reportes/posgrado" routerLinkActive="activo">
+        <span class="material-icons">menu_book</span>
+        Posgrado
+      </a>
+      <a routerLink="/reportes/reconocimientos" routerLinkActive="activo">
+        <span class="material-icons">emoji_events</span>
+        Reconocimientos
+      </a>
+    </div>
+
+    <a routerLink="/usuarios" routerLinkActive="activo">
+      <span class="material-icons">people</span>
+      Usuarios
+    </a>
+
+  </nav>
+</aside>

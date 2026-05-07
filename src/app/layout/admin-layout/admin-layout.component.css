@@ -1,0 +1,19 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.layout {
+  display: flex;
+  height: calc(100vh - 65px);
+  overflow: hidden;
+}
+
+.contenido {
+  flex: 1;
+  min-width: 0;
+  background: #f3f5f7;
+  overflow-y: auto;
+  height: 100%;
+}
