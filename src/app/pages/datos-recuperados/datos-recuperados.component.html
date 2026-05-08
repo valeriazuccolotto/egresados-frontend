@@ -130,6 +130,57 @@
         </div>
 
         <!-- =========================
+            RESULTADOS FILTRADOS
+        ========================== -->
+
+        <div
+    class="lista-egresados"
+    *ngIf="egresadosFiltrados.length > 0"
+>
+
+    <div
+        class="egresado-linea clickable"
+        *ngFor="let egresado of egresadosFiltrados"
+        (click)="abrirContacto(egresado)"
+    >
+
+        <span class="egresado-nombre">
+
+            {{ egresado.nombre }}
+            {{ egresado.apellidoPaterno }}
+            {{ egresado.apellidoMaterno }}
+
+        </span>
+
+        <span class="egresado-separador">
+            •
+        </span>
+
+        <span class="egresado-carrera">
+            {{ egresado.carrera }}
+        </span>
+
+        <span class="egresado-separador">
+            •
+        </span>
+
+        <span class="egresado-generacion">
+            {{ egresado.generacion }}
+        </span>
+
+        <span class="egresado-separador">
+            •
+        </span>
+
+        <span class="egresado-campus">
+            {{ egresado.campus }}
+        </span>
+
+    </div>
+
+</div>
+
+        <!-- =========================
             LOADING
         ========================== -->
 
@@ -154,7 +205,11 @@
 
         <div
             class="estado-vacio"
-            *ngIf="!resultado && !cargando"
+            *ngIf="
+                !resultado &&
+                !cargando &&
+                egresadosFiltrados.length === 0
+            "
         >
 
             <div class="empty-icon">
@@ -166,14 +221,14 @@
             </h3>
 
             <p>
-                Realiza una búsqueda por matrícula para consultar la información del egresado.
+                Realiza una búsqueda por matrícula o utiliza los filtros para consultar información.
             </p>
 
         </div>
 
         <!-- =========================
-            RESULTADO
-        ========================== -->
+            RESULTADO INDIVIDUAL
+        ========================= -->
 
         <div
             class="resultado"
@@ -188,7 +243,7 @@
                     class="foto-perfil"
                     [src]="resultado.urlFoto
                         ? 'http://localhost:8181' + resultado.urlFoto
-                        : 'assets/user-default.png'"
+                        : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'"
                     alt="Foto de perfil"
                 >
 
@@ -205,110 +260,461 @@
 
                     </h3>
 
-                    <div class="perfil-badges">
-
-                        <span class="badge">
-                            Egresado
-                        </span>
-
-                        <span class="badge-secundario">
-                            {{ resultado.matricula }}
-                        </span>
-
-                    </div>
-
                 </div>
 
             </div>
 
-            <!-- DATOS -->
-            <div class="resultado-grid">
+            <!-- =========================
+                INFORMACIÓN EN UNA LÍNEA
+            ========================== -->
 
-                <!-- MATRÍCULA -->
-                <div class="info-item">
+            <div class="resultado-linea">
 
-                    <div class="info-icon">
-                        🎓
-                    </div>
+                <span>
+                    🎓 {{ resultado.matricula }}
+                </span>
 
-                    <div class="info-content">
+                <span class="linea-separador">
+                    •
+                </span>
 
-                        <div class="info-label">
-                            Matrícula
-                        </div>
+                <span>
+                    🏫 {{ resultado.campus }}
+                </span>
 
-                        <div class="info-value">
-                            {{ resultado.matricula }}
-                        </div>
+                <span class="linea-separador">
+                    •
+                </span>
 
-                    </div>
+                <span>
+                    📅 {{ resultado.generacion }}
+                </span>
 
-                </div>
+                <span class="linea-separador">
+                    •
+                </span>
 
-                <!-- CAMPUS -->
-                <div class="info-item">
-
-                    <div class="info-icon">
-                        🏫
-                    </div>
-
-                    <div class="info-content">
-
-                        <div class="info-label">
-                            Campus
-                        </div>
-
-                        <div class="info-value">
-                            {{ resultado.campus }}
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- GENERACIÓN -->
-                <div class="info-item">
-
-                    <div class="info-icon">
-                        📅
-                    </div>
-
-                    <div class="info-content">
-
-                        <div class="info-label">
-                            Generación
-                        </div>
-
-                        <div class="info-value">
-                            {{ resultado.generacion }}
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- CARRERA -->
-                <div class="info-item">
-
-                    <div class="info-icon">
-                        📘
-                    </div>
-
-                    <div class="info-content">
-
-                        <div class="info-label">
-                            Carrera
-                        </div>
-
-                        <div class="info-value">
-                            {{ resultado.carrera }}
-                        </div>
-
-                    </div>
-
-                </div>
+                <span>
+                    📘 {{ resultado.carrera }}
+                </span>
 
             </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- =========================
+    MODAL DETALLE EGRESADO
+========================== -->
+
+<div class="modal-overlay" *ngIf="mostrarModalDetalle">
+
+    <div class="modal-card modal-detalle">
+
+        <!-- CERRAR -->
+        <button class="modal-close" (click)="cerrarContacto()">
+            &times;
+        </button>
+
+        <!-- HEADER -->
+        <div class="modal-header">
+
+            <div class="modal-icon">
+                <i class="fas fa-user"></i>
+            </div>
+
+            <div>
+                <h3>
+                    {{ detalleEgresado?.nombre }}
+                    {{ detalleEgresado?.apellidoPaterno }}
+                </h3>
+
+                <p>
+                    Expediente completo del egresado
+                </p>
+            </div>
+
+        </div>
+
+        <!-- BODY -->
+        <div class="modal-body">
+            <div class="estado-vacio" *ngIf="cargandoDetalle">
+                <h3>Cargando expediente...</h3>
+            </div>
+
+            <div *ngIf="!cargandoDetalle && detalleEgresado">
+                <!-- CONTACTO -->
+                <div class="seccion-acordeon">
+                    <button class="acordeon-header" (click)="toggleSeccion('contacto')">
+                        <div class="acordeon-left">
+                            <div class="acordeon-icon">
+                                <i class="fas fa-address-book"></i>
+                            </div>
+                            <div class="acordeon-title">
+                                <h4>Contacto</h4>
+                                <span>{{ contacto.correoPersonal || 'Sin correo registrado' }}</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down acordeon-arrow" [class.open]="seccionActiva === 'contacto'"></i>
+                    </button>
+
+                    <div class="acordeon-body" *ngIf="seccionActiva === 'contacto'">
+                        <div class="detalle-grid">
+                            <div class="detalle-item">
+                                <div class="info-icon"><i class="fas fa-phone"></i></div>
+                                <div>
+                                    <label>Teléfono</label>
+                                    <p>{{ contacto.telefono || 'No registrado' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item">
+                                <div class="info-icon"><i class="fas fa-envelope"></i></div>
+                                <div>
+                                    <label>Correo</label>
+                                    <p>{{ contacto.correoPersonal || 'No registrado' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item">
+                                <div class="info-icon"><i class="fas fa-city"></i></div>
+                                <div>
+                                    <label>Ciudad</label>
+                                    <p>{{ contacto.ciudad || 'No registrada' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item">
+                                <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                                <div>
+                                    <label>Estado</label>
+                                    <p>{{ contacto.estadoResidencia || 'No registrado' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item">
+                                <div class="info-icon"><i class="fab fa-instagram"></i></div>
+                                <div>
+                                    <label>Instagram</label>
+                                    <p>{{ contacto.instagram || 'No registrado' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item">
+                                <div class="info-icon"><i class="fab fa-facebook"></i></div>
+                                <div>
+                                    <label>Facebook</label>
+                                    <p>{{ contacto.facebook || 'No registrado' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ACADEMICO -->
+                <div class="seccion-acordeon">
+                    <button class="acordeon-header" (click)="toggleSeccion('academico')">
+                        <div class="acordeon-left">
+                            <div class="acordeon-icon">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <div class="acordeon-title">
+                                <h4>Académico</h4>
+                                <span>{{ academico.claveCarrera || 'Sin carrera registrada' }}</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down acordeon-arrow" [class.open]="seccionActiva === 'academico'"></i>
+                    </button>
+
+                    <div class="acordeon-body" *ngIf="seccionActiva === 'academico'">
+                        <div class="detalle-grid">
+                            <div class="detalle-item">
+                                <div class="info-icon"><i class="fas fa-book"></i></div>
+                                <div>
+                                    <label>Clave carrera</label>
+                                    <p>{{ academico.claveCarrera || 'No registrada' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item">
+                                <div class="info-icon"><i class="fas fa-star"></i></div>
+                                <div>
+                                    <label>Promedio</label>
+                                    <p>{{ academico.promedio ?? 'No registrado' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item">
+                                <div class="info-icon"><i class="fas fa-calendar-alt"></i></div>
+                                <div>
+                                    <label>Año egreso</label>
+                                    <p>{{ academico.anioEgreso || 'No registrado' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item">
+                                <div class="info-icon"><i class="fas fa-scroll"></i></div>
+                                <div>
+                                    <label>Titulado</label>
+                                    <p>{{ academico.titulado || 'No registrado' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item" *ngIf="estaTitulado">
+                                <div class="info-icon"><i class="fas fa-calendar-check"></i></div>
+                                <div>
+                                    <label>Fecha titulación</label>
+                                    <p>{{ academico.fechaTitulacion || 'No registrada' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item" *ngIf="estaTitulado">
+                                <div class="info-icon"><i class="fas fa-file-signature"></i></div>
+                                <div>
+                                    <label>Tipo titulación</label>
+                                    <p>{{ academico.tipoTitulacion || 'No registrado' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item">
+                                <div class="info-icon"><i class="fas fa-id-card"></i></div>
+                                <div>
+                                    <label>Cédula profesional</label>
+                                    <p>{{ academico.cedulaProfesional || 'No' }}</p>
+                                </div>
+                            </div>
+
+                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'tesis'">
+                                <div class="info-icon"><i class="fas fa-book-open"></i></div>
+                                <div>
+                                    <label>Nombre tesis</label>
+                                    <p>{{ academico.nombreTesis || 'No registrado' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'tesis'">
+                                <div class="info-icon"><i class="fas fa-user"></i></div>
+                                <div>
+                                    <label>Director</label>
+                                    <p>{{ academico.director || 'No registrado' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'tesis'">
+                                <div class="info-icon"><i class="fas fa-user-friends"></i></div>
+                                <div>
+                                    <label>Codirector</label>
+                                    <p>{{ academico.codirector || 'No registrado' }}</p>
+                                </div>
+                            </div>
+
+                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'ceneval'">
+                                <div class="info-icon"><i class="fas fa-calendar-day"></i></div>
+                                <div>
+                                    <label>Fecha examen</label>
+                                    <p>{{ academico.fechaExamen || 'No registrada' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'ceneval'">
+                                <div class="info-icon"><i class="fas fa-chart-line"></i></div>
+                                <div>
+                                    <label>Puntaje CENEVAL</label>
+                                    <p>{{ academico.puntajeCeneval || 'No registrado' }}</p>
+                                </div>
+                            </div>
+
+                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'experiencia_laboral'">
+                                <div class="info-icon"><i class="fas fa-briefcase"></i></div>
+                                <div>
+                                    <label>Título memoria</label>
+                                    <p>{{ academico.tituloMemoria || 'No registrado' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'experiencia_laboral'">
+                                <div class="info-icon"><i class="fas fa-user-tie"></i></div>
+                                <div>
+                                    <label>Asesor</label>
+                                    <p>{{ academico.asesor || 'No registrado' }}</p>
+                                </div>
+                            </div>
+                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'experiencia_laboral'">
+                                <div class="info-icon"><i class="fas fa-calendar-day"></i></div>
+                                <div>
+                                    <label>Fecha examen</label>
+                                    <p>{{ academico.fechaExamen || 'No registrada' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LABORAL -->
+                <div class="seccion-acordeon">
+                    <button class="acordeon-header" (click)="toggleSeccion('laboral')">
+                        <div class="acordeon-left">
+                            <div class="acordeon-icon">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="acordeon-title">
+                                <h4>Laboral</h4>
+                                <span>{{ laborales.length }} registro(s)</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down acordeon-arrow" [class.open]="seccionActiva === 'laboral'"></i>
+                    </button>
+
+                    <div class="acordeon-body" *ngIf="seccionActiva === 'laboral'">
+                        <div class="lista-registros" *ngIf="laborales.length; else sinLaborales">
+                            <button
+                                class="registro-linea"
+                                *ngFor="let item of laborales"
+                                (click)="seleccionarLaboral(item)"
+                                [class.activo]="laboralSeleccionado?.idLaboral === item.idLaboral"
+                            >
+                                {{ item.empresa }} - {{ item.puesto }} - {{ item.tipoContrato }}
+                            </button>
+                        </div>
+                        <ng-template #sinLaborales>
+                            <p class="mensaje-vacio-seccion">No hay registros laborales.</p>
+                        </ng-template>
+
+                        <div class="detalle-grid detalle-seleccionado" *ngIf="laboralSeleccionado">
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-user-tie"></i></div><div><label>Puesto</label><p>{{ laboralSeleccionado.puesto }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-industry"></i></div><div><label>Sector</label><p>{{ laboralSeleccionado.sector }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-file-contract"></i></div><div><label>Contrato</label><p>{{ laboralSeleccionado.tipoContrato }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-laptop-house"></i></div><div><label>Modalidad</label><p>{{ laboralSeleccionado.modalidadTrabajo }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-money-bill-wave"></i></div><div><label>Salario</label><p>{{ laboralSeleccionado.salario }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-search"></i></div><div><label>Cómo consiguió</label><p>{{ laboralSeleccionado.comoConsiguio }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-clock"></i></div><div><label>Tiempo en conseguir</label><p>{{ laboralSeleccionado.tiempoConseguir }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-graduation-cap"></i></div><div><label>Relación con carrera</label><p>{{ laboralSeleccionado.relacionCarrera }}</p></div></div>
+                            <div class="detalle-item detalle-completo"><div class="info-icon"><i class="fas fa-comment"></i></div><div><label>Comentarios</label><p>{{ laboralSeleccionado.comentarios || 'Sin comentarios' }}</p></div></div>
+                            <div class="detalle-item detalle-completo"><div class="info-icon"><i class="fas fa-gift"></i></div><div><label>Prestaciones</label><p>{{ obtenerPrestaciones(laboralSeleccionado) }}</p></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- POSGRADO -->
+                <div class="seccion-acordeon">
+                    <button class="acordeon-header" (click)="toggleSeccion('posgrado')">
+                        <div class="acordeon-left">
+                            <div class="acordeon-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="acordeon-title">
+                                <h4>Posgrado</h4>
+                                <span>{{ posgrados.length }} registro(s)</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down acordeon-arrow" [class.open]="seccionActiva === 'posgrado'"></i>
+                    </button>
+
+                    <div class="acordeon-body" *ngIf="seccionActiva === 'posgrado'">
+                        <div class="lista-registros" *ngIf="posgrados.length; else sinPosgrados">
+                            <button
+                                class="registro-linea"
+                                *ngFor="let item of posgrados"
+                                (click)="seleccionarPosgrado(item)"
+                                [class.activo]="posgradoSeleccionado?.idPosgrado === item.idPosgrado"
+                            >
+                                {{ item.nivelEstudio }} - {{ item.nombrePrograma }} - {{ item.institucion }}
+                            </button>
+                        </div>
+                        <ng-template #sinPosgrados>
+                            <p class="mensaje-vacio-seccion">No hay registros de posgrado.</p>
+                        </ng-template>
+
+                        <div class="detalle-grid detalle-seleccionado" *ngIf="posgradoSeleccionado">
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-university"></i></div><div><label>Institución</label><p>{{ posgradoSeleccionado.institucion }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-layer-group"></i></div><div><label>Nivel</label><p>{{ posgradoSeleccionado.nivelEstudio }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-book-open"></i></div><div><label>Programa</label><p>{{ posgradoSeleccionado.nombrePrograma }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-laptop-house"></i></div><div><label>Modalidad</label><p>{{ posgradoSeleccionado.modalidad }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-check-circle"></i></div><div><label>Estatus</label><p>{{ posgradoSeleccionado.estatus }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-link"></i></div><div><label>Relación carrera</label><p>{{ posgradoSeleccionado.relacionadoCarrera }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-calendar-day"></i></div><div><label>Inicio</label><p>{{ posgradoSeleccionado.fechaInicio || 'No registrada' }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-calendar-times"></i></div><div><label>Fin</label><p>{{ posgradoSeleccionado.fechaFin || 'No registrada' }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-award"></i></div><div><label>Tiene beca</label><p>{{ posgradoSeleccionado.tieneBeca ? 'Sí' : 'No' }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-gift"></i></div><div><label>Tipo beca</label><p>{{ posgradoSeleccionado.tipoBeca?.nombre || 'No aplica' }}</p></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECONOCIMIENTOS -->
+                <div class="seccion-acordeon">
+                    <button class="acordeon-header" (click)="toggleSeccion('reconocimientos')">
+                        <div class="acordeon-left">
+                            <div class="acordeon-icon">
+                                <i class="fas fa-award"></i>
+                            </div>
+                            <div class="acordeon-title">
+                                <h4>Reconocimientos</h4>
+                                <span>{{ reconocimientos.length }} registro(s)</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down acordeon-arrow" [class.open]="seccionActiva === 'reconocimientos'"></i>
+                    </button>
+
+                    <div class="acordeon-body" *ngIf="seccionActiva === 'reconocimientos'">
+                        <div class="lista-registros" *ngIf="reconocimientos.length; else sinReco">
+                            <button
+                                class="registro-linea"
+                                *ngFor="let item of reconocimientos"
+                                (click)="seleccionarReconocimiento(item)"
+                                [class.activo]="reconocimientoSeleccionado?.idReconocimiento === item.idReconocimiento"
+                            >
+                                {{ item.nombreReconocimiento }} - {{ item.tipoReconocimiento }} - {{ item.fechaEntrega || 'Sin fecha' }}
+                            </button>
+                        </div>
+                        <ng-template #sinReco>
+                            <p class="mensaje-vacio-seccion">No hay reconocimientos registrados.</p>
+                        </ng-template>
+
+                        <div class="detalle-grid detalle-seleccionado" *ngIf="reconocimientoSeleccionado">
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-medal"></i></div><div><label>Nombre</label><p>{{ reconocimientoSeleccionado.nombreReconocimiento }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-tag"></i></div><div><label>Tipo</label><p>{{ reconocimientoSeleccionado.tipoReconocimiento }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-calendar-check"></i></div><div><label>Fecha entrega</label><p>{{ reconocimientoSeleccionado.fechaEntrega || 'No registrada' }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-university"></i></div><div><label>Institución</label><p>{{ reconocimientoSeleccionado.institucion || 'No registrada' }}</p></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CERTIFICACIONES -->
+                <div class="seccion-acordeon">
+                    <button class="acordeon-header" (click)="toggleSeccion('certificaciones')">
+                        <div class="acordeon-left">
+                            <div class="acordeon-icon">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <div class="acordeon-title">
+                                <h4>Certificaciones</h4>
+                                <span>{{ certificaciones.length }} registro(s)</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down acordeon-arrow" [class.open]="seccionActiva === 'certificaciones'"></i>
+                    </button>
+
+                    <div class="acordeon-body" *ngIf="seccionActiva === 'certificaciones'">
+                        <div class="lista-registros" *ngIf="certificaciones.length; else sinCert">
+                            <button
+                                class="registro-linea"
+                                *ngFor="let item of certificaciones"
+                                (click)="seleccionarCertificacion(item)"
+                                [class.activo]="certificacionSeleccionada?.idCertificacion === item.idCertificacion"
+                            >
+                                {{ item.nombreCertificacion }} - {{ item.institucionCertificacion }}
+                            </button>
+                        </div>
+                        <ng-template #sinCert>
+                            <p class="mensaje-vacio-seccion">No hay certificaciones registradas.</p>
+                        </ng-template>
+
+                        <div class="detalle-grid detalle-seleccionado" *ngIf="certificacionSeleccionada">
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-certificate"></i></div><div><label>Nombre</label><p>{{ certificacionSeleccionada.nombreCertificacion }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-building"></i></div><div><label>Institución</label><p>{{ certificacionSeleccionada.institucionCertificacion }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-calendar-day"></i></div><div><label>Inicio</label><p>{{ certificacionSeleccionada.fechaInicio || 'No registrada' }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-calendar-times"></i></div><div><label>Fin</label><p>{{ certificacionSeleccionada.fechaFin || 'No registrada' }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-calendar-check"></i></div><div><label>Obtención</label><p>{{ certificacionSeleccionada.fechaObtencion || 'No registrada' }}</p></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="cert-footer">
+
+            <button class="cert-btn-secondary" (click)="cerrarContacto()">
+                Cerrar
+            </button>
 
         </div>
 

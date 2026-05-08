@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { catchError, forkJoin, of } from 'rxjs';
 
 import { EgresadoService } from '../../services/egresado/egresado.service';
 
@@ -21,195 +22,372 @@ export class DatosRecuperadosComponent implements OnInit {
   // =========================
   // BÚSQUEDA
   // =========================
-
   matricula: string = '';
-
-  // =========================
-  // RESULTADO
-  // =========================
-
   resultado: any = null;
-
   cargando: boolean = false;
 
   // =========================
-  // CAMPUS
+  // FILTROS
   // =========================
-
   campusSeleccionado: string = '';
-
-  // =========================
-  // FILTROS SELECCIONADOS
-  // =========================
-
   carreraSeleccionada: string = '';
-
   generacionSeleccionada: string = '';
 
-  // =========================
-  // CARRERAS POR CAMPUS
-  // =========================
+  carrerasFiltradas: string[] = [];
 
-  carrerasPorCampus: { [key: string]: string[] } = {
+  egresadosFiltrados: any[] = [];
 
+  generaciones: string[] = [
+    '2019 - 2023',
+    '2020 - 2024',
+    '2021 - 2025',
+    '2022 - 2026'
+  ];
+
+  // =========================
+  // MODAL DETALLE
+  // =========================
+  mostrarModalDetalle = false;
+  cargandoDetalle = false;
+  detalleEgresado: any = null;
+  seccionActiva:
+    | 'contacto'
+    | 'academico'
+    | 'laboral'
+    | 'posgrado'
+    | 'reconocimientos'
+    | 'certificaciones' = 'contacto';
+
+  laboralSeleccionado: any = null;
+  posgradoSeleccionado: any = null;
+  reconocimientoSeleccionado: any = null;
+  certificacionSeleccionada: any = null;
+
+  // =========================
+  // CONSTRUCTOR
+  // =========================
+  constructor(private egresadoService: EgresadoService) {}
+
+  ngOnInit(): void {}
+
+  // =========================
+  // CARRERAS
+  // =========================
+  carrerasPorCampus: any = {
     'Loma Bonita': [
-
       'Ingeniería en Agronomía',
       'Ingeniería Agrícola Tropical',
       'Ingeniería en Ciencia de Datos',
       'Ingeniería en Computación',
       'Ingeniería en Diseño',
-      'Ingeniería en Mecatrónica',
-      'Licenciatura en Biología Sostenible',
-      'Licenciatura en Medicina Veterinaria y Zootecnia'
-
+      'Ingeniería en Mecatrónica'
     ],
-
     'Tuxtepec': [
-
       'Licenciatura en Medicina',
       'Licenciatura en Enfermería',
       'Químico Farmacobiólogo',
-      'Ingeniería en Biotecnología',
-      'Ingeniería en Alimentos',
-      'Ingeniería en Innovación y Desarrollo Agropecuario',
-      'Ciencias Empresariales'
-
+      'Ingeniería en Biotecnología'
     ]
-
   };
-
-  // =========================
-  // LISTAS
-  // =========================
-
-  carrerasFiltradas: string[] = [];
-
-  generaciones: string[] = [
-
-    '2020 - 2024',
-    '2021 - 2025',
-    '2022 - 2026'
-
-  ];
-
-  // =========================
-  // CONSTRUCTOR
-  // =========================
-
-  constructor(
-    private egresadoService: EgresadoService
-  ) {}
-
-  // =========================
-  // INIT
-  // =========================
-
-  ngOnInit(): void {}
-
-  // =========================
-  // CAMBIO DE CAMPUS
-  // =========================
 
   actualizarCarreras(): void {
 
-    // limpiar carrera seleccionada
     this.carreraSeleccionada = '';
 
-    // TODOS
     if (this.campusSeleccionado === 'Todos') {
-
       this.carrerasFiltradas = [
-
         ...this.carrerasPorCampus['Loma Bonita'],
         ...this.carrerasPorCampus['Tuxtepec']
-
       ];
-
       return;
-
     }
 
-    // CAMPUS ESPECÍFICO
     this.carrerasFiltradas =
       this.carrerasPorCampus[this.campusSeleccionado] || [];
-
   }
 
   // =========================
-  // BUSCAR EGRESADO
+  // BUSCAR MATRÍCULA
   // =========================
-
   buscarPorMatricula(): void {
 
-    // evitar búsqueda vacía
+    this.egresadosFiltrados = [];
+
     if (!this.matricula.trim()) {
-
       this.resultado = null;
-
       return;
-
     }
 
     this.cargando = true;
 
-    this.egresadoService
-      .getPerfilCompleto(this.matricula)
+    this.egresadoService.getPerfilCompleto(this.matricula)
       .subscribe({
-
         next: (data) => {
-
-          console.log(
-            'Perfil encontrado:',
-            data
-          );
-
           this.resultado = data;
-
           this.cargando = false;
-
         },
-
-        error: (err) => {
-
-          console.error(
-            'Error buscando egresado',
-            err
-          );
-
+        error: () => {
           this.resultado = null;
-
           this.cargando = false;
-
         }
-
       });
-
   }
 
   // =========================
-  // FILTRAR
+  // FILTROS
   // =========================
-
   filtrar(): void {
 
-    console.log(
-      'Campus:',
-      this.campusSeleccionado
-    );
+    this.resultado = null;
+    this.cargando = true;
 
-    console.log(
-      'Carrera:',
-      this.carreraSeleccionada
-    );
-
-    console.log(
-      'Generación:',
+    this.egresadoService.filtrarEgresados(
+      this.campusSeleccionado,
+      this.carreraSeleccionada,
       this.generacionSeleccionada
-    );
+    ).subscribe({
+      next: (data) => {
+        this.egresadosFiltrados = data;
+        this.cargando = false;
+      },
+      error: () => {
+        this.egresadosFiltrados = [];
+        this.cargando = false;
+      }
+    });
+  }
 
-    // 🔥 después conectarás tu endpoint real
+  // =========================
+  // 🔥 CONTACTO (CLICK EN LISTA)
+  // =========================
+  abrirContacto(egresado: any): void {
+    this.abrirDetalleEgresado(egresado?.matricula);
+  }
 
+  abrirDetalleEgresado(matricula: string): void {
+    if (!matricula) {
+      return;
+    }
+
+    this.mostrarModalDetalle = true;
+    this.cargandoDetalle = true;
+    this.seccionActiva = 'contacto';
+    this.detalleEgresado = null;
+    this.laboralSeleccionado = null;
+    this.posgradoSeleccionado = null;
+    this.reconocimientoSeleccionado = null;
+    this.certificacionSeleccionada = null;
+
+    forkJoin({
+      perfil: this.egresadoService.getPerfilCompleto(matricula).pipe(catchError(() => of(null))),
+      contacto: this.egresadoService.getContactoPorMatricula(matricula).pipe(catchError(() => of(null))),
+      academico: this.egresadoService.getAcademicoPorMatricula(matricula).pipe(catchError(() => of(null))),
+      laboral: this.egresadoService.getLaboralPorMatricula(matricula).pipe(catchError(() => of([]))),
+      posgrado: this.egresadoService.getPosgradoPorMatricula(matricula).pipe(catchError(() => of([]))),
+      reconocimientos: this.egresadoService.getReconocimientosPorMatricula(matricula).pipe(catchError(() => of([]))),
+      certificaciones: this.egresadoService.getCertificacionesPorMatricula(matricula).pipe(catchError(() => of([])))
+    }).subscribe({
+      next: ({ perfil, contacto, academico, laboral, posgrado, reconocimientos, certificaciones }) => {
+        const combinado = {
+          ...(perfil || {}),
+          contacto,
+          academico,
+          laboral,
+          posgrado,
+          reconocimientos,
+          certificaciones
+        };
+        this.detalleEgresado = this.normalizarPerfilResponse(combinado);
+        this.laboralSeleccionado = this.laborales[0] || null;
+        this.posgradoSeleccionado = this.posgrados[0] || null;
+        this.reconocimientoSeleccionado = this.reconocimientos[0] || null;
+        this.certificacionSeleccionada = this.certificaciones[0] || null;
+        this.cargandoDetalle = false;
+      },
+      error: () => {
+        this.detalleEgresado = null;
+        this.cargandoDetalle = false;
+      }
+    });
+  }
+
+  cerrarContacto(): void {
+    this.mostrarModalDetalle = false;
+    this.detalleEgresado = null;
+    this.laboralSeleccionado = null;
+    this.posgradoSeleccionado = null;
+    this.reconocimientoSeleccionado = null;
+    this.certificacionSeleccionada = null;
+    this.seccionActiva = 'contacto';
+  }
+
+  toggleSeccion(seccion: 'contacto' | 'academico' | 'laboral' | 'posgrado' | 'reconocimientos' | 'certificaciones'): void {
+    this.seccionActiva = this.seccionActiva === seccion ? 'contacto' : seccion;
+  }
+
+  // =========================
+  // HELPERS DE DATOS
+  // =========================
+  get contacto(): any {
+    return this.detalleEgresado?.contacto || this.detalleEgresado || {};
+  }
+
+  get academico(): any {
+    return this.detalleEgresado?.academico || {};
+  }
+
+  get laborales(): any[] {
+    return this.detalleEgresado?.laboral || this.detalleEgresado?.laborales || [];
+  }
+
+  get posgrados(): any[] {
+    return this.detalleEgresado?.posgrado || this.detalleEgresado?.posgrados || [];
+  }
+
+  get reconocimientos(): any[] {
+    return this.detalleEgresado?.reconocimientos || [];
+  }
+
+  get certificaciones(): any[] {
+    return this.detalleEgresado?.certificaciones || [];
+  }
+
+  seleccionarLaboral(item: any): void {
+    this.laboralSeleccionado = item;
+  }
+
+  seleccionarPosgrado(item: any): void {
+    this.posgradoSeleccionado = item;
+  }
+
+  seleccionarReconocimiento(item: any): void {
+    this.reconocimientoSeleccionado = item;
+  }
+
+  seleccionarCertificacion(item: any): void {
+    this.certificacionSeleccionada = item;
+  }
+
+  obtenerPrestaciones(laboral: any): string {
+    if (!laboral?.prestaciones?.length) {
+      return 'No cuenta con prestaciones';
+    }
+    return laboral.prestaciones.map((p: any) => p.nombre).join(', ');
+  }
+
+  // =========================
+  // NORMALIZACION BACKEND
+  // =========================
+  private normalizarPerfilResponse(raw: any): any {
+    const perfil = raw?.perfil || raw?.egresado || raw || {};
+    const contactoRaw = raw?.contacto || perfil?.contacto || perfil || {};
+    const academicoRaw = raw?.academico || raw?.datosAcademicos || perfil?.academico || {};
+
+    const laboralRaw = this.obtenerLista(raw, ['laboral', 'laborales', 'experienciaLaboral']);
+    const posgradoRaw = this.obtenerLista(raw, ['posgrado', 'posgrados', 'estudiosPosgrado']);
+    const reconocimientosRaw = this.obtenerLista(raw, ['reconocimientos', 'reconocimiento']);
+    const certificacionesRaw = this.obtenerLista(raw, ['certificaciones', 'certificacion']);
+
+    return {
+      ...perfil,
+      contacto: {
+        telefono: this.pick(contactoRaw, ['telefono', 'telefonoCelular', 'celular']),
+        correoPersonal: this.pick(contactoRaw, ['correoPersonal', 'correo_personal', 'correo', 'email']),
+        ciudad: this.pick(contactoRaw, ['ciudad']),
+        estadoResidencia: this.pick(contactoRaw, ['estadoResidencia', 'estado_residencia', 'estado']),
+        instagram: this.pick(contactoRaw, ['instagram']),
+        facebook: this.pick(contactoRaw, ['facebook'])
+      },
+      academico: {
+        claveCarrera: this.pick(academicoRaw, ['claveCarrera', 'clave_carrera']),
+        promedio: this.pick(academicoRaw, ['promedio']),
+        anioEgreso: this.pick(academicoRaw, ['anioEgreso', 'anio_egreso']),
+        titulado: this.pick(academicoRaw, ['titulado']),
+        fechaTitulacion: this.pick(academicoRaw, ['fechaTitulacion', 'fecha_titulacion']),
+        tipoTitulacion: this.pick(academicoRaw, ['tipoTitulacion', 'tipo_titulacion']),
+        cedulaProfesional: this.pick(academicoRaw, ['cedulaProfesional', 'cedula_profesional']),
+        nombreTesis: this.pick(academicoRaw, ['nombreTesis', 'nombre_tesis']),
+        director: this.pick(academicoRaw, ['director']),
+        codirector: this.pick(academicoRaw, ['codirector']),
+        fechaExamen: this.pick(academicoRaw, ['fechaExamen', 'fecha_examen']),
+        puntajeCeneval: this.pick(academicoRaw, ['puntajeCeneval', 'puntaje_ceneval']),
+        tituloMemoria: this.pick(academicoRaw, ['tituloMemoria', 'titulo_memoria']),
+        asesor: this.pick(academicoRaw, ['asesor'])
+      },
+      laboral: laboralRaw.map((item: any) => ({
+        ...item,
+        idLaboral: this.pick(item, ['idLaboral', 'id_laboral']),
+        empresa: this.pick(item, ['empresa']),
+        puesto: this.pick(item, ['puesto']),
+        sector: this.pick(item, ['sector']),
+        tipoContrato: this.pick(item, ['tipoContrato', 'tipo_contrato']),
+        modalidadTrabajo: this.pick(item, ['modalidadTrabajo', 'modalidad_trabajo']),
+        salario: this.pick(item, ['salario']),
+        comoConsiguio: this.pick(item, ['comoConsiguio', 'como_consiguio']),
+        tiempoConseguir: this.pick(item, ['tiempoConseguir', 'tiempo_conseguir']),
+        relacionCarrera: this.pick(item, ['relacionCarrera', 'relacion_carrera']),
+        comentarios: this.pick(item, ['comentarios']),
+        prestaciones: Array.isArray(item?.prestaciones) ? item.prestaciones : []
+      })),
+      posgrado: posgradoRaw.map((item: any) => ({
+        ...item,
+        idPosgrado: this.pick(item, ['idPosgrado', 'id_posgrado']),
+        nivelEstudio: this.pick(item, ['nivelEstudio', 'nivel_estudio']),
+        institucion: this.pick(item, ['institucion']),
+        nombrePrograma: this.pick(item, ['nombrePrograma', 'nombre_programa']),
+        modalidad: this.pick(item, ['modalidad']),
+        estatus: this.pick(item, ['estatus']),
+        relacionadoCarrera: this.pick(item, ['relacionadoCarrera', 'relacionado_carrera']),
+        fechaInicio: this.pick(item, ['fechaInicio', 'fecha_inicio']),
+        fechaFin: this.pick(item, ['fechaFin', 'fecha_fin']),
+        tieneBeca: this.pick(item, ['tieneBeca', 'tiene_beca']),
+        tipoBeca: item?.tipoBeca || item?.tipo_beca || null
+      })),
+      reconocimientos: reconocimientosRaw.map((item: any) => ({
+        ...item,
+        idReconocimiento: this.pick(item, ['idReconocimiento', 'id_reconocimiento']),
+        nombreReconocimiento: this.pick(item, ['nombreReconocimiento', 'nombre_reconocimiento']),
+        tipoReconocimiento: this.pick(item, ['tipoReconocimiento', 'tipo_reconocimiento']),
+        fechaEntrega: this.pick(item, ['fechaEntrega', 'fecha_entrega']),
+        institucion: this.pick(item, ['institucion'])
+      })),
+      certificaciones: certificacionesRaw.map((item: any) => ({
+        ...item,
+        idCertificacion: this.pick(item, ['idCertificacion', 'id_certificacion']),
+        nombreCertificacion: this.pick(item, ['nombreCertificacion', 'nombre_certificacion']),
+        institucionCertificacion: this.pick(item, ['institucionCertificacion', 'institucion_certificacion']),
+        fechaInicio: this.pick(item, ['fechaInicio', 'fecha_inicio']),
+        fechaFin: this.pick(item, ['fechaFin', 'fecha_fin']),
+        fechaObtencion: this.pick(item, ['fechaObtencion', 'fecha_obtencion'])
+      }))
+    };
+  }
+
+  private obtenerLista(data: any, keys: string[]): any[] {
+    for (const key of keys) {
+      if (Array.isArray(data?.[key])) {
+        return data[key];
+      }
+    }
+    return [];
+  }
+
+  private pick(obj: any, keys: string[]): any {
+    for (const key of keys) {
+      if (obj?.[key] !== undefined && obj?.[key] !== null) {
+        return obj[key];
+      }
+    }
+    return null;
+  }
+
+  get estaTitulado(): boolean {
+    const valor = String(this.academico?.titulado || '').toLowerCase();
+    return valor === 'si' || valor === 'sí';
+  }
+
+  get tipoTitulacionNormalizado(): string {
+    return String(this.academico?.tipoTitulacion || '').toLowerCase().replace(/\s+/g, '_');
   }
 
 }

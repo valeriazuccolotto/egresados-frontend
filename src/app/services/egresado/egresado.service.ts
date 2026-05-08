@@ -8,8 +8,8 @@ import { Egresado } from '../../models/egresado';
 })
 export class EgresadoService {
 
-  // 👇 Usa el puerto correcto según tu backend (8181 o 8080)
-  private url = 'http://localhost:8181/egresados'; 
+  // 👇 Usa el puerto correcto según tu backend
+  private url = 'http://localhost:8181/egresados';
 
   constructor(private http: HttpClient) {}
 
@@ -33,7 +33,7 @@ export class EgresadoService {
     return this.http.get<Egresado>(`${this.url}/${matricula}`);
   }
 
-  // 🔹 Vista usuarios (lista con carrera, generación, etc.)
+  // 🔹 Vista usuarios
   getVistaUsuarios(): Observable<any[]> {
     return this.http.get<any[]>(`${this.url}/vista-usuarios`);
   }
@@ -42,4 +42,53 @@ export class EgresadoService {
   getPerfilCompleto(matricula: string): Observable<any> {
     return this.http.get<any>(`${this.url}/perfil/${matricula}`);
   }
+
+  // 🔹 Filtrar egresados
+  filtrarEgresados(
+    campus: string,
+    carrera: string,
+    generacion: string
+  ): Observable<any[]> {
+
+    return this.http.get<any[]>(
+
+      `${this.url}/filtrar`,
+
+      {
+        params: {
+          campus,
+          carrera,
+          generacion
+        }
+      }
+
+    );
+
+  }
+
+  // 🔹 Módulos por matrícula (detalle)
+  getLaboralPorMatricula(matricula: string): Observable<any[]> {
+    return this.http.get<any[]>(`http://localhost:8181/egresado/laboral/${matricula}`);
+  }
+
+  getPosgradoPorMatricula(matricula: string): Observable<any[]> {
+    return this.http.get<any[]>(`http://localhost:8181/egresado/posgrado/${matricula}`);
+  }
+
+  getReconocimientosPorMatricula(matricula: string): Observable<any[]> {
+    return this.http.get<any[]>(`http://localhost:8181/egresado/reconocimientos/${matricula}`);
+  }
+
+  getCertificacionesPorMatricula(matricula: string): Observable<any[]> {
+    return this.http.get<any[]>(`http://localhost:8181/egresado/certificaciones/${matricula}`);
+  }
+
+  getContactoPorMatricula(matricula: string): Observable<any> {
+    return this.http.get<any>(`${this.url}/contacto/${matricula}`);
+  }
+
+  getAcademicoPorMatricula(matricula: string): Observable<any> {
+    return this.http.get<any>(`${this.url}/academico/${matricula}`);
+  }
+
 }
