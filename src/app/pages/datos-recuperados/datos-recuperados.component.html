@@ -1,0 +1,53 @@
+<app-admin-layout>
+
+    <div class="section-header">
+        <div class="section-title">
+        <h2>Datos Recuperados</h2>
+        <p>Consulta la información de los egresados</p>
+        </div>
+    </div>
+
+    <div class="card">
+
+        <!-- 🔍 BUSCADOR -->
+        <div class="search-container">
+        <span class="search-icon">🔍</span>
+
+        <input
+            type="text"
+            [(ngModel)]="matricula"
+            placeholder="Buscar por matrícula..."
+        >
+
+        <button class="btn-guardar" (click)="buscarPorMatricula()">
+            Buscar
+        </button>
+        </div>
+
+        <!-- 🎯 FILTROS -->
+        <div class="filtros">
+
+        <select [(ngModel)]="carreraSeleccionada">
+            <option value="">Carrera</option>
+            <option *ngFor="let c of carreras" [value]="c">{{ c }}</option>
+        </select>
+
+        <select [(ngModel)]="generacionSeleccionada">
+            <option value="">Generación</option>
+            <option *ngFor="let g of generaciones" [value]="g">{{ g }}</option>
+        </select>
+
+
+        <button class="btn-secundario" (click)="filtrar()">
+            Filtrar
+        </button>
+
+        </div>
+
+        <div class="estado-vacio">
+        Realiza una búsqueda para ver resultados
+        </div>
+
+    </div>
+
+</app-admin-layout>
