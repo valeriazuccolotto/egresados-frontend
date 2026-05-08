@@ -8,6 +8,7 @@ import { Egresado } from '../../models/egresado';
 })
 export class EgresadoService {
 
+  // 👇 Usa el puerto correcto según tu backend (8181 o 8080)
   private url = 'http://localhost:8181/egresados'; 
 
   constructor(private http: HttpClient) {}
