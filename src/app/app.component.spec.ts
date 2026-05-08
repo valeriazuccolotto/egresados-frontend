@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 /// <reference types="jasmine" />
 
@@ -32,3 +33,5 @@ describe('AppComponent', () => {
   });
 });
 >>>>>>> origin/laboral
+=======
+>>>>>>> origin/datos-recuperados

@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+
+// LOGIN Y EGRESADOS
 import { LoginComponent } from './pages/login/login.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { ContactoComponent } from './pages/contacto/contacto.component';
@@ -9,11 +11,24 @@ import { CertificacionesComponent } from './pages/certificaciones/certificacione
 import { ReconocimientosComponent } from './pages/reconocimientos/reconocimientos.component';
 import { DatosPersonalesComponent } from './pages/datos-personales/datos-personales.component';
 
+// ADMIN
+import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
+import { DatosRecuperadosComponent } from './pages/datos-recuperados/datos-recuperados.component';
+import { UsuariosAdmComponent } from './pages/usuarios-adm/usuarios-adm.component';
+
+// REPORTES ADMIN
+import { AcademicoComponent as ReporteAcademicoComponent } from './pages/reportes/academico/academico.component';
+import { LaboralComponent as ReporteLaboralComponent } from './pages/reportes/laboral/laboral.component';
+import { PosgradoComponent as ReportePosgradoComponent } from './pages/reportes/posgrado/posgrado.component';
+import { ReconocimientosComponent as ReporteReconocimientosComponent } from './pages/reportes/reconocimientos/reconocimientos.component';
+
 export const routes: Routes = [
 
+  // LOGIN
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
 
+  // EGRESADOS
   { path: 'perfil', component: PerfilComponent },
   { path: 'datos-personales', component: DatosPersonalesComponent },
   { path: 'contacto', component: ContactoComponent },
@@ -23,5 +38,25 @@ export const routes: Routes = [
   { path: 'certificaciones', component: CertificacionesComponent },
   { path: 'reconocimientos', component: ReconocimientosComponent },
 
+  // ADMIN
+  {
+    path: 'admin',
+    component: AdminLayoutComponent,
+    children: [
+
+      { path: 'usuarios', component: UsuariosAdmComponent },
+      { path: 'datos-recuperados', component: DatosRecuperadosComponent },
+
+      // REPORTES
+      { path: 'reportes/academico', component: ReporteAcademicoComponent },
+      { path: 'reportes/laboral', component: ReporteLaboralComponent },
+      { path: 'reportes/posgrado', component: ReportePosgradoComponent },
+      { path: 'reportes/reconocimientos', component: ReporteReconocimientosComponent }
+
+    ]
+  },
+
+  // RUTA NO ENCONTRADA
   { path: '**', redirectTo: 'login' }
+
 ];

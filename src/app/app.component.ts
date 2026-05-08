@@ -338,3 +338,4 @@ actualizarPorcentaje(completados: number, total: number) {
 }
   
 }
+

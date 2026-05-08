@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 import { Academico } from '../models/academico';
 import { Carrera } from '../models/carrera';
 
@@ -9,9 +10,17 @@ import { Carrera } from '../models/carrera';
 })
 export class AcademicoService {
 
+  // API principal
   private apiUrl = 'http://localhost:8189/egresados/academico';
 
+  // Base URL general
+  private baseUrl = 'http://localhost:8189';
+
   constructor(private http: HttpClient) {}
+
+  // =========================
+  // EGRESADOS
+  // =========================
 
   obtenerPorMatricula(matricula: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${matricula}`);
@@ -27,5 +36,17 @@ export class AcademicoService {
 
   obtenerCarreras(): Observable<Carrera[]> {
     return this.http.get<Carrera[]>(`${this.apiUrl}/carreras`);
+  }
+
+  // =========================
+  // REPORTES / ADMIN
+  // =========================
+
+  getAcademicos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/egresados/academico`);
+  }
+
+  getEgresados(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/egresados`);
   }
 }

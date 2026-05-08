@@ -1,0 +1,109 @@
+<div class="pagina">
+
+  <!-- ENCABEZADO -->
+  <div class="encabezado">
+    <div class="encabezado-texto">
+      <h2>Reportes de Reconocimientos obtenidos</h2>
+      <p>Análisis estadístico de reconocimientos de egresados</p>
+    </div>
+    <div class="campus-box">
+      <span class="material-icons">location_on</span>
+      <label>Campus</label>
+      <select [(ngModel)]="campusSeleccionado" (change)="cambiarCampus()">
+        <option *ngFor="let c of campus">{{ c }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- MÉTRICAS -->
+  <div class="metricas">
+    <div class="metrica-card">
+      <span class="material-icons icono-metrica">emoji_events</span>
+      <h3>{{ totalReconocimientos }}</h3>
+      <p>Total de reconocimientos</p>
+    </div>
+    <div class="metrica-card">
+      <span class="material-icons icono-metrica">people</span>
+      <h3>{{ egresadosConReconocimiento }}</h3>
+      <p>Egresados con reconocimiento</p>
+    </div>
+    <div class="metrica-card">
+      <span class="material-icons icono-metrica">star</span>
+      <h3>{{ tipoMasFrecuente }}</h3>
+      <p>Tipo más frecuente</p>
+    </div>
+    <div class="metrica-card">
+      <span class="material-icons icono-metrica">account_balance</span>
+      <h3>{{ institucionMasFrecuente }}</h3>
+      <p>Institución que más reconoce</p>
+    </div>
+  </div>
+
+  <!-- GRÁFICAS -->
+  <div class="graficas-grid dos-col">
+
+    <div class="grafica-card">
+      <h3 class="grafica-titulo">
+        <span class="material-icons">emoji_events</span>
+        Tipo de reconocimiento
+      </h3>
+      <p class="grafica-desc">Distribución por tipo: académico, cultural o deportivo</p>
+      <div class="grafica-wrap grande">
+        <canvas id="chartTipo"></canvas>
+      </div>
+    </div>
+
+    <div class="grafica-card">
+      <h3 class="grafica-titulo">
+        <span class="material-icons">account_balance</span>
+        Reconocimientos por institución
+      </h3>
+      <p class="grafica-desc">Instituciones que han otorgado reconocimientos a egresados</p>
+      <div class="grafica-wrap grande">
+        <canvas id="chartInstitucion"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TABLA -->
+  <div class="tabla-card">
+    <h3 class="grafica-titulo">
+      <span class="material-icons">list_alt</span>
+      Detalle de reconocimientos
+    </h3>
+    <p class="grafica-desc">Listado completo de reconocimientos registrados</p>
+    <div class="tabla-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Matrícula</th>
+            <th>Reconocimiento</th>
+            <th>Tipo</th>
+            <th>Institución</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of reconocimientosFiltrados">
+            <td>{{ r.matricula }}</td>
+            <td>{{ r.nombreReconocimiento }}</td>
+            <td>
+              <span class="badge" [ngClass]="{
+                'badge-academico': r.tipoReconocimiento === 'Academico',
+                'badge-cultural': r.tipoReconocimiento === 'Cultural',
+                'badge-deportivo': r.tipoReconocimiento === 'Deportivo'
+              }">{{ r.tipoReconocimiento }}</span>
+            </td>
+            <td>{{ r.institucion }}</td>
+            <td>{{ r.fechaEntrega | date:'dd/MM/yyyy' }}</td>
+          </tr>
+          <tr *ngIf="reconocimientosFiltrados.length === 0">
+            <td colspan="5" class="sin-datos">No hay reconocimientos registrados</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
