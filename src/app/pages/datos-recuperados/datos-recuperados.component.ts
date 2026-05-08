@@ -3,8 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
-import { AdminLayoutComponent } from '../../layout/layout/layout.component';
-import { EgresadoService } from '../../services/egresado.service';
+// ✅ Import correcto del nuevo layout
+import { AdminLayoutComponent } from '../../layout/admin-layout/admin-layout.component';
+
+// ✅ Import del service
+import { EgresadoService } from '../../services/egresado/egresado.service';
 
 @Component({
   selector: 'app-datos-recuperados',
@@ -12,7 +15,7 @@ import { EgresadoService } from '../../services/egresado.service';
   imports: [
     CommonModule,
     FormsModule,
-    HttpClientModule, // 🔥 necesario para HttpClient
+    HttpClientModule,
     AdminLayoutComponent
   ],
   templateUrl: './datos-recuperados.component.html',
@@ -20,21 +23,16 @@ import { EgresadoService } from '../../services/egresado.service';
 })
 export class DatosRecuperadosComponent implements OnInit {
 
-  // ================= UI =================
   menu = true;
-
-  // ================= BUSQUEDA =================
   matricula: string = '';
   resultado: any = null;
 
-  // ================= FILTRO =================
   carreraSeleccionada: string = '';
   generacionSeleccionada: string | null = null;
 
   carreras: string[] = [];
   generaciones: (string | number)[] = [];
-
-  // ================= CONTROL SECCIONES =================
+  
   secciones: any = {
     academico: false,
     laboral: false,
@@ -43,7 +41,6 @@ export class DatosRecuperadosComponent implements OnInit {
     reconocimientos: false
   };
 
-  // ================= MODALES =================
   mostrarModal: any = {
     academico: false,
     laboral: false,
@@ -55,17 +52,14 @@ export class DatosRecuperadosComponent implements OnInit {
   constructor(private egresadoService: EgresadoService) {}
 
   ngOnInit(): void {
-    // 🔥 cargar carreras y generaciones desde backend
-    this.egresadoService.getCarreras().subscribe(data => {
+    this.egresadoService.getCarreras().subscribe((data: string[]) => {
       this.carreras = data;
     });
 
-    this.egresadoService.getGeneraciones().subscribe(data => {
+    this.egresadoService.getGeneraciones().subscribe((data: number[]) => {
       this.generaciones = data;
     });
   }
-
-  // ================= ACCIONES =================
 
   buscarPorMatricula() {
     if (!this.matricula.trim()) return;
@@ -84,7 +78,6 @@ export class DatosRecuperadosComponent implements OnInit {
       reconocimientos: { nombre: 'Mejor promedio' }
     };
 
-    // reset secciones
     this.secciones = {
       academico: false,
       laboral: false,
