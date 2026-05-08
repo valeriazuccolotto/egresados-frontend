@@ -133,7 +133,7 @@ export class CertificacionesComponent implements OnInit {
 
   actualizarCertificacion() {
     const datosActualizados = {
-      matricula: "A1234567",
+      matricula: this.matriculaUsuario,
       idCertificacion: this.certSeleccionado.idCertificacion,
       nombreCertificacion: this.certSeleccionado.nombreCertificacion,
       fechaInicio: this.certSeleccionado.fechaInicio,

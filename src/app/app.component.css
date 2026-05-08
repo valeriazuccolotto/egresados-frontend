@@ -1,11 +1,38 @@
 :host {
   font-family: 'Roboto', sans-serif;
 }
+
+
 /* CONTENEDOR GENERAL */
+.app-body {
+  display: flex;
+  align-items: stretch;
+  min-height: calc(100vh - 80px);
+  background: #f4f5f8;
+  overflow-x: hidden;
+}
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: linear-gradient(180deg, #178a7a, #0b7a6b);
+  transition: transform 0.3s ease;
+  position: relative;
+  z-index: 2;
+  align-self: stretch;
+}
+
+.page-content {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  background: #f4f5f8;
+  overflow-x: hidden;
+}
+
 .app-shell {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 /* TOPBAR */
@@ -145,11 +172,7 @@
 }
 
 /* CONTENIDO */
-.page-content {
-  flex: 1;
-  padding: 0;
-  background: #f4f5f8;
-}
+
 .user-menu {
   position: relative;
   display: flex;

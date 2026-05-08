@@ -2,6 +2,47 @@
     FORMULARIO GENERAL
 ========================= */
 
+:host {
+  font-family: 'Roboto', sans-serif;
+}
+
+.page-section {
+  width: 100%;
+  padding: 40px 60px;
+  background: #f4f6f8;
+  min-height: 100%;
+  box-sizing: border-box;
+}
+
+.section-header {
+  margin-bottom: 24px;
+}
+
+.card {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.historial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
+  gap: 20px;
+}
+
+.historial-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 10px 30px;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+  width: 100%;
+  max-width: none;
+  border: 1px solid #dbe3e8;
+  border-radius: 14px;
+  box-sizing: border-box;
+}
+
+
 .form-grid{
     display:flex;
     flex-direction:column;
@@ -10,21 +51,32 @@
 
 
 
-/* BLOQUES */
-.bloque-formulario{
-    width:100%;
-    padding: 10px 30px;
-    border:1px solid #e5e5e5;
-    border-radius:14px;
-    background:#ffffff;
-
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:18px;
-    margin-bottom:20px;
+.section-title h2 {
+  color: #2f8f83;
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 6px;
 }
 
+.section-title p {
+  color: #6b7280;
+  font-size: 15px;
+  margin-bottom: 24px;
+}
 
+/* BLOQUES */
+.bloque-formulario {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 20px;
+  padding: 40px 60px;
+  border: 1px solid #e5e5e5;
+  border-radius: 14px;
+  background: white;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
 
 .bloque-formulario h3{
     grid-column:1/-1;
@@ -68,7 +120,7 @@
 /* BOTONES GENERALES */
 .btn-guardar,
 .btn-secundario{
-    padding:12px 24px;
+    padding:12px 14px;
     border-radius:10px;
     cursor:pointer;
 }
@@ -556,11 +608,23 @@
     text-decoration: underline;
 }
 
-/* Íconos en labels de formularios */
-.field-group label i {
-  color: #256f66;        /* verde oscuro */
-  margin-right: 6px;     /* separación con el texto */
-  font-size: 1rem;       /* tamaño ajustable */
-  vertical-align: middle; /* alineación con el texto */
+.field-group label{
+    display:flex;
+    align-items:center;
+    gap:10px;
 }
 
+.field-group label i{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    width:26px;
+    height:26px;
+    border-radius:50%;
+
+    background:#E5F3F0;   /* 🔥 verde clarito */
+    color:#2f8f83;        /* 🔥 verde principal */
+
+    font-size:12px;
+}

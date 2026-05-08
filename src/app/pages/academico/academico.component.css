@@ -1,10 +1,13 @@
 :host {
   font-family: 'Roboto', sans-serif;
 }
+
 .page-section {
-  padding: 26px 34px 42px;
+  width: 100%;
+  padding: 40px 60px;
   background: #f4f6f8;
   min-height: 100%;
+  box-sizing: border-box;
 }
 
 .section-header {
@@ -26,14 +29,15 @@
 
 .form-card {
   width: 100%;
+  max-width: none;
   background: #ffffff;
   border: 1px solid #dbe3e8;
   border-radius: 14px;
   padding: 10px 30px;
   box-sizing: border-box;
-  max-width: none;
 }
 
+.academico-form h2,
 .contact-form h2 {
   margin: 0 0 24px;
   font-size: 18px;
@@ -65,11 +69,6 @@
   color: #1f2d3a;
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.field-group input::placeholder {
-  color: #9aa6b2;
 }
 
 .field-group input:focus,
@@ -82,26 +81,6 @@
   margin-top: 30px;
   padding-top: 28px;
   border-top: 1px solid #e6eaee;
-}
-
-.save-msg {
-  margin-bottom: 16px;
-  padding: 14px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  background: #ecfdf3;
-  color: #027a48;
-  border: 1px solid #abefc6;
-}
-
-.error-msg {
-  margin-bottom: 16px;
-  padding: 14px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  background: #fef3f2;
-  color: #b42318;
-  border: 1px solid #fecdca;
 }
 
 .form-actions {

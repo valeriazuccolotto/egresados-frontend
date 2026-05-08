@@ -1,4 +1,7 @@
-    <div class="section-header">
+
+<div class="page-section">
+
+<div class="section-header">
     <div class="section-title">
         <h2>Reconocimientos Académicos</h2>
         <p>Registra premios, logros y distinciones</p>
@@ -22,44 +25,58 @@
 
     <!-- FORMULARIO CREAR -->
     <form class="form-grid" *ngIf="mostrarFormulario && !reconocimientoSeleccionado">
-        <div class="bloque-formulario">
+
+    <div class="bloque-formulario">
         <h3>Información del reconocimiento</h3>
 
         <div class="field-group">
-            <label>Nombre <span class="required">*</span></label>
+            <label>
+                <i class="fas fa-award"></i>
+                Nombre <span class="required">*</span>
+            </label>
             <input [(ngModel)]="form.recoNombre" name="recoNombre" required #recoNombre="ngModel">
             <div class="error" *ngIf="recoNombre.invalid && recoNombre.touched">Campo obligatorio</div>
         </div>
 
         <div class="field-group">
-            <label>Tipo <span class="required">*</span></label>
+            <label>
+                <i class="fas fa-layer-group"></i>
+                Tipo <span class="required">*</span>
+            </label>
             <select [(ngModel)]="form.recoTipo" name="recoTipo" required #recoTipo="ngModel">
-            <option value="">Seleccione</option>
-            <option>Académico</option>
-            <option>Cultural</option>
-            <option>Deportivo</option>
+                <option value="">Seleccione</option>
+                <option>Académico</option>
+                <option>Cultural</option>
+                <option>Deportivo</option>
             </select>
             <div class="error" *ngIf="recoTipo.invalid && recoTipo.touched">Campo obligatorio</div>
         </div>
 
         <div class="field-group">
-            <label>Fecha <span class="required">*</span></label>
+            <label>
+                <i class="fas fa-calendar-day"></i>
+                Fecha <span class="required">*</span>
+            </label>
             <input type="date" [(ngModel)]="form.recoFecha" name="recoFecha" required #recoFecha="ngModel">
             <div class="error" *ngIf="recoFecha.invalid && recoFecha.touched">Campo obligatorio</div>
         </div>
 
         <div class="field-group">
-            <label>Institución <span class="required">*</span></label>
+            <label>
+                <i class="fas fa-university"></i>
+                Institución <span class="required">*</span>
+            </label>
             <input [(ngModel)]="form.recoInstitucion" name="recoInstitucion" required #recoInstitucion="ngModel">
             <div class="error" *ngIf="recoInstitucion.invalid && recoInstitucion.touched">Campo obligatorio</div>
         </div>
-        </div>
+    </div>
 
-        <div class="full">
+    <div class="acciones-detalle">
         <button type="button" (click)="guardar()" class="btn-guardar">Guardar reconocimiento</button>
         <button type="button" (click)="cancelarFormulario()" class="btn-secundario">Cancelar</button>
-        </div>
-    </form>
+    </div>
+
+</form>
 
     <div *ngIf="mensaje" class="save-msg">
         {{ mensaje }}
@@ -85,7 +102,7 @@
             </div>
 
             <div class="historial-actions">
-            <button (click)="verDetalle(reco)" class="btn-ver">Ver</button>
+            <button (click)="verDetalle(reco)" class="btn-ver">Editar</button>
             <button (click)="abrirConfirmacion(reco.idReconocimiento)" class="btn-eliminar">Eliminar</button>
             </div>
         </div>
@@ -95,18 +112,25 @@
     <!-- FORMULARIO EDICIÓN -->
     <div *ngIf="reconocimientoSeleccionado" class="detalle-expandido">
         <form (ngSubmit)="actualizarReconocimiento()" class="form-grid">
-        <div class="bloque-formulario">
-            <h3>Editar reconocimiento</h3>
 
-            <div class="field-group">
-            <label>Nombre del reconocimiento <span class="required">*</span></label>
+    <div class="bloque-formulario">
+        <h3>Editar reconocimiento</h3>
+
+        <div class="field-group">
+            <label>
+                <i class="fas fa-award"></i>
+                Nombre del reconocimiento <span class="required">*</span>
+            </label>
             <input [(ngModel)]="reconocimientoSeleccionado.nombreReconocimiento"
                     name="nombreReconocimiento" required #nombreEdit="ngModel">
             <div class="error" *ngIf="nombreEdit.invalid && nombreEdit.touched">Campo obligatorio</div>
-            </div>
+        </div>
 
-            <div class="field-group">
-            <label>Tipo de reconocimiento <span class="required">*</span></label>
+        <div class="field-group">
+            <label>
+                <i class="fas fa-layer-group"></i>
+                Tipo de reconocimiento <span class="required">*</span>
+            </label>
             <select [(ngModel)]="reconocimientoSeleccionado.tipoReconocimiento"
                     name="tipoReconocimiento" required #tipoEdit="ngModel">
                 <option value="">Seleccione</option>
@@ -115,28 +139,37 @@
                 <option>Deportivo</option>
             </select>
             <div class="error" *ngIf="tipoEdit.invalid && tipoEdit.touched">Campo obligatorio</div>
-            </div>
+        </div>
 
-            <div class="field-group">
-            <label>Fecha de entrega <span class="required">*</span></label>
-            <input type="date" [(ngModel)]="reconocimientoSeleccionado.fechaEntrega"
+        <div class="field-group">
+            <label>
+                <i class="fas fa-calendar-day"></i>
+                Fecha de entrega <span class="required">*</span>
+            </label>
+            <input type="date"
+                    [(ngModel)]="reconocimientoSeleccionado.fechaEntrega"
                     name="fechaEntrega" required #fechaEdit="ngModel">
             <div class="error" *ngIf="fechaEdit.invalid && fechaEdit.touched">Campo obligatorio</div>
-            </div>
+        </div>
 
-            <div class="field-group">
-            <label>Institución <span class="required">*</span></label>
+        <div class="field-group">
+            <label>
+                <i class="fas fa-university"></i>
+                Institución <span class="required">*</span>
+            </label>
             <input [(ngModel)]="reconocimientoSeleccionado.institucion"
                     name="institucion" required #instEdit="ngModel">
             <div class="error" *ngIf="instEdit.invalid && instEdit.touched">Campo obligatorio</div>
-            </div>
         </div>
 
-        <div class="acciones-detalle">
-            <button type="submit" class="btn-guardar">Guardar cambios</button>
-            <button type="button" (click)="cancelarEdicion()" class="btn-secundario">Cancelar</button>
-        </div>
-        </form>
+    </div>
+
+    <div class="acciones-detalle">
+        <button type="submit" class="btn-guardar">Guardar cambios</button>
+        <button type="button" (click)="cancelarEdicion()" class="btn-secundario">Cancelar</button>
+    </div>
+
+</form>
     </div>
 
     <!-- MODAL CONFIRMACIÓN -->
@@ -154,43 +187,77 @@
     </div>
 
 <!-- MODAL CONSULTA RECONOCIMIENTO -->
-    <div class="modal-overlay" *ngIf="mostrarConsulta">
-        <div class="modal-card modal-detalle">
+<div class="modal-overlay" *ngIf="mostrarConsulta">
+    <div class="modal-card modal-detalle">
+
+        <!-- BOTÓN CERRAR -->
+        <button class="modal-close" (click)="cerrarConsulta()">&times;</button>
+
+        <!-- HEADER -->
+        <div class="modal-header">
+            <div class="modal-icon">
+                <i class="fas fa-award"></i>
+            </div>
+            <div>
+                <label class="modal-label">Reconocimiento</label>
+                <h3>{{ recoConsulta?.nombreReconocimiento }}</h3>
+                <p>Información del reconocimiento obtenido</p>
+            </div>
+        </div>
 
         <!-- BODY -->
         <div class="modal-body" *ngIf="recoConsulta">
-        <div class="detalle-grid">
 
-            <div class="detalle-item">
-            <label>Nombre</label>
-            <p>{{ recoConsulta.nombreReconocimiento }}</p>
+            <!-- IZQUIERDA -->
+            <div class="detalle-grid">
+
+                <div class="detalle-item">
+                    <div class="info-icon"><i class="fas fa-tag"></i></div>
+                    <div>
+                        <label>Tipo</label>
+                        <p>{{ recoConsulta.tipoReconocimiento }}</p>
+                    </div>
+                </div>
+
+                <div class="detalle-item">
+                    <div class="info-icon"><i class="fas fa-calendar-check"></i></div>
+                    <div>
+                        <label>Fecha</label>
+                        <p>{{ recoConsulta.fechaEntrega }}</p>
+                    </div>
+                </div>
+
+                <div class="detalle-item">
+                    <div class="info-icon"><i class="fas fa-university"></i></div>
+                    <div>
+                        <label>Institución</label>
+                        <p>{{ recoConsulta.institucion }}</p>
+                    </div>
+                </div>
+
             </div>
 
-            <div class="detalle-item">
-            <label>Tipo</label>
-            <p>{{ recoConsulta.tipoReconocimiento }}</p>
+            <!-- DERECHA (PREVIEW) -->
+            <div class="laboral-preview">
+                <div class="laboral-card">
+                    <div class="laboral-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <h4 class="laboral-label">Reconocimiento</h4>
+                    <p class="laboral-value">
+                        {{ recoConsulta?.nombreReconocimiento }}
+                    </p>
+                </div>
             </div>
 
-            <div class="detalle-item">
-            <label>Fecha</label>
-            <p>{{ recoConsulta.fechaEntrega }}</p>
-            </div>
-
-            <div class="detalle-item">
-            <label>Institución</label>
-            <p>{{ recoConsulta.institucion }}</p>
-            </div>
-
-        </div>
         </div>
 
         <!-- FOOTER -->
         <div class="acciones-modal">
-        <button class="btn-secundario" (click)="cerrarConsulta()">
-            Cerrar
-        </button>
+            <button class="cert-btn-secondary" (click)="cerrarConsulta()">
+                Cerrar
+            </button>
         </div>
 
     </div>
 </div>
-
