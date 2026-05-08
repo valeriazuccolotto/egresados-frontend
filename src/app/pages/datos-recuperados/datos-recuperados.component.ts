@@ -3,10 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
-// ✅ Import correcto del nuevo layout
-import { AdminLayoutComponent } from '../../layout/admin-layout/admin-layout.component';
-
-// ✅ Import del service
 import { EgresadoService } from '../../services/egresado/egresado.service';
 
 @Component({
@@ -15,92 +11,205 @@ import { EgresadoService } from '../../services/egresado/egresado.service';
   imports: [
     CommonModule,
     FormsModule,
-    HttpClientModule,
-    AdminLayoutComponent
+    HttpClientModule
   ],
   templateUrl: './datos-recuperados.component.html',
   styleUrls: ['./datos-recuperados.component.css']
 })
 export class DatosRecuperadosComponent implements OnInit {
 
-  menu = true;
+  // =========================
+  // BÚSQUEDA
+  // =========================
+
   matricula: string = '';
+
+  // =========================
+  // RESULTADO
+  // =========================
+
   resultado: any = null;
 
+  cargando: boolean = false;
+
+  // =========================
+  // CAMPUS
+  // =========================
+
+  campusSeleccionado: string = '';
+
+  // =========================
+  // FILTROS SELECCIONADOS
+  // =========================
+
   carreraSeleccionada: string = '';
-  generacionSeleccionada: string | null = null;
 
-  carreras: string[] = [];
-  generaciones: (string | number)[] = [];
-  
-  secciones: any = {
-    academico: false,
-    laboral: false,
-    posgrado: false,
-    certificaciones: false,
-    reconocimientos: false
+  generacionSeleccionada: string = '';
+
+  // =========================
+  // CARRERAS POR CAMPUS
+  // =========================
+
+  carrerasPorCampus: { [key: string]: string[] } = {
+
+    'Loma Bonita': [
+
+      'Ingeniería en Agronomía',
+      'Ingeniería Agrícola Tropical',
+      'Ingeniería en Ciencia de Datos',
+      'Ingeniería en Computación',
+      'Ingeniería en Diseño',
+      'Ingeniería en Mecatrónica',
+      'Licenciatura en Biología Sostenible',
+      'Licenciatura en Medicina Veterinaria y Zootecnia'
+
+    ],
+
+    'Tuxtepec': [
+
+      'Licenciatura en Medicina',
+      'Licenciatura en Enfermería',
+      'Químico Farmacobiólogo',
+      'Ingeniería en Biotecnología',
+      'Ingeniería en Alimentos',
+      'Ingeniería en Innovación y Desarrollo Agropecuario',
+      'Ciencias Empresariales'
+
+    ]
+
   };
 
-  mostrarModal: any = {
-    academico: false,
-    laboral: false,
-    posgrado: false,
-    certificaciones: false,
-    reconocimientos: false
-  };
+  // =========================
+  // LISTAS
+  // =========================
 
-  constructor(private egresadoService: EgresadoService) {}
+  carrerasFiltradas: string[] = [];
 
-  ngOnInit(): void {
-    this.egresadoService.getCarreras().subscribe((data: string[]) => {
-      this.carreras = data;
-    });
+  generaciones: string[] = [
 
-    this.egresadoService.getGeneraciones().subscribe((data: number[]) => {
-      this.generaciones = data;
-    });
+    '2020 - 2024',
+    '2021 - 2025',
+    '2022 - 2026'
+
+  ];
+
+  // =========================
+  // CONSTRUCTOR
+  // =========================
+
+  constructor(
+    private egresadoService: EgresadoService
+  ) {}
+
+  // =========================
+  // INIT
+  // =========================
+
+  ngOnInit(): void {}
+
+  // =========================
+  // CAMBIO DE CAMPUS
+  // =========================
+
+  actualizarCarreras(): void {
+
+    // limpiar carrera seleccionada
+    this.carreraSeleccionada = '';
+
+    // TODOS
+    if (this.campusSeleccionado === 'Todos') {
+
+      this.carrerasFiltradas = [
+
+        ...this.carrerasPorCampus['Loma Bonita'],
+        ...this.carrerasPorCampus['Tuxtepec']
+
+      ];
+
+      return;
+
+    }
+
+    // CAMPUS ESPECÍFICO
+    this.carrerasFiltradas =
+      this.carrerasPorCampus[this.campusSeleccionado] || [];
+
   }
 
-  buscarPorMatricula() {
-    if (!this.matricula.trim()) return;
+  // =========================
+  // BUSCAR EGRESADO
+  // =========================
 
-    console.log('Buscar matrícula:', this.matricula);
+  buscarPorMatricula(): void {
 
-    // 🔥 MOCK (luego API real)
-    this.resultado = {
-      nombre: 'Valeria',
-      matricula: this.matricula,
-      contacto: { correo: 'valeria@gmail.com', telefono: '2711234567' },
-      academico: { resumen: 'Egresada de Ingeniería en Sistemas' },
-      laboral: { empresa: 'Google' },
-      posgrado: { programa: 'Maestría en IA' },
-      certificaciones: { nombre: 'Scrum Master' },
-      reconocimientos: { nombre: 'Mejor promedio' }
-    };
+    // evitar búsqueda vacía
+    if (!this.matricula.trim()) {
 
-    this.secciones = {
-      academico: false,
-      laboral: false,
-      posgrado: false,
-      certificaciones: false,
-      reconocimientos: false
-    };
+      this.resultado = null;
+
+      return;
+
+    }
+
+    this.cargando = true;
+
+    this.egresadoService
+      .getPerfilCompleto(this.matricula)
+      .subscribe({
+
+        next: (data) => {
+
+          console.log(
+            'Perfil encontrado:',
+            data
+          );
+
+          this.resultado = data;
+
+          this.cargando = false;
+
+        },
+
+        error: (err) => {
+
+          console.error(
+            'Error buscando egresado',
+            err
+          );
+
+          this.resultado = null;
+
+          this.cargando = false;
+
+        }
+
+      });
+
   }
 
-  filtrar() {
-    console.log('Filtrar:', this.carreraSeleccionada, this.generacionSeleccionada);
-    // 🔥 aquí puedes llamar a un endpoint que filtre egresados por carrera y generación
+  // =========================
+  // FILTRAR
+  // =========================
+
+  filtrar(): void {
+
+    console.log(
+      'Campus:',
+      this.campusSeleccionado
+    );
+
+    console.log(
+      'Carrera:',
+      this.carreraSeleccionada
+    );
+
+    console.log(
+      'Generación:',
+      this.generacionSeleccionada
+    );
+
+    // 🔥 después conectarás tu endpoint real
+
   }
 
-  toggle(seccion: string) {
-    this.secciones[seccion] = !this.secciones[seccion];
-  }
-
-  abrirModal(tipo: string) {
-    this.mostrarModal[tipo] = true;
-  }
-
-  cerrarModal(tipo: string) {
-    this.mostrarModal[tipo] = false;
-  }
 }

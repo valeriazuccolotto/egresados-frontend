@@ -1,8 +1,15 @@
-export interface Egresado{
-  matricula:string;
-  nombre:string;
-  apellido_paterno:string;
-  apellido_materno:string;
-  foto_perfil:string;
-  campus:string;
+export interface Egresado {
+
+  matricula: string;
+
+  nombre: string;
+
+  apellidoPaterno: string;
+
+  apellidoMaterno: string;
+
+  generacion: string;
+
+  campus: string;
+
 }

@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class ReconocimientosService {
 
-  private baseUrl = 'http://localhost:8080';
+  private baseUrl = 'http://localhost:8181';
 
   constructor(private http: HttpClient) {}
 

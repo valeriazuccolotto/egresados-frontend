@@ -37,4 +37,9 @@ export class EgresadoService {
   getVistaUsuarios(): Observable<any[]> {
     return this.http.get<any[]>(`${this.url}/vista-usuarios`);
   }
+
+  // 🔹 Perfil completo con foto
+  getPerfilCompleto(matricula: string): Observable<any> {
+    return this.http.get<any>(`${this.url}/perfil/${matricula}`);
+  }
 }

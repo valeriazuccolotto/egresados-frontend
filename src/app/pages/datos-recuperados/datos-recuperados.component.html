@@ -1,53 +1,317 @@
-<app-admin-layout>
+<div class="page-wrapper">
+
+    <!-- =========================
+        HEADER
+    ========================== -->
 
     <div class="section-header">
+
         <div class="section-title">
-        <h2>Datos Recuperados</h2>
-        <p>Consulta la información de los egresados</p>
+
+            <h2>
+                Datos Recuperados
+            </h2>
+
+            <p>
+                Consulta la información de los egresados
+            </p>
+
         </div>
+
     </div>
+
+    <!-- =========================
+        CARD PRINCIPAL
+    ========================== -->
 
     <div class="card">
 
-        <!-- 🔍 BUSCADOR -->
+        <!-- =========================
+            BUSCADOR
+        ========================== -->
+
         <div class="search-container">
-        <span class="search-icon">🔍</span>
 
-        <input
-            type="text"
-            [(ngModel)]="matricula"
-            placeholder="Buscar por matrícula..."
-        >
+            <span class="search-icon">
+                🔍
+            </span>
 
-        <button class="btn-guardar" (click)="buscarPorMatricula()">
-            Buscar
-        </button>
+            <input
+                type="text"
+                [(ngModel)]="matricula"
+                placeholder="Buscar por matrícula..."
+            >
+
+            <button
+                class="btn-guardar"
+                (click)="buscarPorMatricula()"
+            >
+                Buscar
+            </button>
+
         </div>
 
-        <!-- 🎯 FILTROS -->
+        <!-- =========================
+            FILTROS
+        ========================== -->
+
         <div class="filtros">
 
-        <select [(ngModel)]="carreraSeleccionada">
-            <option value="">Carrera</option>
-            <option *ngFor="let c of carreras" [value]="c">{{ c }}</option>
-        </select>
+            <!-- CAMPUS -->
+            <select
+                [(ngModel)]="campusSeleccionado"
+                (change)="actualizarCarreras()"
+            >
 
-        <select [(ngModel)]="generacionSeleccionada">
-            <option value="">Generación</option>
-            <option *ngFor="let g of generaciones" [value]="g">{{ g }}</option>
-        </select>
+                <option value="">
+                    Seleccionar campus
+                </option>
 
+                <option value="Todos">
+                    Todos
+                </option>
 
-        <button class="btn-secundario" (click)="filtrar()">
-            Filtrar
-        </button>
+                <option value="Loma Bonita">
+                    Loma Bonita
+                </option>
+
+                <option value="Tuxtepec">
+                    Tuxtepec
+                </option>
+
+            </select>
+
+            <!-- CARRERAS -->
+            <select
+                *ngIf="campusSeleccionado"
+                [(ngModel)]="carreraSeleccionada"
+            >
+
+                <option value="">
+                    Seleccionar carrera
+                </option>
+
+                <option
+                    *ngFor="let carrera of carrerasFiltradas"
+                    [value]="carrera"
+                >
+                    {{ carrera }}
+                </option>
+
+            </select>
+
+            <!-- GENERACIONES -->
+            <select
+                *ngIf="campusSeleccionado"
+                [(ngModel)]="generacionSeleccionada"
+            >
+
+                <option value="">
+                    Seleccionar generación
+                </option>
+
+                <option
+                    *ngFor="let g of generaciones"
+                    [value]="g"
+                >
+                    {{ g }}
+                </option>
+
+            </select>
+
+            <!-- BOTÓN -->
+            <button
+                class="btn-secundario"
+                (click)="filtrar()"
+            >
+                Filtrar
+            </button>
 
         </div>
 
-        <div class="estado-vacio">
-        Realiza una búsqueda para ver resultados
+        <!-- =========================
+            LOADING
+        ========================== -->
+
+        <div
+            class="estado-vacio"
+            *ngIf="cargando"
+        >
+
+            <div class="empty-icon">
+                ⏳
+            </div>
+
+            <h3>
+                Buscando información...
+            </h3>
+
+        </div>
+
+        <!-- =========================
+            ESTADO VACÍO
+        ========================== -->
+
+        <div
+            class="estado-vacio"
+            *ngIf="!resultado && !cargando"
+        >
+
+            <div class="empty-icon">
+                📄
+            </div>
+
+            <h3>
+                Sin resultados
+            </h3>
+
+            <p>
+                Realiza una búsqueda por matrícula para consultar la información del egresado.
+            </p>
+
+        </div>
+
+        <!-- =========================
+            RESULTADO
+        ========================== -->
+
+        <div
+            class="resultado"
+            *ngIf="resultado"
+        >
+
+            <!-- PERFIL -->
+            <div class="perfil-header">
+
+                <!-- FOTO -->
+                <img
+                    class="foto-perfil"
+                    [src]="resultado.urlFoto
+                        ? 'http://localhost:8181' + resultado.urlFoto
+                        : 'assets/user-default.png'"
+                    alt="Foto de perfil"
+                >
+
+                <!-- INFO -->
+                <div class="perfil-info">
+
+                    <h3>
+
+                        {{ resultado.nombre }}
+
+                        {{ resultado.apellidoPaterno }}
+
+                        {{ resultado.apellidoMaterno }}
+
+                    </h3>
+
+                    <div class="perfil-badges">
+
+                        <span class="badge">
+                            Egresado
+                        </span>
+
+                        <span class="badge-secundario">
+                            {{ resultado.matricula }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- DATOS -->
+            <div class="resultado-grid">
+
+                <!-- MATRÍCULA -->
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        🎓
+                    </div>
+
+                    <div class="info-content">
+
+                        <div class="info-label">
+                            Matrícula
+                        </div>
+
+                        <div class="info-value">
+                            {{ resultado.matricula }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- CAMPUS -->
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        🏫
+                    </div>
+
+                    <div class="info-content">
+
+                        <div class="info-label">
+                            Campus
+                        </div>
+
+                        <div class="info-value">
+                            {{ resultado.campus }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- GENERACIÓN -->
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        📅
+                    </div>
+
+                    <div class="info-content">
+
+                        <div class="info-label">
+                            Generación
+                        </div>
+
+                        <div class="info-value">
+                            {{ resultado.generacion }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- CARRERA -->
+                <div class="info-item">
+
+                    <div class="info-icon">
+                        📘
+                    </div>
+
+                    <div class="info-content">
+
+                        <div class="info-label">
+                            Carrera
+                        </div>
+
+                        <div class="info-value">
+                            {{ resultado.carrera }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
 
     </div>
 
-</app-admin-layout>
+</div>
