@@ -1,43 +1,45 @@
 import { Routes } from '@angular/router';
 import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
-
-// ✅ Importa todos los componentes que usarás
 import { DatosRecuperadosComponent } from './pages/datos-recuperados/datos-recuperados.component';
 import { UsuariosAdmComponent } from './pages/usuarios-adm/usuarios-adm.component';
-
-// 📊 Reportes
-import { AcademicoComponent } from './pages/reportes/academico/academico.component';
-import { LaboralComponent } from './pages/reportes/laboral/laboral.component';
-import { PosgradoComponent } from './pages/reportes/posgrado/posgrado.component';
-import { ReconocimientosComponent } from './pages/reportes/reconocimientos/reconocimientos.component';
-
-// 🔹 Si ya tienes Dashboard, Encuestas, Empresas, también los importas aquí
-// import { DashboardComponent } from './pages/dashboard/dashboard.component';
-// import { EncuestasComponent } from './pages/encuestas/encuestas.component';
-// import { EmpresasComponent } from './pages/empresas/empresas.component';
+import { LoginComponent } from './pages/login/login.component';
+import { PerfilComponent } from './pages/perfil/perfil.component';
+import { ContactoComponent } from './pages/contacto/contacto.component';
+import { AcademicoComponent } from './pages/academico/academico.component';
+import { LaboralComponent } from './pages/laboral/laboral.component';
+import { PosgradoComponent } from './pages/posgrado/posgrado.component';
+import { CertificacionesComponent } from './pages/certificaciones/certificaciones.component';
+import { ReconocimientosComponent } from './pages/reconocimientos/reconocimientos.component';
+import { DatosPersonalesComponent } from './pages/datos-personales/datos-personales.component';
+import { AcademicoComponent as ReporteAcademicoComponent } from './pages/reportes/academico/academico.component';
+import { LaboralComponent as ReporteLaboralComponent } from './pages/reportes/laboral/laboral.component';
+import { PosgradoComponent as ReportePosgradoComponent } from './pages/reportes/posgrado/posgrado.component';
+import { ReconocimientosComponent as ReporteReconocimientosComponent } from './pages/reportes/reconocimientos/reconocimientos.component';
 
 export const routes: Routes = [
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: 'login', component: LoginComponent },
+  { path: 'perfil', component: PerfilComponent },
+  { path: 'datos-personales', component: DatosPersonalesComponent },
+  { path: 'contacto', component: ContactoComponent },
+  { path: 'academico', component: AcademicoComponent },
+  { path: 'laboral', component: LaboralComponent },
+  { path: 'posgrado', component: PosgradoComponent },
+  { path: 'certificaciones', component: CertificacionesComponent },
+  { path: 'reconocimientos', component: ReconocimientosComponent },
   {
-    path: '',
+    path: 'admin',
     component: AdminLayoutComponent,
     children: [
-      // 🔹 Ruta por defecto
       { path: '', redirectTo: 'usuarios', pathMatch: 'full' },
-
-      // 🔹 Tus páginas
       { path: 'usuarios', component: UsuariosAdmComponent },
       { path: 'datos-recuperados', component: DatosRecuperadosComponent },
-
-      // 📊 Reportes
-      { path: 'reportes/academico', component: AcademicoComponent },
-      { path: 'reportes/laboral', component: LaboralComponent },
-      { path: 'reportes/posgrado', component: PosgradoComponent },
-      { path: 'reportes/reconocimientos', component: ReconocimientosComponent },
-
-      // 🔹 Ejemplo si ya integraste más páginas
-      // { path: 'dashboard', component: DashboardComponent },
-      // { path: 'encuestas', component: EncuestasComponent },
-      // { path: 'empresas', component: EmpresasComponent }
+      { path: 'reportes/academico', component: ReporteAcademicoComponent },
+      { path: 'reportes/laboral', component: ReporteLaboralComponent },
+      { path: 'reportes/posgrado', component: ReportePosgradoComponent },
+      { path: 'reportes/reconocimientos', component: ReporteReconocimientosComponent }
     ]
-  }
+  },
+
+  { path: '**', redirectTo: 'login' }
 ];

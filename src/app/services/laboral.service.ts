@@ -22,4 +22,8 @@ export class LaboralService {
   getPrestaciones(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/egresado/prestaciones`);
   }
+
+  guardar(data: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/egresado/laboral`, data);
+  }
 }

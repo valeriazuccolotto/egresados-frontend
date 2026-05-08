@@ -1,0 +1,88 @@
+/* CONTENEDOR */
+.form-container {
+  max-width: 500px;
+  margin: auto;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #d8dde6;
+}
+
+/* TITULO */
+.form-container h1 {
+  margin-bottom: 5px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #008577; /* verde UNPA */
+}
+
+.sub {
+  margin-bottom: 20px;
+  color: #5f6f82;
+}
+
+/* GRUPOS */
+.form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* LABEL */
+.form-group label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* INPUTS */
+input, select {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #d8dde6;
+  font-size: 14px;
+  outline: none;
+}
+
+/* FOCUS */
+input:focus, select:focus {
+  border-color: #008577;
+  box-shadow: 0 0 0 2px rgba(0, 133, 119, 0.15);
+}
+
+/* BOTONES */
+.botones {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* GUARDAR */
+.btn-guardar {
+  background: #008577;
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-guardar:hover {
+  background: #006f63;
+}
+
+/* CANCELAR */
+.btn-cancelar {
+  background: #e0e0e0;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* MENSAJE */
+.mensaje {
+  margin-top: 15px;
+  font-weight: 600;
+}

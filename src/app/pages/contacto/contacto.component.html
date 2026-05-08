@@ -1,0 +1,81 @@
+<div class="page-section">
+  <div class="section-header">
+    <h1>Información de contacto</h1>
+    <p>Mantén tus datos actualizados para recibir notificaciones</p>
+  </div>
+
+  <div class="form-card">
+    <form class="contact-form" (ngSubmit)="guardar()">
+      <h2>Datos de contacto</h2>
+       <div *ngIf="mensajeError" class="error-msg">
+           {{ mensajeError }}
+       </div>
+      <div class="field-group">
+        <label for="correo">Correo personal</label>
+        <input
+          type="email"
+          id="correo"
+          name="correoPersonal"
+          [(ngModel)]="contacto.correoPersonal"
+          placeholder="Ej. correo@ejemplo.com"
+          required>
+      </div>
+
+      <div class="field-group">
+        <label for="telefono">Teléfono</label>
+        <input
+          type="tel"
+          id="telefono"
+          name="telefono"
+          [(ngModel)]="contacto.telefono"
+          placeholder="Ej. 2871234567">
+      </div>
+
+      <div class="field-group">
+        <label for="ciudad">Ciudad de residencia</label>
+        <input
+          type="text"
+          id="ciudad"
+          name="ciudad"
+          [(ngModel)]="contacto.ciudad"
+          placeholder="Ej. Tuxtepec">
+      </div>
+
+      <div class="field-group">
+        <label for="estado">Estado de residencia</label>
+        <input
+          type="text"
+          id="estado"
+          name="estadoResidencia"
+          [(ngModel)]="contacto.estadoResidencia"
+          placeholder="Ej. Oaxaca">
+      </div>
+
+      <div class="field-group">
+        <label for="instagram">Instagram</label>
+        <input
+          type="text"
+          id="instagram"
+          name="instagram"
+          [(ngModel)]="contacto.instagram"
+          placeholder="Ej. @valeria">
+      </div>
+
+      <div class="field-group">
+        <label for="facebook">Facebook</label>
+        <input
+          type="text"
+          id="facebook"
+          name="facebook"
+          [(ngModel)]="contacto.facebook"
+          placeholder="Ej. Valeria Pérez">
+      </div>
+
+      <div *ngIf="mensajeExito" class="save-msg">
+        ✓ Información guardada correctamente.
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn-guardar">Guardar contacto</button>
+      </div>
+    </form>
