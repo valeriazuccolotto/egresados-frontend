@@ -1,19 +1,18 @@
-/// <reference types="jasmine" />
-
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { SidebarComponent } from './sidebar.component';
 
-describe('SidebarComponent', () => {
-  let component: SidebarComponent;
-  let fixture: ComponentFixture<SidebarComponent>;
+import { AcademicoComponent } from './academico.component';
+
+describe('AcademicoComponent', () => {
+  let component: AcademicoComponent;
+  let fixture: ComponentFixture<AcademicoComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SidebarComponent]
+      imports: [AcademicoComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SidebarComponent);
+    fixture = TestBed.createComponent(AcademicoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

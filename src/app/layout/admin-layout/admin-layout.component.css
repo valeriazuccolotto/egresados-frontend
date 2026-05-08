@@ -6,14 +6,14 @@
 
 .layout {
   display: flex;
-  height: calc(100vh - 65px);  /* altura exacta bajo el header */
-  overflow: hidden;             /* evita scroll en el contenedor padre */
+  height: calc(100vh - 65px);
+  overflow: hidden;
 }
 
 .contenido {
   flex: 1;
   min-width: 0;
   background: #f3f5f7;
-  overflow-y: auto;             /* SOLO este div hace scroll */
+  overflow-y: auto;
   height: 100%;
 }

@@ -20,9 +20,11 @@
 .menu-btn {
   border: none;
   background: none;
-  font-size: 24px;
+  font-size: 24px;          /* tamaño de ícono/menu */
   cursor: pointer;
   color: #2f8f83;
+  display: flex;            /* asegura alineación vertical */
+  align-items: center;
 }
 
 .logo {

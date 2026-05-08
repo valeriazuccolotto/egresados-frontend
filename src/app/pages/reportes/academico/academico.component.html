@@ -1,0 +1,94 @@
+<div class="pagina">
+
+  <!-- ENCABEZADO -->
+  <div class="encabezado">
+    <div class="encabezado-texto">
+      <h2>Reportes de datos Académicos obtenidos</h2>
+      <p>Análisis estadístico de información académica de egresados</p>
+    </div>
+    <div class="campus-box">
+      <span class="material-icons">location_on</span>
+      <label>Campus</label>
+      <select [(ngModel)]="campusSeleccionado" (change)="cambiarCampus()">
+        <option *ngFor="let c of campus">{{ c }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- MÉTRICAS -->
+  <div class="metricas">
+    <div class="metrica-card">
+      <span class="material-icons icono-metrica">groups</span>
+      <h3>{{ totalEncuestados }}</h3>
+      <p>Egresados con datos académicos</p>
+    </div>
+    <div class="metrica-card">
+      <span class="material-icons icono-metrica">verified</span>
+      <h3>{{ porcentajeTitulados }}%</h3>
+      <p>Están titulados</p>
+    </div>
+    <div class="metrica-card">
+      <span class="material-icons icono-metrica">emoji_events</span>
+      <h3>{{ titulacionMasFrecuente }}</h3>
+      <p>Tipo de titulación más frecuente</p>
+    </div>
+    <div class="metrica-card">
+      <span class="material-icons icono-metrica">calendar_today</span>
+      <h3>{{ anioEgresoMasFrecuente }}</h3>
+      <p>Año de egreso más frecuente</p>
+    </div>
+  </div>
+
+  <!-- GRÁFICAS -->
+  <div class="graficas-grid">
+
+    <!-- Titulado - PIE -->
+    <div class="grafica-card grande">
+      <h3 class="grafica-titulo">
+        <span class="material-icons">school</span>
+        ¿Está titulado?
+      </h3>
+      <p class="grafica-desc">Porcentaje de egresados titulados vs no titulados</p>
+      <div class="grafica-wrap">
+        <canvas id="chartTitulado"></canvas>
+      </div>
+    </div>
+
+    <!-- Tipo titulación - DOUGHNUT -->
+    <div class="grafica-card grande">
+      <h3 class="grafica-titulo">
+        <span class="material-icons">workspace_premium</span>
+        Tipo de titulación
+      </h3>
+      <p class="grafica-desc">Modalidad con la que obtuvieron su título</p>
+      <div class="grafica-wrap">
+        <canvas id="chartTipoTitulacion"></canvas>
+      </div>
+    </div>
+
+    <!-- Año de egreso - BAR -->
+    <div class="grafica-card mediana">
+      <h3 class="grafica-titulo">
+        <span class="material-icons">calendar_month</span>
+        Año de egreso
+      </h3>
+      <p class="grafica-desc">Distribución de egresados por año de egreso</p>
+      <div class="grafica-wrap">
+        <canvas id="chartAnioEgreso"></canvas>
+      </div>
+    </div>
+
+    <!-- Carrera - BAR HORIZONTAL -->
+    <div class="grafica-card ancha">
+      <h3 class="grafica-titulo">
+        <span class="material-icons">menu_book</span>
+        Egresados por carrera
+      </h3>
+      <p class="grafica-desc">Cantidad de egresados registrados por carrera</p>
+      <div class="grafica-wrap alta">
+        <canvas id="chartCarrera"></canvas>
+      </div>
+    </div>
+
+  </div>
+</div>

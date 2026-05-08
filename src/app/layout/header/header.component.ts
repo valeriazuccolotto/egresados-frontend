@@ -4,12 +4,12 @@ import { Component, EventEmitter, Output } from '@angular/core';
   selector: 'app-header',
   standalone: true,
   templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  styleUrls: ['./header.component.css']   // ojo: debe ser "styleUrls" en plural
 })
 export class HeaderComponent {
   @Output() menuClick = new EventEmitter<void>();
 
-  toggleMenu(){
+  toggleMenu() {
     this.menuClick.emit();
   }
 }

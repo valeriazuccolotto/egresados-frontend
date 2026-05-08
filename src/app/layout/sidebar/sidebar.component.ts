@@ -7,11 +7,11 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [RouterModule, CommonModule],
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.css'
+  styleUrls: ['./sidebar.component.css']   // ojo: debe ser "styleUrls" en plural
 })
 export class SidebarComponent {
   @Input() abierto = true;
-  reportesAbierto = false;
+  reportesAbierto = false;   // cerrado por defecto
 
   toggleReportes() {
     this.reportesAbierto = !this.reportesAbierto;
