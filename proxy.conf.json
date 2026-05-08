@@ -1,0 +1,22 @@
+{
+  "/egresados": {
+    "target": "http://localhost:8181",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/egresado": {
+    "target": "http://localhost:8181",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/usuarios": {
+    "target": "http://localhost:8181",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/tipo-beca": {
+    "target": "http://localhost:8181",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

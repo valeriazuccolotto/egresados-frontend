@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AdminLayoutComponent } from '../../layout/admin-layout/admin-layout.component';
 import { EgresadoVistaService } from '../../services/egresado-vista.service';
 import { EgresadoVista } from '../../models/egresado-vista';
 
@@ -20,7 +19,7 @@ interface SeccionGrupo {
 @Component({
   selector: 'app-usuarios-adm',
   standalone: true,
-  imports: [CommonModule, FormsModule, AdminLayoutComponent],
+  imports: [CommonModule, FormsModule],
   templateUrl: './usuarios-adm.component.html',
   styleUrl: './usuarios-adm.component.css'
 })

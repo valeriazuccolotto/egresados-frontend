@@ -18,7 +18,8 @@ import { Carrera } from '../../models/carrera';
 export class PerfilComponent implements OnInit {
 
   perfil?: Perfil;
-  urlFoto: string = 'assets/default-user.png';
+  urlFoto: string = 'assets/favicon-UNPA.ico';
+  private readonly backendOrigin = 'http://localhost:8181';
   carrera: string = '';
   carreras: Carrera[] = [];
 
@@ -45,14 +46,18 @@ export class PerfilComponent implements OnInit {
 
     const usuario: Usuario = JSON.parse(raw);
     const matricula = usuario.matricula;
+    if (!/^\d+$/.test(String(matricula || '').trim())) {
+      console.warn('La vista de perfil de egresado no aplica para cuentas administrativas.');
+      return;
+    }
 
     this.perfilService.obtenerPerfil(matricula).subscribe({
       next: (data: Perfil) => {
         this.perfil = data;
 
         const foto = data.urlFoto
-          ? `http://localhost:8189${data.urlFoto}?t=${Date.now()}`
-          : 'assets/default-user.png';
+          ? this.normalizarUrlFoto(data.urlFoto)
+          : 'assets/favicon-UNPA.ico';
 
         this.urlFoto = foto;
         this.perfilService.setFoto(foto);
@@ -68,12 +73,8 @@ export class PerfilComponent implements OnInit {
   cargarAcademico(matricula: string): void {
   this.academicoService.obtenerPorMatricula(matricula).subscribe({
     next: (academico: any) => {
-      console.log('ACADÉMICO:', academico);
-
       this.academicoService.obtenerCarreras().subscribe({
         next: (carreras: Carrera[]) => {
-          console.log('CARRERAS:', carreras);
-
           const claveAcademico =
             academico?.claveCarrera ||
             academico?.carrera?.claveCarrera ||
@@ -101,4 +102,16 @@ export class PerfilComponent implements OnInit {
     }
   });
 }
+
+  private normalizarUrlFoto(url: string): string {
+    if (!url) return 'assets/favicon-UNPA.ico';
+    const cacheBust = `t=${Date.now()}`;
+
+    if (/^(https?:|data:|blob:)/i.test(url)) {
+      return `${url}${url.includes('?') ? '&' : '?'}${cacheBust}`;
+    }
+
+    const ruta = url.startsWith('/') ? url : `/${url}`;
+    return `${this.backendOrigin}${ruta}${ruta.includes('?') ? '&' : '?'}${cacheBust}`;
+  }
 }

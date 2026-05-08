@@ -61,7 +61,7 @@ this.matriculaUsuario = usuario.matricula;
 }
   // ================= HISTORIAL =================
   cargarHistorial() {
-  this.http.get<any[]>(`http://localhost:8189/egresado/laboral/${this.matriculaUsuario}`)
+  this.http.get<any[]>(`/egresado/laboral/${this.matriculaUsuario}`)
     .subscribe({
       next: data => this.historial = data.reverse(),
       error: () => this.mostrarMensaje("❌ Error al cargar historial")
@@ -70,7 +70,7 @@ this.matriculaUsuario = usuario.matricula;
 
   // ================= CATALOGO =================
   cargarPrestacionesCatalogo() {
-    this.http.get<any[]>(`http://localhost:8189/egresado/prestaciones`)
+    this.http.get<any[]>(`/egresado/prestaciones`)
       .subscribe({
         next: data => this.listaPrestaciones = data,
         error: () => this.mostrarMensaje("❌ Error al cargar catálogo")
@@ -125,7 +125,7 @@ this.matriculaUsuario = usuario.matricula;
 
   guardar() {
     const datos = this.construirDatos();
-    this.http.post("http://localhost:8189/egresado/laboral", datos)
+    this.http.post("/egresado/laboral", datos)
       .subscribe({
         next: () => {
           this.mostrarMensaje("✓ Guardado correctamente");
@@ -151,7 +151,7 @@ this.matriculaUsuario = usuario.matricula;
 
   actualizarLaboral() {
     const laboral = this.laboralSeleccionado;
-    this.http.put(`http://localhost:8189/egresado/laboral/${laboral.idLaboral}`, laboral)
+    this.http.put(`/egresado/laboral/${laboral.idLaboral}`, laboral)
       .subscribe({
         next: () => {
           const index = this.historial.findIndex(l => l.idLaboral === laboral.idLaboral);
@@ -173,7 +173,7 @@ this.matriculaUsuario = usuario.matricula;
 
   confirmarEliminacion() {
     if (this.laboralAEliminar !== null) {
-      this.http.delete(`http://localhost:8189/egresado/laboral/${this.laboralAEliminar}`)
+      this.http.delete(`/egresado/laboral/${this.laboralAEliminar}`)
         .subscribe({
           next: () => {
             this.mostrarMensaje("🗑️ Eliminado correctamente");
@@ -219,7 +219,7 @@ this.matriculaUsuario = usuario.matricula;
   agregarOtroPrestacion() {
   if (!this.otroTexto.trim()) return;
 
-  this.http.post<any>("http://localhost:8189/egresado/prestaciones", { nombre: this.otroTexto })
+  this.http.post<any>("/egresado/prestaciones", { nombre: this.otroTexto })
     .subscribe({
       next: (resp) => {
         this.form.prestacionesSeleccionadas.push(resp);
@@ -280,7 +280,7 @@ this.matriculaUsuario = usuario.matricula;
   agregarPrestacionNuevaEdit() {
   if (!this.otroTexto.trim()) return;
 
-  this.http.post<any>("http://localhost:8189/egresado/prestaciones", { nombre: this.otroTexto })
+  this.http.post<any>("/egresado/prestaciones", { nombre: this.otroTexto })
     .subscribe({
       next: (resp) => {
 

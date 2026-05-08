@@ -32,12 +32,25 @@ export class AcademicoComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(private academicoService: AcademicoService) {}
 
   ngOnInit() {
-    this.academicoService.getEgresados().subscribe(egresados => {
-      this.todosEgresados = egresados;
-      this.academicoService.getAcademicos().subscribe(academicos => {
-        this.todosAcademicos = academicos;
+    this.academicoService.getEgresados().subscribe({
+      next: (egresados) => {
+        this.todosEgresados = egresados || [];
+        this.academicoService.getAcademicos().subscribe({
+          next: (academicos) => {
+            this.todosAcademicos = academicos || [];
+            this.aplicarFiltro();
+          },
+          error: () => {
+            this.todosAcademicos = [];
+            this.aplicarFiltro();
+          }
+        });
+      },
+      error: () => {
+        this.todosEgresados = [];
+        this.todosAcademicos = [];
         this.aplicarFiltro();
-      });
+      }
     });
   }
 
@@ -98,6 +111,15 @@ export class AcademicoComponent implements OnInit, AfterViewInit, OnDestroy {
       : 0;
   }
 
+  private normalizar(valor: any): string {
+    return String(valor ?? '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/_/g, ' ')
+      .toLowerCase()
+      .trim();
+  }
+
   construirGraficas(academicos: any[]) {
     const V1 = '#2f8f83';
     const V2 = '#52b0a4';
@@ -116,10 +138,10 @@ export class AcademicoComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     // 2. Tipo titulación - doughnut
-    const tipos = ['Tesis', 'CENEVAL', 'Promedio', 'Experiencia_laboral'];
+    const tipos = ['Tesis', 'CENEVAL', 'Promedio', 'Experiencia laboral'];
     const tiposLabels = ['Tesis', 'CENEVAL', 'Promedio', 'Exp. Laboral'];
     const datosTipo = tipos.map(t =>
-      academicos.filter(a => a.tipoTitulacion === t).length
+      academicos.filter(a => this.normalizar(a.tipoTitulacion) === this.normalizar(t)).length
     );
     this.crearGrafica('chartTipoTitulacion', 'doughnut',
       tiposLabels, datosTipo, [V1, V2, V3, AZ]

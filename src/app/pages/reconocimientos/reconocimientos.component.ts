@@ -52,7 +52,7 @@ matriculaUsuario: string = '';
   // ================= HISTORIAL =================
   cargarHistorial() {
   this.http.get<any[]>(
-    `http://localhost:8189/egresado/reconocimientos/${this.matriculaUsuario}`
+    `/egresado/reconocimientos/${this.matriculaUsuario}`
   ).subscribe({
     next: data => this.historial = data,
     error: () => this.mostrarMensaje("❌ Error al cargar historial")
@@ -94,7 +94,7 @@ matriculaUsuario: string = '';
     const datos = this.construirDatos();
 
     this.http.post(
-      "http://localhost:8189/egresado/reconocimientos",
+      "/egresado/reconocimientos",
       datos
     ).subscribe({
       next: () => {
@@ -121,7 +121,7 @@ matriculaUsuario: string = '';
     const reco = this.reconocimientoSeleccionado;
 
     this.http.put(
-      `http://localhost:8189/egresado/reconocimientos/${reco.idReconocimiento}`,
+      `/egresado/reconocimientos/${reco.idReconocimiento}`,
       reco
     ).subscribe({
       next: () => {
@@ -142,7 +142,7 @@ matriculaUsuario: string = '';
   confirmarEliminacion() {
     if (this.reconocimientoAEliminar !== null) {
       this.http.delete(
-        `http://localhost:8189/egresado/reconocimientos/${this.reconocimientoAEliminar}`
+        `/egresado/reconocimientos/${this.reconocimientoAEliminar}`
       ).subscribe({
         next: () => {
           this.mostrarMensaje("🗑️ Reconocimiento eliminado correctamente");

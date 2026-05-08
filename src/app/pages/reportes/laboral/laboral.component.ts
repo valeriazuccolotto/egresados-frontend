@@ -32,12 +32,25 @@ export class LaboralComponent implements OnInit, OnDestroy {
   constructor(private laboralService: LaboralService) {}
 
   ngOnInit() {
-    this.laboralService.getEgresados().subscribe(egresados => {
-      this.todosEgresados = egresados;
-      this.laboralService.getLaborales().subscribe(laborales => {
-        this.todosLaborales = laborales;
+    this.laboralService.getEgresados().subscribe({
+      next: (egresados) => {
+        this.todosEgresados = egresados || [];
+        this.laboralService.getLaborales().subscribe({
+          next: (laborales) => {
+            this.todosLaborales = laborales || [];
+            this.aplicarFiltro();
+          },
+          error: () => {
+            this.todosLaborales = [];
+            this.aplicarFiltro();
+          }
+        });
+      },
+      error: () => {
+        this.todosEgresados = [];
+        this.todosLaborales = [];
         this.aplicarFiltro();
-      });
+      }
     });
   }
 
@@ -80,6 +93,14 @@ export class LaboralComponent implements OnInit, OnDestroy {
       : 'N/A';
   }
 
+  private normalizar(valor: any): string {
+    return String(valor ?? '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+
   construirGraficas(laborales: any[]) {
     const V1 = '#2f8f83';
     const V2 = '#52b0a4';
@@ -96,13 +117,13 @@ export class LaboralComponent implements OnInit, OnDestroy {
 
     // 2. Cómo consiguió - doughnut
     this.crearGraficaDoughnut('chartComoConsiguio', laborales, 'comoConsiguio',
-      ['Bolsa de trabajo','Internet','Recomendacion','Entrevista'],
+      ['Bolsa de trabajo','Internet','Recomendación','Entrevista'],
       [V1, V2, V3, AZ]
     );
 
     // 3. Tiempo para conseguir - bar
     this.crearGraficaBar('chartTiempo', laborales, 'tiempoConseguir',
-      ['Menos de 3 meses','3-6 meses','6-12 meses','Mas de un año'],
+      ['Menos de 3 meses','3-6 meses','6-12 meses','Más de un año'],
       [V1, V2, V3, G1]
     );
 
@@ -114,7 +135,7 @@ export class LaboralComponent implements OnInit, OnDestroy {
 
     // 5. Modalidad - doughnut
     this.crearGraficaDoughnut('chartModalidad', laborales, 'modalidadTrabajo',
-      ['Presencial','Remoto','Hibrido'],
+      ['Presencial','Remoto','Híbrido'],
       [V1, V2, V3]
     );
 
@@ -137,7 +158,7 @@ export class LaboralComponent implements OnInit, OnDestroy {
   crearGraficaPie(id: string, laborales: any[], campo: string, labels: string[], colors: string[]) {
     const canvas = document.getElementById(id) as HTMLCanvasElement;
     if (!canvas) return;
-    const data = labels.map(l => laborales.filter(x => x[campo] === l).length);
+    const data = labels.map(l => laborales.filter(x => this.normalizar(x[campo]) === this.normalizar(l)).length);
     const chart = new Chart(canvas, {
       type: 'pie',
       data: { labels, datasets: [{ data, backgroundColor: colors }] },
@@ -149,7 +170,7 @@ export class LaboralComponent implements OnInit, OnDestroy {
   crearGraficaDoughnut(id: string, laborales: any[], campo: string, labels: string[], colors: string[]) {
     const canvas = document.getElementById(id) as HTMLCanvasElement;
     if (!canvas) return;
-    const data = labels.map(l => laborales.filter(x => x[campo] === l).length);
+    const data = labels.map(l => laborales.filter(x => this.normalizar(x[campo]) === this.normalizar(l)).length);
     const chart = new Chart(canvas, {
       type: 'doughnut',
       data: { labels, datasets: [{ data, backgroundColor: colors }] },
@@ -161,7 +182,7 @@ export class LaboralComponent implements OnInit, OnDestroy {
   crearGraficaBar(id: string, laborales: any[], campo: string, labels: string[], colors: string[]) {
     const canvas = document.getElementById(id) as HTMLCanvasElement;
     if (!canvas) return;
-    const data = labels.map(l => laborales.filter(x => x[campo] === l).length);
+    const data = labels.map(l => laborales.filter(x => this.normalizar(x[campo]) === this.normalizar(l)).length);
     const chart = new Chart(canvas, {
       type: 'bar',
       data: { labels, datasets: [{ label: 'Egresados', data, backgroundColor: colors }] },
@@ -177,7 +198,7 @@ export class LaboralComponent implements OnInit, OnDestroy {
       'Vales de despensa','Aguinaldo','Vacaciones pagadas','Otra'];
     const data = nombresPrestaciones.map(nombre =>
       laborales.filter(l =>
-        l.prestaciones && l.prestaciones.some((p: any) => p.nombre === nombre)
+        l.prestaciones && l.prestaciones.some((p: any) => this.normalizar(p.nombre) === this.normalizar(nombre))
       ).length
     );
     const chart = new Chart(canvas, {

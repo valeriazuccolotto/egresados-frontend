@@ -5,7 +5,7 @@ import { EgresadoVista } from '../models/egresado-vista';
 
 @Injectable({ providedIn: 'root' })
 export class EgresadoVistaService {
-  private url = 'http://localhost:8181/egresados/vista-usuarios';
+  private url = '/egresados/vista-usuarios';
   constructor(private http: HttpClient) {}
   getAll(): Observable<EgresadoVista[]> {
     return this.http.get<EgresadoVista[]>(this.url);

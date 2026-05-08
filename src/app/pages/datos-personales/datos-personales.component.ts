@@ -42,7 +42,7 @@ export class DatosPersonalesComponent implements OnInit {
   }
 
   cargarDatos() {
-    this.http.get<any>(`http://localhost:8189/egresados/${this.matriculaUsuario}`)
+    this.http.get<any>(`/egresados/${this.matriculaUsuario}`)
       .subscribe({
         next: (data) => {
           this.form = {
@@ -72,7 +72,7 @@ export class DatosPersonalesComponent implements OnInit {
 
     console.log("DATOS ENVIADOS:", datos);
 
-    this.http.post(`http://localhost:8189/egresados`, datos)
+    this.http.post(`/egresados`, datos)
       .subscribe({
         next: () => {
           this.mensaje = "✓ Perfil actualizado";

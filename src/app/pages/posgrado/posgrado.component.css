@@ -1,3 +1,41 @@
+:host {
+    display: block;
+    width: 100%;
+    font-family: 'Roboto', sans-serif;
+}
+
+.page-section {
+    width: 100%;
+    min-height: 100%;
+    padding: 32px 40px 44px;
+    background: #f4f6f8;
+    box-sizing: border-box;
+}
+
+.section-header {
+    margin-bottom: 20px;
+}
+
+.section-title h2 {
+    margin: 0 0 6px;
+    color: #2f9a8f;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.section-title p {
+    margin: 0;
+    color: #7d8a96;
+    font-size: 15px;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid #dbe3e8;
+    border-radius: 14px;
+    padding: 22px 24px;
+}
+
 .form-grid{
     display:flex;
     flex-direction:column;
@@ -361,66 +399,185 @@
     text-decoration: underline; /* aparece solo al hover */
 }
 
-/* MODAL CUADRADO Y RESPONSIVE */
-.modal-detalle {
-    width: 90%;
-    max-width: 520px;
-    aspect-ratio: 1 / 1;
-
+/* MODAL CONSULTA (misma línea visual que Laboral/Certificación) */
+.modal-card.modal-detalle {
+    position: relative;
+    width: 100%;
+    max-width: 920px;
+    max-height: none;
     border-radius: 16px;
-    padding: 20px;
-
+    padding: 0;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    overflow: visible;
+    text-align: left;
 }
 
-/* SCROLL INTERNO */
-.modal-body {
-    margin-bottom: 20px; /* 🔥 separa del botón */
+.modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: #f3f7f6;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 26px;
+    line-height: 1;
+    z-index: 2;
 }
 
-/* HEADER */
-.modal-header {
+.modal-close:hover {
+    background: #e0e5e4;
+}
+
+.modal-card.modal-detalle .modal-header {
     display: flex;
-    justify-content: space-between;
+    gap: 16px;
     align-items: center;
-    margin-bottom: 16px;
+    padding: 18px 52px 18px 24px;
+    border-bottom: 1px solid #e5e7eb;
 }
 
-.modal-header h3 {
+.modal-card.modal-detalle .modal-header h3 {
     margin: 0;
-    color: #2f8f83; /* tu color principal */
+    color: #00332a;
+    font-size: 1.1rem;
+    line-height: 1.3;
 }
 
-/* GRID */
-.detalle-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+.modal-card.modal-detalle .modal-header p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: #6b7280;
 }
 
-.detalle-item {
-    background: #f0fdfc; /* verde muy suave */
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #d1fae5;
+.modal-card.modal-detalle .modal-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #e5f3f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #007d68;
+    flex-shrink: 0;
 }
 
-.detalle-item.full {
-    grid-column: span 2;
-}
-
-.detalle-item label {
+.modal-label {
+    display: block;
     font-size: 12px;
-    color: #2f8f83;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.modal-card.modal-detalle .modal-body.modal-consulta-sin-scroll {
+    flex: 0 0 auto;
+    min-height: 0;
+    overflow: hidden;
+    padding: 16px 24px 20px;
+}
+
+.modal-card.modal-detalle .detalle-grid--dos-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 20px;
+    row-gap: 2px;
+    align-content: start;
+}
+
+.modal-card.modal-detalle .detalle-grid--dos-col > .info-row {
+    grid-column: 1 / -1;
+    gap: 16px;
+}
+
+.modal-card.modal-detalle .detalle-grid--dos-col .detalle-item--full {
+    grid-column: 1 / -1;
+}
+
+.modal-card.modal-detalle .detalle-grid--dos-col .detalle-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border: none;
+    background: none;
+    border-radius: 0;
+}
+
+.modal-card.modal-detalle .info-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #e5f3f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    color: #007d68;
+    flex-shrink: 0;
+}
+
+.info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.modal-card.modal-detalle .detalle-item label {
+    font-size: 12px;
+    color: #6b7280;
     font-weight: 600;
 }
 
-.detalle-item p {
-    margin: 4px 0 0;
-    font-weight: 500;
-    color: #374151;
+.modal-card.modal-detalle .detalle-item p {
+    margin: 2px 0 0;
+    font-weight: 600;
+    color: #00332a;
+    font-size: 14px;
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.modal-card.modal-detalle .cert-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 12px 24px 16px;
+    border-top: 1px solid #e5e7eb;
+    flex-shrink: 0;
+}
+
+.cert-btn-secondary {
+    background: #eee;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.cert-btn-secondary:hover {
+    background: #ddd;
+}
+
+@media (max-width: 700px) {
+    .modal-card.modal-detalle .detalle-grid--dos-col {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-card.modal-detalle .detalle-grid--dos-col > .info-row {
+        grid-template-columns: 1fr;
+    }
+
+    .info-row {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* PRESTACIONES INTEGRADO */

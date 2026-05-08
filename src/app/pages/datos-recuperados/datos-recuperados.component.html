@@ -231,8 +231,10 @@
         ========================= -->
 
         <div
-            class="resultado"
+            class="resultado clickable"
             *ngIf="resultado"
+            (click)="abrirDetalleEgresado(resultado?.matricula)"
+            title="Haz clic para ver expediente completo"
         >
 
             <!-- PERFIL -->
@@ -242,8 +244,8 @@
                 <img
                     class="foto-perfil"
                     [src]="resultado.urlFoto
-                        ? 'http://localhost:8181' + resultado.urlFoto
-                        : 'https://cdn-icons-png.flaticon.com/512/149/149071.png'"
+                        ? resultado.urlFoto
+                        : 'assets/favicon-UNPA.ico'"
                     alt="Foto de perfil"
                 >
 

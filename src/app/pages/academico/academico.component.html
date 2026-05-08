@@ -1,7 +1,9 @@
 <div class="page-section">
   <div class="section-header">
-    <h1>Información académica</h1>
-    <p>Mantén actualizados tus datos académicos y de titulación</p>
+    <div class="section-title">
+      <h2>Información académica</h2>
+      <p>Mantén actualizados tus datos académicos y de titulación</p>
+    </div>
   </div>
 
   <div class="form-card">
@@ -9,7 +11,7 @@
       <h2>Datos académicos</h2>
 
       <div class="field-group">
-        <label for="claveCarrera">Carrera</label>
+        <label for="claveCarrera"><i class="fas fa-graduation-cap"></i>Carrera</label>
         <select
           id="claveCarrera"
           name="claveCarrera"
@@ -23,7 +25,7 @@
       </div>
 
       <div class="field-group">
-        <label for="promedio">Promedio</label>
+        <label for="promedio"><i class="fas fa-chart-line"></i>Promedio</label>
         <input
           type="number"
           id="promedio"
@@ -37,7 +39,7 @@
       </div>
 
       <div class="field-group">
-        <label for="anioEgreso">Año de egreso</label>
+        <label for="anioEgreso"><i class="fas fa-calendar-alt"></i>Año de egreso</label>
         <input
           type="number"
           id="anioEgreso"
@@ -48,7 +50,7 @@
       </div>
 
       <div class="field-group">
-        <label for="titulado">Titulado</label>
+        <label for="titulado"><i class="fas fa-scroll"></i>Titulado</label>
         <select
           id="titulado"
           name="titulado"
@@ -60,7 +62,7 @@
       </div>
 
       <div class="field-group">
-        <label for="cedulaProfesional">Cédula profesional</label>
+        <label for="cedulaProfesional"><i class="fas fa-id-card"></i>Cédula profesional</label>
         <select
           id="cedulaProfesional"
           name="cedulaProfesional"
@@ -75,7 +77,7 @@
         <h2>Datos de titulación</h2>
 
         <div class="field-group">
-          <label for="fechaTitulacion">Fecha de titulación</label>
+          <label for="fechaTitulacion"><i class="fas fa-calendar-check"></i>Fecha de titulación</label>
           <input
             type="date"
             id="fechaTitulacion"
@@ -84,7 +86,7 @@
         </div>
 
         <div class="field-group">
-          <label for="tipoTitulacion">Tipo de titulación</label>
+          <label for="tipoTitulacion"><i class="fas fa-award"></i>Tipo de titulación</label>
           <select
             id="tipoTitulacion"
             name="tipoTitulacion"
@@ -99,7 +101,7 @@
 
         <div *ngIf="academico.tipoTitulacion === 'Tesis'">
           <div class="field-group">
-            <label for="nombreTesis">Nombre de tesis</label>
+            <label for="nombreTesis"><i class="fas fa-book"></i>Nombre de tesis</label>
             <input
               type="text"
               id="nombreTesis"
@@ -109,7 +111,7 @@
           </div>
 
           <div class="field-group">
-            <label for="director">Director</label>
+            <label for="director"><i class="fas fa-user-tie"></i>Director</label>
             <input
               type="text"
               id="director"
@@ -119,7 +121,7 @@
           </div>
 
           <div class="field-group">
-            <label for="codirector">Codirector</label>
+            <label for="codirector"><i class="fas fa-user-friends"></i>Codirector</label>
             <input
               type="text"
               id="codirector"
@@ -131,7 +133,7 @@
 
         <div *ngIf="academico.tipoTitulacion === 'CENEVAL'">
           <div class="field-group">
-            <label for="fechaExamenCeneval">Fecha de examen</label>
+            <label for="fechaExamenCeneval"><i class="fas fa-calendar-day"></i>Fecha de examen</label>
             <input
               type="date"
               id="fechaExamenCeneval"
@@ -140,7 +142,7 @@
           </div>
 
           <div class="field-group">
-            <label for="puntajeCeneval">Puntaje CENEVAL</label>
+            <label for="puntajeCeneval"><i class="fas fa-percent"></i>Puntaje CENEVAL</label>
             <input
               type="number"
               id="puntajeCeneval"
@@ -152,7 +154,7 @@
 
         <div *ngIf="academico.tipoTitulacion === 'Experiencia laboral'">
           <div class="field-group">
-            <label for="tituloMemoria">Título de memoria</label>
+            <label for="tituloMemoria"><i class="fas fa-book-open"></i>Título de memoria</label>
             <input
               type="text"
               id="tituloMemoria"
@@ -162,7 +164,7 @@
           </div>
 
           <div class="field-group">
-            <label for="asesor">Asesor</label>
+            <label for="asesor"><i class="fas fa-user"></i>Asesor</label>
             <input
               type="text"
               id="asesor"
@@ -172,7 +174,7 @@
           </div>
 
           <div class="field-group">
-            <label for="fechaExamenMemoria">Fecha de examen</label>
+            <label for="fechaExamenMemoria"><i class="fas fa-calendar-day"></i>Fecha de examen</label>
             <input
               type="date"
               id="fechaExamenMemoria"

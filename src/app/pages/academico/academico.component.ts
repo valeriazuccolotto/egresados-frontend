@@ -167,8 +167,6 @@ export class AcademicoComponent implements OnInit {
   cargarAcademico(): void {
   this.academicoService.obtenerPorMatricula(this.academico.matricula).subscribe({
     next: (data: any) => {
-      console.log('ACADEMICO RECIBIDO:', data);
-
       const clave = String(
         data.claveCarrera ??
         data.clave_carrera ??
@@ -225,8 +223,6 @@ export class AcademicoComponent implements OnInit {
     data.memoria?.asesor ??
     ''
 };
-      console.log('CLAVE CARRERA FINAL:', this.academico.claveCarrera);
-      console.log('ACADEMICO MAPEADO:', this.academico);
     },
     error: (err) => {
       console.error('Error al cargar académico:', err);

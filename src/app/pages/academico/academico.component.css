@@ -2,23 +2,25 @@
   font-family: 'Roboto', sans-serif;
 }
 .page-section {
-  padding: 26px 34px 42px;
+  width: 100%;
+  padding: 32px 40px 44px;
   background: #f4f6f8;
   min-height: 100%;
+  box-sizing: border-box;
 }
 
 .section-header {
   margin-bottom: 20px;
 }
 
-.section-header h1 {
+.section-title h2 {
   margin: 0 0 6px;
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   color: #2f9a8f;
 }
 
-.section-header p {
+.section-title p {
   margin: 0;
   font-size: 15px;
   color: #7d8a96;

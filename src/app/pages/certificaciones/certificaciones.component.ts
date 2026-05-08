@@ -57,7 +57,7 @@ export class CertificacionesComponent implements OnInit {
 }
   cargarHistorial() {
   this.http.get<any[]>(
-    `http://localhost:8189/egresado/certificaciones/${this.matriculaUsuario}`
+    `/egresado/certificaciones/${this.matriculaUsuario}`
   ).subscribe({
     next: (data) => this.historial = data,
     error: () => {
@@ -113,7 +113,7 @@ export class CertificacionesComponent implements OnInit {
     institucionCertificacion: this.form.certInstitucion
   };
 
-  this.http.post('http://localhost:8189/egresado/certificaciones', datos)
+  this.http.post('/egresado/certificaciones', datos)
     .subscribe({
       next: () => {
         this.mostrarMensaje("✓ Certificación guardada");
@@ -133,7 +133,7 @@ export class CertificacionesComponent implements OnInit {
 
   actualizarCertificacion() {
     const datosActualizados = {
-      matricula: "A1234567",
+      matricula: this.matriculaUsuario,
       idCertificacion: this.certSeleccionado.idCertificacion,
       nombreCertificacion: this.certSeleccionado.nombreCertificacion,
       fechaInicio: this.certSeleccionado.fechaInicio,
@@ -143,7 +143,7 @@ export class CertificacionesComponent implements OnInit {
     };
 
     this.http.put(
-      `http://localhost:8189/egresado/certificaciones/${this.certSeleccionado.idCertificacion}`,
+      `/egresado/certificaciones/${this.certSeleccionado.idCertificacion}`,
       datosActualizados
     ).subscribe({
       next: () => {
@@ -173,7 +173,7 @@ export class CertificacionesComponent implements OnInit {
   confirmarEliminacion() {
     if (this.certAEliminar !== null) {
       this.http.delete(
-        `http://localhost:8189/egresado/certificaciones/${this.certAEliminar}`
+        `/egresado/certificaciones/${this.certAEliminar}`
       ).subscribe({
         next: () => {
           this.mostrarMensaje("🗑️ Certificación eliminada correctamente");

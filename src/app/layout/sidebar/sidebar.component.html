@@ -1,22 +1,28 @@
 <aside class="sidebar" [class.oculto]="!abierto">
   <nav>
 
+    <!-- DEJADO TAL CUAL -->
     <a routerLink="/dashboard" routerLinkActive="activo">
       <span class="material-icons">dashboard</span>
       Dashboard
     </a>
 
-    <a routerLink="/datos-recuperados" routerLinkActive="activo">
+    <!-- CORREGIDO -->
+    <a routerLink="/admin/datos-recuperados" routerLinkActive="activo">
       <span class="material-icons">assignment</span>
       Datos recuperados
     </a>
 
+    <!-- (IMPORTANTE) este NO existe en tus rutas -->
+    <!-- lo dejo comentado para que no rompa -->
+    <!--
     <a routerLink="/empresas" routerLinkActive="activo">
       <span class="material-icons">business</span>
       Empresas
     </a>
+    -->
 
-    <!-- REPORTES CON SUBMENÚ -->
+    <!-- REPORTES -->
     <div class="menu-item" [class.abierto]="reportesAbierto" (click)="toggleReportes()">
       <span class="material-icons">bar_chart</span>
       Reportes
@@ -24,25 +30,31 @@
     </div>
 
     <div class="submenu" [class.visible]="reportesAbierto">
-      <a routerLink="/reportes/laboral" routerLinkActive="activo">
+
+      <a routerLink="/admin/reportes/laboral" routerLinkActive="activo">
         <span class="material-icons">work</span>
         Laboral
       </a>
-      <a routerLink="/reportes/academico" routerLinkActive="activo">
+
+      <a routerLink="/admin/reportes/academico" routerLinkActive="activo">
         <span class="material-icons">school</span>
         Académico
       </a>
-      <a routerLink="/reportes/posgrado" routerLinkActive="activo">
+
+      <a routerLink="/admin/reportes/posgrado" routerLinkActive="activo">
         <span class="material-icons">menu_book</span>
         Posgrado
       </a>
-      <a routerLink="/reportes/reconocimientos" routerLinkActive="activo">
+
+      <a routerLink="/admin/reportes/reconocimientos" routerLinkActive="activo">
         <span class="material-icons">emoji_events</span>
         Reconocimientos
       </a>
+
     </div>
 
-    <a routerLink="/usuarios" routerLinkActive="activo">
+    <!-- CORREGIDO -->
+    <a routerLink="/admin/usuarios" routerLinkActive="activo">
       <span class="material-icons">people</span>
       Usuarios
     </a>

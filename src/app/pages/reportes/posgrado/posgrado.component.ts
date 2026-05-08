@@ -32,12 +32,25 @@ export class PosgradoComponent implements OnInit, OnDestroy {
   constructor(private posgradoService: PosgradoService) {}
 
   ngOnInit() {
-    this.posgradoService.getEgresados().subscribe(egresados => {
-      this.todosEgresados = egresados;
-      this.posgradoService.getPosgrados().subscribe(posgrados => {
-        this.todosPosgrados = posgrados;
+    this.posgradoService.getEgresados().subscribe({
+      next: (egresados) => {
+        this.todosEgresados = egresados || [];
+        this.posgradoService.getPosgrados().subscribe({
+          next: (posgrados) => {
+            this.todosPosgrados = posgrados || [];
+            this.aplicarFiltro();
+          },
+          error: () => {
+            this.todosPosgrados = [];
+            this.aplicarFiltro();
+          }
+        });
+      },
+      error: () => {
+        this.todosEgresados = [];
+        this.todosPosgrados = [];
         this.aplicarFiltro();
-      });
+      }
     });
   }
 
@@ -81,6 +94,14 @@ export class PosgradoComponent implements OnInit, OnDestroy {
       : 'N/A';
   }
 
+  private normalizar(valor: any): string {
+    return String(valor ?? '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+
   construirGraficas(posgrados: any[]) {
     const V1 = '#2f8f83';
     const V2 = '#52b0a4';
@@ -96,7 +117,7 @@ export class PosgradoComponent implements OnInit, OnDestroy {
 
     // 2. Modalidad - doughnut
     this.crearGraficaDoughnut('chartModalidad', posgrados, 'modalidad',
-      ['Presencial', 'Virtual', 'Hibrida'], [V1, V2, V3]
+      ['Presencial', 'Virtual', 'Híbrido'], [V1, V2, V3]
     );
 
     // 3. Estatus - bar
@@ -122,14 +143,14 @@ export class PosgradoComponent implements OnInit, OnDestroy {
 
     // 6. Relacionado con carrera - doughnut
     this.crearGraficaDoughnut('chartRelacionado', posgrados, 'relacionadoCarrera',
-      ['Si', 'No', 'Un poco'], [V1, G1, V3]
+      ['Sí', 'No', 'Un poco'], [V1, G1, V3]
     );
   }
 
   crearGraficaPie(id: string, datos: any[], campo: string, labels: string[], colors: string[]) {
     const canvas = document.getElementById(id) as HTMLCanvasElement;
     if (!canvas) return;
-    const data = labels.map(l => datos.filter(x => x[campo] === l).length);
+    const data = labels.map(l => datos.filter(x => this.normalizar(x[campo]) === this.normalizar(l)).length);
     const chart = new Chart(canvas, {
       type: 'pie',
       data: { labels, datasets: [{ data, backgroundColor: colors }] },
@@ -152,7 +173,7 @@ export class PosgradoComponent implements OnInit, OnDestroy {
   crearGraficaDoughnut(id: string, datos: any[], campo: string, labels: string[], colors: string[]) {
     const canvas = document.getElementById(id) as HTMLCanvasElement;
     if (!canvas) return;
-    const data = labels.map(l => datos.filter(x => x[campo] === l).length);
+    const data = labels.map(l => datos.filter(x => this.normalizar(x[campo]) === this.normalizar(l)).length);
     const chart = new Chart(canvas, {
       type: 'doughnut',
       data: { labels, datasets: [{ data, backgroundColor: colors }] },
@@ -164,7 +185,7 @@ export class PosgradoComponent implements OnInit, OnDestroy {
   crearGraficaBar(id: string, datos: any[], campo: string, labels: string[], colors: string[]) {
     const canvas = document.getElementById(id) as HTMLCanvasElement;
     if (!canvas) return;
-    const data = labels.map(l => datos.filter(x => x[campo] === l).length);
+    const data = labels.map(l => datos.filter(x => this.normalizar(x[campo]) === this.normalizar(l)).length);
     const chart = new Chart(canvas, {
       type: 'bar',
       data: { labels, datasets: [{ label: 'Egresados', data, backgroundColor: colors }] },

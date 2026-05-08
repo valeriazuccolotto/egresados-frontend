@@ -9,7 +9,7 @@ import { Egresado } from '../../models/egresado';
 export class EgresadoService {
 
   // 👇 Usa el puerto correcto según tu backend
-  private url = 'http://localhost:8181/egresados';
+  private url = '/egresados';
 
   constructor(private http: HttpClient) {}
 
@@ -68,19 +68,19 @@ export class EgresadoService {
 
   // 🔹 Módulos por matrícula (detalle)
   getLaboralPorMatricula(matricula: string): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:8181/egresado/laboral/${matricula}`);
+    return this.http.get<any[]>(`/egresado/laboral/${matricula}`);
   }
 
   getPosgradoPorMatricula(matricula: string): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:8181/egresado/posgrado/${matricula}`);
+    return this.http.get<any[]>(`/egresado/posgrado/${matricula}`);
   }
 
   getReconocimientosPorMatricula(matricula: string): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:8181/egresado/reconocimientos/${matricula}`);
+    return this.http.get<any[]>(`/egresado/reconocimientos/${matricula}`);
   }
 
   getCertificacionesPorMatricula(matricula: string): Observable<any[]> {
-    return this.http.get<any[]>(`http://localhost:8181/egresado/certificaciones/${matricula}`);
+    return this.http.get<any[]>(`/egresado/certificaciones/${matricula}`);
   }
 
   getContactoPorMatricula(matricula: string): Observable<any> {

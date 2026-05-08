@@ -33,12 +33,25 @@ export class ReconocimientosComponent implements OnInit, OnDestroy {
   constructor(private reconocimientosService: ReconocimientosService) {}
 
   ngOnInit() {
-    this.reconocimientosService.getEgresados().subscribe(egresados => {
-      this.todosEgresados = egresados;
-      this.reconocimientosService.getReconocimientos().subscribe(reconocimientos => {
-        this.todosReconocimientos = reconocimientos;
+    this.reconocimientosService.getEgresados().subscribe({
+      next: (egresados) => {
+        this.todosEgresados = egresados || [];
+        this.reconocimientosService.getReconocimientos().subscribe({
+          next: (reconocimientos) => {
+            this.todosReconocimientos = reconocimientos || [];
+            this.aplicarFiltro();
+          },
+          error: () => {
+            this.todosReconocimientos = [];
+            this.aplicarFiltro();
+          }
+        });
+      },
+      error: () => {
+        this.todosEgresados = [];
+        this.todosReconocimientos = [];
         this.aplicarFiltro();
-      });
+      }
     });
   }
 
@@ -80,6 +93,14 @@ export class ReconocimientosComponent implements OnInit, OnDestroy {
       : 'N/A';
   }
 
+  private normalizar(valor: any): string {
+    return String(valor ?? '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  }
+
   construirGraficas(reconocimientos: any[]) {
     const V1 = '#2f8f83';
     const V2 = '#52b0a4';
@@ -88,9 +109,9 @@ export class ReconocimientosComponent implements OnInit, OnDestroy {
     const AZ = '#1a6e78';
 
     // 1. Tipo de reconocimiento - pie grande
-    const tipos = ['Academico', 'Cultural', 'Deportivo'];
+    const tipos = ['Académico', 'Cultural', 'Deportivo'];
     const datosTipo = tipos.map(t =>
-      reconocimientos.filter(r => r.tipoReconocimiento === t).length
+      reconocimientos.filter(r => this.normalizar(r.tipoReconocimiento) === this.normalizar(t)).length
     );
     const canvas1 = document.getElementById('chartTipo') as HTMLCanvasElement;
     if (canvas1) {

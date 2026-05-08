@@ -64,14 +64,14 @@ export class PosgradoComponent implements OnInit {
 }
 
   cargarHistorial() {
-  this.http.get<any[]>(`http://localhost:8189/egresado/posgrado/${this.matriculaUsuario}`)
+  this.http.get<any[]>(`/egresado/posgrado/${this.matriculaUsuario}`)
     .subscribe({
       next: data => this.historial = data.reverse(),
       error: () => this.mostrarMensaje("❌ Error al cargar historial")
     });
 }
   cargarBecas() {
-    this.http.get<any[]>('http://localhost:8189/tipo-beca')
+    this.http.get<any[]>('/tipo-beca')
       .subscribe({
         next: data => {
           this.listaBecas = [...data, { idTipoBeca: 0, nombre: 'Otros' }];
@@ -142,7 +142,7 @@ export class PosgradoComponent implements OnInit {
     : null
 };
 
-    this.http.post('http://localhost:8189/egresado/posgrado', datos)
+    this.http.post('/egresado/posgrado', datos)
       .subscribe({
         next: () => {
           this.cargarHistorial();
@@ -197,7 +197,7 @@ export class PosgradoComponent implements OnInit {
     };
 
     this.http.put(
-      `http://localhost:8189/egresado/posgrado/${this.posgradoSeleccionado.idPosgrado}`,
+      `/egresado/posgrado/${this.posgradoSeleccionado.idPosgrado}`,
       datos
     ).subscribe({
       next: () => {
@@ -218,7 +218,7 @@ export class PosgradoComponent implements OnInit {
 
   confirmarEliminacion() {
     if (this.posgradoAEliminar !== null) {
-      this.http.delete(`http://localhost:8189/egresado/posgrado/${this.posgradoAEliminar}`)
+      this.http.delete(`/egresado/posgrado/${this.posgradoAEliminar}`)
         .subscribe({
           next: () => {
             this.mostrarMensaje("🗑️ Posgrado eliminado correctamente");

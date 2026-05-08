@@ -67,7 +67,8 @@
               "buildTarget": "egresados-frontend:build:production"
             },
             "development": {
-              "buildTarget": "egresados-frontend:build:development"
+              "buildTarget": "egresados-frontend:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

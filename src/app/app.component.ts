@@ -18,6 +18,7 @@ import { HttpClient } from '@angular/common/http';
 export class AppComponent implements OnInit, OnDestroy {
   porcentajePerfil = 0;
   esLogin = false;
+  esAdmin = false;
   title = 'egresados-frontend';
   sidebarHidden = false;
 
@@ -32,21 +33,22 @@ export class AppComponent implements OnInit, OnDestroy {
   cameraCapturedPreview: string | null = null;
   private cameraStream: MediaStream | null = null;
 
-  fotoGlobal: string = 'assets/default-user.png';
+  fotoGlobal: string = 'assets/favicon-UNPA.ico';
+  private readonly backendOrigin = 'http://localhost:8181';
 
   constructor(
   private perfilService: PerfilService,
   private router: Router,
   private http: HttpClient
 ) {
-  this.esLogin = this.router.url === '/login';
+  this.actualizarEstadoLayout(this.router.url);
 
   this.router.events
     .pipe(filter(event => event instanceof NavigationEnd))
     .subscribe((event: NavigationEnd) => {
-      this.esLogin = event.urlAfterRedirects === '/login';
+      this.actualizarEstadoLayout(event.urlAfterRedirects);
 
-      if (!this.esLogin) {
+      if (!this.esLogin && !this.esAdmin) {
         this.calcularProgreso();
       }
     });
@@ -136,18 +138,24 @@ toggleSidebar(): void {
       return;
     }
 
+    // Reduce resolution to avoid files >5MB from high-res cameras.
+    const maxDimension = 1280;
+    const scale = Math.min(1, maxDimension / Math.max(video.videoWidth, video.videoHeight));
+    const targetWidth = Math.round(video.videoWidth * scale);
+    const targetHeight = Math.round(video.videoHeight * scale);
+
     const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.translate(canvas.width, 0);
+    ctx.translate(targetWidth, 0);
     ctx.scale(-1, 1);
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, 0, 0, targetWidth, targetHeight);
 
-    this.cameraCapturedPreview = canvas.toDataURL('image/jpeg', 0.92);
+    this.cameraCapturedPreview = canvas.toDataURL('image/jpeg', 0.85);
     this.stopCameraStream();
   }
 
@@ -159,13 +167,12 @@ toggleSidebar(): void {
   confirmCapturedPhoto(): void {
     if (!this.cameraCapturedPreview) return;
 
-    const archivo = this.dataUrlToFile(
-      this.cameraCapturedPreview,
-      `foto-perfil-${Date.now()}.jpg`
-    );
-
-    this.subirArchivo(archivo);
-    this.closeCameraModal();
+    const archivo = this.dataUrlToFile(this.cameraCapturedPreview);
+    if (!archivo) {
+      this.cameraError = 'No se pudo procesar la foto capturada.';
+      return;
+    }
+    this.subirArchivo(archivo, true);
   }
 
   closeCameraModal(): void {
@@ -193,33 +200,119 @@ toggleSidebar(): void {
     input.value = '';
   }
 
-  private subirArchivo(archivo: File): void {
+  private subirArchivo(archivo: File, desdeCamara = false): void {
     if (archivo.size > 5 * 1024 * 1024) {
-      alert('La imagen no debe pesar más de 5MB');
+      const mensaje = 'La imagen no debe pesar más de 5MB';
+      if (desdeCamara) {
+        this.cameraError = `${mensaje}. Intenta de nuevo con mejor iluminación o menor resolución.`;
+      } else {
+        alert(mensaje);
+      }
       return;
     }
 
-    const matricula = localStorage.getItem('matricula') || '21010048';
+    const raw = sessionStorage.getItem('usuario');
+    const matricula = raw ? JSON.parse(raw)?.matricula : null;
+
+    if (!matricula) {
+      const mensaje = 'No se encontró la matrícula en sesión. Inicia sesión de nuevo.';
+      if (desdeCamara) {
+        this.cameraError = mensaje;
+      } else {
+        alert(mensaje);
+      }
+      return;
+    }
+
+    if (!this.esMatriculaEgresado(matricula)) {
+      const mensaje = 'La foto de perfil en este modulo solo aplica para cuentas de egresado.';
+      if (desdeCamara) {
+        this.cameraError = mensaje;
+      } else {
+        alert(mensaje);
+      }
+      return;
+    }
 
     this.perfilService.subirFotoPerfil(matricula, archivo).subscribe({
       next: (resp) => {
-        const nuevaUrl = `http://localhost:8189${resp.urlFoto}?t=${Date.now()}`;
+        // Some backends return only a message on upload. Re-read profile to get urlFoto safely.
+        this.perfilService.obtenerPerfil(matricula).subscribe({
+          next: (perfil) => {
+            const rutaFoto = perfil?.urlFoto || resp?.urlFoto || resp?.fotoUrl || resp?.url || resp?.path;
+            if (!rutaFoto) {
+              const mensaje = 'La foto se subio, pero no se pudo obtener la ruta de la imagen.';
+              if (desdeCamara) {
+                this.cameraError = mensaje;
+              } else {
+                alert(mensaje);
+              }
+              return;
+            }
 
-        this.perfilService.setFoto(nuevaUrl);
-        this.fotoGlobal = nuevaUrl;
-        this.mostrarPanelFoto = false;
+            const nuevaUrl = this.normalizarUrlFoto(rutaFoto);
+            this.perfilService.setFoto(nuevaUrl);
+            this.fotoGlobal = nuevaUrl;
+            this.mostrarPanelFoto = false;
+            if (desdeCamara) {
+              this.closeCameraModal();
+            }
+          },
+          error: () => {
+            const rutaFoto = resp?.urlFoto || resp?.fotoUrl || resp?.url || resp?.path;
+            if (!rutaFoto) {
+              const mensaje = 'La foto se subio, pero no se pudo refrescar el perfil.';
+              if (desdeCamara) {
+                this.cameraError = mensaje;
+              } else {
+                alert(mensaje);
+              }
+              return;
+            }
+
+            const nuevaUrl = this.normalizarUrlFoto(rutaFoto);
+            this.perfilService.setFoto(nuevaUrl);
+            this.fotoGlobal = nuevaUrl;
+            this.mostrarPanelFoto = false;
+            if (desdeCamara) {
+              this.closeCameraModal();
+            }
+          }
+        });
       },
       error: (err) => {
         console.error('Error al subir foto:', err);
-        alert('Error al subir la foto');
+        const mensajeBackend =
+          err?.error?.message ||
+          err?.error?.mensaje ||
+          err?.message ||
+          '';
+        const mensaje = mensajeBackend
+          ? `Error al subir la foto: ${mensajeBackend}`
+          : 'Error al subir la foto. Intenta nuevamente.';
+        if (desdeCamara) {
+          this.cameraError = mensaje;
+        } else {
+          alert(mensaje);
+        }
       }
     });
   }
 
-  private dataUrlToFile(dataUrl: string, filename: string): File {
+  private actualizarEstadoLayout(url: string): void {
+    const cleanUrl = url.split('?')[0].split('#')[0];
+    this.esLogin = cleanUrl === '/login';
+    this.esAdmin = cleanUrl.startsWith('/admin');
+  }
+
+  private dataUrlToFile(dataUrl: string): File | null {
     const [meta, payload] = dataUrl.split(',');
+    if (!meta || !payload) return null;
+
     const mimeMatch = /data:(.*?);base64/.exec(meta);
     const mimeType = mimeMatch?.[1] || 'image/jpeg';
+    const extension = mimeType.includes('png') ? 'png' : 'jpg';
+    const filename = `foto-perfil-${Date.now()}.${extension}`;
 
     const binary = atob(payload);
     const bytes = new Uint8Array(binary.length);
@@ -230,6 +323,17 @@ toggleSidebar(): void {
 
     return new File([bytes], filename, { type: mimeType });
   }
+
+  private normalizarUrlFoto(url: string): string {
+    if (!url) return this.fotoGlobal;
+    const cacheBust = `t=${Date.now()}`;
+    if (/^(https?:|data:|blob:)/i.test(url)) {
+      return `${url}${url.includes('?') ? '&' : '?'}${cacheBust}`;
+    }
+
+    const ruta = url.startsWith('/') ? url : `/${url}`;
+    return `${this.backendOrigin}${ruta}${ruta.includes('?') ? '&' : '?'}${cacheBust}`;
+  }
   
   calcularProgreso() {
   const raw = sessionStorage.getItem('usuario');
@@ -238,11 +342,12 @@ toggleSidebar(): void {
 
   const usuario = JSON.parse(raw);
   const matricula = usuario.matricula;
+  if (!this.esMatriculaEgresado(matricula)) return;
 
   let completados = 0;
   const total = 7;
 
-  this.http.get<any>(`http://localhost:8189/egresados/${matricula}`)
+  this.http.get<any>(`/egresados/${matricula}`)
     .subscribe({
       next: (data: any) => {
         if (
@@ -260,7 +365,7 @@ toggleSidebar(): void {
       error: () => this.actualizarPorcentaje(completados, total)
     });
 
-  this.http.get<any>(`http://localhost:8189/egresados/contacto/${matricula}`)
+  this.http.get<any>(`/egresados/contacto/${matricula}`)
     .subscribe({
       next: (data: any) => {
         if (data?.correoPersonal && data?.telefono) {
@@ -272,7 +377,7 @@ toggleSidebar(): void {
       error: () => this.actualizarPorcentaje(completados, total)
     });
 
-  this.http.get<any>(`http://localhost:8189/egresados/academico/${matricula}`)
+  this.http.get<any>(`/egresados/academico/${matricula}`)
     .subscribe({
       next: (data: any) => {
         if (data?.claveCarrera) {
@@ -284,7 +389,7 @@ toggleSidebar(): void {
       error: () => this.actualizarPorcentaje(completados, total)
     });
 
-  this.http.get<any[]>(`http://localhost:8189/egresado/laboral/${matricula}`)
+  this.http.get<any[]>(`/egresado/laboral/${matricula}`)
     .subscribe({
       next: (data: any[]) => {
         if (data && data.length > 0) {
@@ -296,7 +401,7 @@ toggleSidebar(): void {
       error: () => this.actualizarPorcentaje(completados, total)
     });
 
-  this.http.get<any[]>(`http://localhost:8189/egresado/posgrado/${matricula}`)
+  this.http.get<any[]>(`/egresado/posgrado/${matricula}`)
     .subscribe({
       next: (data: any[]) => {
         if (data && data.length > 0) {
@@ -308,7 +413,7 @@ toggleSidebar(): void {
       error: () => this.actualizarPorcentaje(completados, total)
     });
 
-  this.http.get<any[]>(`http://localhost:8189/egresado/certificaciones/${matricula}`)
+  this.http.get<any[]>(`/egresado/certificaciones/${matricula}`)
     .subscribe({
       next: (data: any[]) => {
         if (data && data.length > 0) {
@@ -320,7 +425,7 @@ toggleSidebar(): void {
       error: () => this.actualizarPorcentaje(completados, total)
     });
 
-  this.http.get<any[]>(`http://localhost:8189/egresado/reconocimientos/${matricula}`)
+  this.http.get<any[]>(`/egresado/reconocimientos/${matricula}`)
     .subscribe({
       next: (data: any[]) => {
         if (data && data.length > 0) {
@@ -335,6 +440,10 @@ toggleSidebar(): void {
 
 actualizarPorcentaje(completados: number, total: number) {
   this.porcentajePerfil = Math.round((completados / total) * 100);
+}
+
+private esMatriculaEgresado(matricula: string): boolean {
+  return /^\d+$/.test(String(matricula || '').trim());
 }
   
 }

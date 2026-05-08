@@ -11,3 +11,16 @@ body {
   background: #f3f5f7;
   color: #333;
 }
+
+.field-group label i {
+  color: #256f66;
+  margin-right: 6px;
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+
+.detalle-item label i,
+.info-content label i {
+  color: #256f66;
+  margin-right: 6px;
+}

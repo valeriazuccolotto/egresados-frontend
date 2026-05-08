@@ -1,8 +1,8 @@
-<!-- LOGIN SIN TOPBAR NI SIDEBAR -->
-<router-outlet *ngIf="esLogin"></router-outlet>
+<!-- LOGIN/ADMIN SIN TOPBAR NI SIDEBAR DE EGRESADO -->
+<router-outlet *ngIf="esLogin || esAdmin"></router-outlet>
 
 <!-- SISTEMA EGRESADOS -->
-<div class="app-shell" *ngIf="!esLogin">
+<div class="app-shell" *ngIf="!esLogin && !esAdmin">
 
   <!-- TOPBAR -->
 <header class="topbar">
@@ -13,7 +13,7 @@
     </button>
 
     <div class="brand">
-      <img src="img/logo.png" alt="UNPA" class="brand-logo" />
+      <img src="assets/images/logo.png" alt="UNPA" class="brand-logo" />
       <span class="brand-title">Seguimiento de Egresados</span>
     </div>
 
@@ -85,7 +85,7 @@
 <aside class="sidebar" [class.closed]="sidebarHidden">
     <nav class="sidebar-menu">
 
-   <a routerLink="/perfil" routerLinkActive="active" class="menu-item">
+  <a routerLink="/perfil" routerLinkActive="active" class="menu-item">
   <span class="material-icons">person</span>
   Mi perfil
 </a>

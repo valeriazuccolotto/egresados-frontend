@@ -1,3 +1,4 @@
+<div class="page-section">
 <div class="section-header">
     <div class="section-title">
         <h2>Información de Posgrado</h2>
@@ -34,7 +35,7 @@
             <h3>Formación de Posgrado</h3>
 
             <div class="field-group">
-                <label>Nivel <span class="required">*</span></label>
+                <label><i class="fas fa-layer-group"></i>Nivel <span class="required">*</span></label>
                 <select [(ngModel)]="form.nivel" name="nivel" required #nivel="ngModel">
                     <option value="">Seleccione</option>
                     <option>Maestria</option>
@@ -44,19 +45,19 @@
             </div>
 
             <div class="field-group">
-                <label>Institución <span class="required">*</span></label>
+                <label><i class="fas fa-university"></i>Institución <span class="required">*</span></label>
                 <input [(ngModel)]="form.institucion" name="institucion" required #institucion="ngModel">
                 <div class="error" *ngIf="institucion.invalid && institucion.touched">Campo obligatorio</div>
             </div>
 
             <div class="field-group full">
-                <label>Programa <span class="required">*</span></label>
+                <label><i class="fas fa-book-open"></i>Programa <span class="required">*</span></label>
                 <input [(ngModel)]="form.programa" name="programa" required #programa="ngModel">
                 <div class="error" *ngIf="programa.invalid && programa.touched">Campo obligatorio</div>
             </div>
 
             <div class="field-group">
-                <label>Modalidad <span class="required">*</span></label>
+                <label><i class="fas fa-laptop-house"></i>Modalidad <span class="required">*</span></label>
                 <select [(ngModel)]="form.modalidad" name="modalidad" required #modalidad="ngModel">
                     <option value="">Seleccione</option>
                     <option>Presencial</option>
@@ -71,7 +72,7 @@
             <h3>Estado Académico</h3>
 
             <div class="field-group">
-                <label>Estatus <span class="required">*</span></label>
+                <label><i class="fas fa-check-circle"></i>Estatus <span class="required">*</span></label>
                 <select [(ngModel)]="form.estatus" name="estatus" required #estatus="ngModel">
                     <option value="">Seleccione</option>
                     <option>En curso</option>
@@ -82,7 +83,7 @@
             </div>
 
             <div class="field-group">
-                <label>Relación <span class="required">*</span></label>
+                <label><i class="fas fa-link"></i>Relación <span class="required">*</span></label>
                 <select [(ngModel)]="form.relacion" name="relacion" required #relacion="ngModel">
                     <option value="">Seleccione</option>
                     <option>Si</option>
@@ -93,13 +94,13 @@
             </div>
 
             <div class="field-group">
-                <label>Inicio <span class="required">*</span></label>
+                <label><i class="fas fa-calendar-day"></i>Inicio <span class="required">*</span></label>
                 <input type="date" [(ngModel)]="form.inicio" name="inicio" required #inicio="ngModel">
                 <div class="error" *ngIf="inicio.invalid && inicio.touched">Campo obligatorio</div>
             </div>
 
             <div class="field-group">
-                <label>Fin <span class="required">*</span></label>
+                <label><i class="fas fa-calendar-times"></i>Fin <span class="required">*</span></label>
                 <input type="date" [(ngModel)]="form.fin" name="fin" required #fin="ngModel">
                 <div class="error" *ngIf="fin.invalid && fin.touched">Campo obligatorio</div>
             </div>
@@ -111,7 +112,7 @@
                 <h3>Apoyos</h3>
 
                 <div class="field-group">
-                    <label>Beca <span class="required">*</span></label>
+                    <label><i class="fas fa-award"></i>Beca <span class="required">*</span></label>
                     <select [(ngModel)]="form.tieneBeca"
                             name="tieneBeca"
                             required
@@ -124,7 +125,7 @@
                 </div>
 
                 <div class="field-group" *ngIf="form.tieneBeca === true">
-                    <label>Tipo de beca <span class="required">*</span></label>
+                    <label><i class="fas fa-medal"></i>Tipo de beca <span class="required">*</span></label>
                     <select [(ngModel)]="form.idTipoBeca"
                             name="idTipoBeca"
                             required
@@ -137,7 +138,7 @@
                 </div>
 
                 <div class="field-group" *ngIf="form.idTipoBeca === 0">
-                    <label>Especifica la beca <span class="required">*</span></label>
+                    <label><i class="fas fa-pen"></i>Especifica la beca <span class="required">*</span></label>
                     <input [(ngModel)]="form.otroBeca"
                         name="otroBeca"
                         required
@@ -181,7 +182,7 @@
                 <p>{{ pos.modalidad }}</p>
             </div>
 
-            <<div class="historial-actions">
+            <div class="historial-actions">
                 <button (click)="verDetalle(pos)" class="btn-ver">Editar</button>
                 <button (click)="abrirConfirmacion(pos.idPosgrado)" class="btn-eliminar">
                     Eliminar
@@ -206,7 +207,7 @@
                 <h3>Formación de Posgrado</h3>
 
                 <div class="field-group">
-                    <label>Nivel <span class="required">*</span></label>
+                    <label><i class="fas fa-layer-group"></i>Nivel <span class="required">*</span></label>
                     <select [(ngModel)]="posgradoSeleccionado.nivelEstudio"
                             name="nivelEstudio"
                             required
@@ -222,7 +223,7 @@
                 </div>
 
                 <div class="field-group">
-                    <label>Institución <span class="required">*</span></label>
+                    <label><i class="fas fa-university"></i>Institución <span class="required">*</span></label>
                     <input [(ngModel)]="posgradoSeleccionado.institucion"
                             name="institucion"
                             required
@@ -233,7 +234,7 @@
                 </div>
 
                 <div class="field-group full">
-                    <label>Programa <span class="required">*</span></label>
+                    <label><i class="fas fa-book-open"></i>Programa <span class="required">*</span></label>
                     <input [(ngModel)]="posgradoSeleccionado.nombrePrograma"
                             name="nombrePrograma"
                             required
@@ -244,7 +245,7 @@
                 </div>
 
                 <div class="field-group">
-                    <label>Modalidad <span class="required">*</span></label>
+                    <label><i class="fas fa-laptop-house"></i>Modalidad <span class="required">*</span></label>
                     <select [(ngModel)]="posgradoSeleccionado.modalidad"
                             name="modalidad"
                             required
@@ -265,7 +266,7 @@
                 <h3>Estado Académico</h3>
 
                 <div class="field-group">
-                    <label>Estatus <span class="required">*</span></label>
+                    <label><i class="fas fa-check-circle"></i>Estatus <span class="required">*</span></label>
                     <select [(ngModel)]="posgradoSeleccionado.estatus"
                             name="estatus"
                             required
@@ -281,7 +282,7 @@
                 </div>
 
                 <div class="field-group">
-                    <label>Relación <span class="required">*</span></label>
+                    <label><i class="fas fa-link"></i>Relación <span class="required">*</span></label>
                     <select [(ngModel)]="posgradoSeleccionado.relacionadoCarrera"
                             name="relacionadoCarrera"
                             required
@@ -297,7 +298,7 @@
                 </div>
 
                 <div class="field-group">
-                    <label>Inicio <span class="required">*</span></label>
+                    <label><i class="fas fa-calendar-day"></i>Inicio <span class="required">*</span></label>
                     <input type="date"
                             [(ngModel)]="posgradoSeleccionado.fechaInicio"
                             name="fechaInicio"
@@ -309,7 +310,7 @@
                 </div>
 
                 <div class="field-group">
-                    <label>Fin <span class="required">*</span></label>
+                    <label><i class="fas fa-calendar-times"></i>Fin <span class="required">*</span></label>
                     <input type="date"
                             [(ngModel)]="posgradoSeleccionado.fechaFin"
                             name="fechaFin"
@@ -327,7 +328,7 @@
                 <h3>Apoyos</h3>
 
                     <div class="field-group">
-                        <label>Beca <span class="required">*</span></label>
+                        <label><i class="fas fa-award"></i>Beca <span class="required">*</span></label>
                         <select [(ngModel)]="posgradoSeleccionado.tieneBeca"
                                 name="tieneBeca"
                                 required
@@ -339,7 +340,7 @@
                     </div>
 
                     <div class="field-group" *ngIf="posgradoSeleccionado.tieneBeca === true">
-                        <label>Tipo de beca <span class="required">*</span></label>
+                        <label><i class="fas fa-medal"></i>Tipo de beca <span class="required">*</span></label>
                         <select [(ngModel)]="posgradoSeleccionado.idTipoBeca"
                                 name="idTipoBeca"
                                 required>
@@ -351,7 +352,7 @@
                     </div>
 
                     <div class="field-group" *ngIf="posgradoSeleccionado.idTipoBeca === 0">
-                        <label>Especifica la beca <span class="required">*</span></label>
+                        <label><i class="fas fa-pen"></i>Especifica la beca <span class="required">*</span></label>
                         <input [(ngModel)]="posgradoSeleccionado.otroBeca"
                             name="otroBeca"
                             required>
@@ -389,78 +390,123 @@
     </div>
     </div>
 
-
 </div>
 
+<!-- MODAL CONSULTA POSGRADO -->
 <div class="modal-overlay" *ngIf="mostrarConsulta">
     <div class="modal-card modal-detalle">
 
+        <!-- BOTÓN CERRAR -->
+        <button type="button" class="modal-close" (click)="cerrarConsulta()" aria-label="Cerrar">×</button>
+
         <!-- HEADER -->
         <div class="modal-header">
-        <h3>{{ posgradoConsulta?.nombrePrograma }}</h3>
-        <span class="badge">{{ posgradoConsulta?.nivelEstudio }}</span>
+            <div class="modal-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div>
+                <label class="modal-label">Programa</label>
+                <h3>{{ posgradoConsulta?.nombrePrograma }}</h3>
+                <p>Información académica de posgrado</p>
+            </div>
         </div>
 
         <!-- BODY -->
-        <div class="modal-body" *ngIf="posgradoConsulta">
+        <div class="modal-body modal-consulta-sin-scroll" *ngIf="posgradoConsulta">
 
-        <div class="detalle-grid">
+            <div class="detalle-grid detalle-grid--dos-col">
 
-            <div class="detalle-item">
-            <label>Institución</label>
-            <p>{{ posgradoConsulta.institucion }}</p>
-            </div>
+                <!-- INSTITUCIÓN -->
+                <div class="detalle-item">
+                    <div class="info-icon"><i class="fas fa-university"></i></div>
+                    <div>
+                        <label>Institución</label>
+                        <p>{{ posgradoConsulta.institucion }}</p>
+                    </div>
+                </div>
 
-            <div class="detalle-item">
-            <label>Modalidad</label>
-            <p>{{ posgradoConsulta.modalidad }}</p>
-            </div>
+                <!-- NIVEL -->
+                <div class="detalle-item">
+                    <div class="info-icon"><i class="fas fa-layer-group"></i></div>
+                    <div>
+                        <label>Nivel</label>
+                        <p>{{ posgradoConsulta.nivelEstudio }}</p>
+                    </div>
+                </div>
 
-            <div class="detalle-item">
-            <label>Estatus</label>
-            <p>{{ posgradoConsulta.estatus }}</p>
-            </div>
+                <!-- MODALIDAD -->
+                <div class="detalle-item">
+                    <div class="info-icon"><i class="fas fa-laptop-house"></i></div>
+                    <div>
+                        <label>Modalidad</label>
+                        <p>{{ posgradoConsulta.modalidad }}</p>
+                    </div>
+                </div>
 
-            <div class="detalle-item">
-            <label>Relación</label>
-            <p>{{ posgradoConsulta.relacionadoCarrera }}</p>
-            </div>
+                <!-- ESTATUS -->
+                <div class="detalle-item">
+                    <div class="info-icon"><i class="fas fa-check-circle"></i></div>
+                    <div>
+                        <label>Estatus</label>
+                        <p>{{ posgradoConsulta.estatus }}</p>
+                    </div>
+                </div>
 
-            <div class="detalle-item">
-            <label>Inicio</label>
-            <p>{{ posgradoConsulta.fechaInicio }}</p>
-            </div>
+                <!-- FILA DOBLE -->
+                <div class="info-row">
+                    <div class="detalle-item">
+                        <div class="info-icon"><i class="fas fa-calendar-day"></i></div>
+                        <div>
+                            <label>Inicio</label>
+                            <p>{{ posgradoConsulta.fechaInicio }}</p>
+                        </div>
+                    </div>
 
-            <div class="detalle-item">
-            <label>Fin</label>
-            <p>{{ posgradoConsulta.fechaFin }}</p>
-            </div>
+                    <div class="detalle-item">
+                        <div class="info-icon"><i class="fas fa-calendar-times"></i></div>
+                        <div>
+                            <label>Fin</label>
+                            <p>{{ posgradoConsulta.fechaFin }}</p>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Beca -->
-            <div class="detalle-item full">
-            <label>Beca</label>
-            <p>
-                {{ posgradoConsulta.tieneBeca ? 'Sí' : 'No' }}
-            </p>
-            </div>
+                <!-- RELACIÓN -->
+                <div class="detalle-item detalle-item--full">
+                    <div class="info-icon"><i class="fas fa-link"></i></div>
+                    <div>
+                        <label>Relación con la carrera</label>
+                        <p>{{ posgradoConsulta.relacionadoCarrera }}</p>
+                    </div>
+                </div>
 
-            <div class="detalle-item full" *ngIf="posgradoConsulta.tieneBeca">
-            <label>Tipo de beca</label>
-            <p>
-                {{ posgradoConsulta.nombreBeca || posgradoConsulta.otroBeca || 'No especificado' }}
-            </p>
+                <!-- BECA -->
+                <div class="detalle-item">
+                    <div class="info-icon"><i class="fas fa-award"></i></div>
+                    <div>
+                        <label>Beca</label>
+                        <p>{{ posgradoConsulta.tieneBeca ? 'Sí' : 'No' }}</p>
+                    </div>
+                </div>
+
+                <!-- TIPO BECA -->
+                <div class="detalle-item" *ngIf="posgradoConsulta.tieneBeca">
+                    <div class="info-icon"><i class="fas fa-gift"></i></div>
+                    <div>
+                        <label>Tipo de beca</label>
+                        <p>{{ posgradoConsulta.tipoBeca?.nombre || posgradoConsulta.nombreBeca || posgradoConsulta.otroBeca || 'No especificado' }}</p>
+                    </div>
+                </div>
+
             </div>
 
         </div>
-
-    </div>
 
         <!-- FOOTER -->
-        <div class="acciones-modal">
-        <button class="btn-secundario" (click)="cerrarConsulta()">
-            Cerrar
-        </button>
+        <div class="cert-footer">
+            <button type="button" class="cert-btn-secondary" (click)="cerrarConsulta()">Cerrar</button>
         </div>
 
     </div>
+</div>
 </div>

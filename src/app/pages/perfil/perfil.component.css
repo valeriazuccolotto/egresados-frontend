@@ -7,20 +7,28 @@
 /* CONTENEDOR GENERAL */
 .perfil-container {
   width: 100%;
-  padding: 40px 60px;
+  min-height: 100%;
+  padding: 32px 40px 44px;
+  background: #f4f6f8;
   box-sizing: border-box;
 }
 
 /* HEADER */
-.perfil-header h1 {
-  font-size: 32px;
-  margin: 0;
-  color: #007D68;
+.section-header {
+  margin-bottom: 20px;
 }
 
-.perfil-header p {
-  color: #6b7280;
-  margin-bottom: 40px;
+.section-title h2 {
+  margin: 0 0 6px;
+  font-size: 26px;
+  font-weight: 700;
+  color: #2f9a8f;
+}
+
+.section-title p {
+  margin: 0;
+  font-size: 15px;
+  color: #7d8a96;
 }
 
 /* CARD PRINCIPAL */

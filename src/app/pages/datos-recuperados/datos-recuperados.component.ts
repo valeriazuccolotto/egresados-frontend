@@ -198,10 +198,15 @@ export class DatosRecuperadosComponent implements OnInit {
           certificaciones
         };
         this.detalleEgresado = this.normalizarPerfilResponse(combinado);
-        this.laboralSeleccionado = this.laborales[0] || null;
-        this.posgradoSeleccionado = this.posgrados[0] || null;
-        this.reconocimientoSeleccionado = this.reconocimientos[0] || null;
-        this.certificacionSeleccionada = this.certificaciones[0] || null;
+        // Solo abrir detalle por defecto cuando hay exactamente un registro; si hay varios, el usuario elige cuál ver.
+        this.laboralSeleccionado =
+          this.laborales.length === 1 ? this.laborales[0] : null;
+        this.posgradoSeleccionado =
+          this.posgrados.length === 1 ? this.posgrados[0] : null;
+        this.reconocimientoSeleccionado =
+          this.reconocimientos.length === 1 ? this.reconocimientos[0] : null;
+        this.certificacionSeleccionada =
+          this.certificaciones.length === 1 ? this.certificaciones[0] : null;
         this.cargandoDetalle = false;
       },
       error: () => {

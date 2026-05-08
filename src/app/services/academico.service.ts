@@ -9,7 +9,7 @@ import { Carrera } from '../models/carrera';
 })
 export class AcademicoService {
 
-  private baseUrl = 'http://localhost:8181';
+  private baseUrl = '';
 
   constructor(private http: HttpClient) {}
 

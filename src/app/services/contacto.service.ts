@@ -8,7 +8,7 @@ import { Contacto } from '../models/contacto';
 })
 export class ContactoService {
 
-  private apiUrl = 'http://localhost:8189/egresados/contacto';
+  private apiUrl = '/egresados/contacto';
 
   constructor(private http: HttpClient) {}
 
