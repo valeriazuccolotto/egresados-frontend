@@ -1,0 +1,8 @@
+<app-header (menuClick)="toggle()"></app-header>
+
+<div class="layout">
+  <app-sidebar [abierto]="menu"></app-sidebar>
+  <div class="contenido">
+    <ng-content></ng-content>
+  </div>
+</div>
