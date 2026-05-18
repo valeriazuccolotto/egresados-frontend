@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-reconocimientos',
@@ -51,13 +52,13 @@ matriculaUsuario: string = '';
 
   // ================= HISTORIAL =================
   cargarHistorial() {
-  this.http.get<any[]>(
-    `/egresado/reconocimientos/${this.matriculaUsuario}`
-  ).subscribe({
-    next: data => this.historial = data,
-    error: () => this.mostrarMensaje("❌ Error al cargar historial")
-  });
-}
+    this.http.get<any[]>(`/egresado/reconocimientos/${this.matriculaUsuario}`).pipe(
+      catchError(() => this.http.get<any[]>(`/egresados/reconocimientos/${this.matriculaUsuario}`))
+    ).subscribe({
+      next: data => this.historial = data || [],
+      error: () => this.mostrarMensaje("❌ Error al cargar historial")
+    });
+  }
   // ================= FORM =================
   resetForm() {
   this.form = {
@@ -93,9 +94,8 @@ matriculaUsuario: string = '';
   guardar() {
     const datos = this.construirDatos();
 
-    this.http.post(
-      "/egresado/reconocimientos",
-      datos
+    this.http.post("/egresado/reconocimientos", datos).pipe(
+      catchError(() => this.http.post("/egresados/reconocimientos", datos))
     ).subscribe({
       next: () => {
         this.mostrarMensaje("✓ Guardado correctamente");
@@ -120,9 +120,9 @@ matriculaUsuario: string = '';
   actualizarReconocimiento() {
     const reco = this.reconocimientoSeleccionado;
 
-    this.http.put(
-      `/egresado/reconocimientos/${reco.idReconocimiento}`,
-      reco
+    const id = reco.idReconocimiento;
+    this.http.put(`/egresado/reconocimientos/${id}`, reco).pipe(
+      catchError(() => this.http.put(`/egresados/reconocimientos/${id}`, reco))
     ).subscribe({
       next: () => {
         this.mostrarMensaje("✓ Registro actualizado");
@@ -141,8 +141,9 @@ matriculaUsuario: string = '';
 
   confirmarEliminacion() {
     if (this.reconocimientoAEliminar !== null) {
-      this.http.delete(
-        `/egresado/reconocimientos/${this.reconocimientoAEliminar}`
+      const id = this.reconocimientoAEliminar;
+      this.http.delete(`/egresado/reconocimientos/${id}`).pipe(
+        catchError(() => this.http.delete(`/egresados/reconocimientos/${id}`))
       ).subscribe({
         next: () => {
           this.mostrarMensaje("🗑️ Reconocimiento eliminado correctamente");
