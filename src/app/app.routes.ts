@@ -15,6 +15,7 @@ import { AcademicoComponent as ReporteAcademicoComponent } from './pages/reporte
 import { LaboralComponent as ReporteLaboralComponent } from './pages/reportes/laboral/laboral.component';
 import { PosgradoComponent as ReportePosgradoComponent } from './pages/reportes/posgrado/posgrado.component';
 import { ReconocimientosComponent as ReporteReconocimientosComponent } from './pages/reportes/reconocimientos/reconocimientos.component';
+import { SolicitarInfoComponent } from './pages/solicitar-info/solicitar-info.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -34,6 +35,7 @@ export const routes: Routes = [
       { path: '', redirectTo: 'usuarios', pathMatch: 'full' },
       { path: 'usuarios', component: UsuariosAdmComponent },
       { path: 'datos-recuperados', component: DatosRecuperadosComponent },
+      { path: 'solicitar-info', component: SolicitarInfoComponent },
       { path: 'reportes/academico', component: ReporteAcademicoComponent },
       { path: 'reportes/laboral', component: ReporteLaboralComponent },
       { path: 'reportes/posgrado', component: ReportePosgradoComponent },

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-laboral',
@@ -61,20 +62,22 @@ this.matriculaUsuario = usuario.matricula;
 }
   // ================= HISTORIAL =================
   cargarHistorial() {
-  this.http.get<any[]>(`/egresado/laboral/${this.matriculaUsuario}`)
-    .subscribe({
-      next: data => this.historial = data.reverse(),
+    this.http.get<any[]>(`/egresado/laboral/${this.matriculaUsuario}`).pipe(
+      catchError(() => this.http.get<any[]>(`/egresados/laboral/${this.matriculaUsuario}`))
+    ).subscribe({
+      next: data => this.historial = (data || []).reverse(),
       error: () => this.mostrarMensaje("❌ Error al cargar historial")
     });
-}
+  }
 
   // ================= CATALOGO =================
   cargarPrestacionesCatalogo() {
-    this.http.get<any[]>(`/egresado/prestaciones`)
-      .subscribe({
-        next: data => this.listaPrestaciones = data,
-        error: () => this.mostrarMensaje("❌ Error al cargar catálogo")
-      });
+    this.http.get<any[]>(`/egresado/prestaciones`).pipe(
+      catchError(() => this.http.get<any[]>(`/egresados/prestaciones`))
+    ).subscribe({
+      next: data => this.listaPrestaciones = data || [],
+      error: () => this.mostrarMensaje("❌ Error al cargar catálogo")
+    });
   }
 
   // ================= FORM =================
@@ -125,15 +128,16 @@ this.matriculaUsuario = usuario.matricula;
 
   guardar() {
     const datos = this.construirDatos();
-    this.http.post("/egresado/laboral", datos)
-      .subscribe({
-        next: () => {
-          this.mostrarMensaje("✓ Guardado correctamente");
-          this.mostrarFormulario = false;
-          this.cargarHistorial();
-        },
-        error: () => this.mostrarMensaje("❌ Error al guardar")
-      });
+    this.http.post("/egresado/laboral", datos).pipe(
+      catchError(() => this.http.post("/egresados/laboral", datos))
+    ).subscribe({
+      next: () => {
+        this.mostrarMensaje("✓ Guardado correctamente");
+        this.mostrarFormulario = false;
+        this.cargarHistorial();
+      },
+      error: () => this.mostrarMensaje("❌ Error al guardar")
+    });
   }
 
   // ================= DETALLE =================
@@ -151,18 +155,20 @@ this.matriculaUsuario = usuario.matricula;
 
   actualizarLaboral() {
     const laboral = this.laboralSeleccionado;
-    this.http.put(`/egresado/laboral/${laboral.idLaboral}`, laboral)
-      .subscribe({
-        next: () => {
-          const index = this.historial.findIndex(l => l.idLaboral === laboral.idLaboral);
-          if (index !== -1) {
-            this.historial[index] = { ...laboral };
-          }
-          this.mostrarMensaje("✓ Registro actualizado");
-          this.cancelarEdicion();
-        },
-        error: () => this.mostrarMensaje("❌ Error al actualizar")
-      });
+    const id = laboral.idLaboral;
+    this.http.put(`/egresado/laboral/${id}`, laboral).pipe(
+      catchError(() => this.http.put(`/egresados/laboral/${id}`, laboral))
+    ).subscribe({
+      next: () => {
+        const index = this.historial.findIndex(l => l.idLaboral === laboral.idLaboral);
+        if (index !== -1) {
+          this.historial[index] = { ...laboral };
+        }
+        this.mostrarMensaje("✓ Registro actualizado");
+        this.cancelarEdicion();
+      },
+      error: () => this.mostrarMensaje("❌ Error al actualizar")
+    });
   }
 
   // ================= ELIMINAR =================
@@ -173,15 +179,17 @@ this.matriculaUsuario = usuario.matricula;
 
   confirmarEliminacion() {
     if (this.laboralAEliminar !== null) {
-      this.http.delete(`/egresado/laboral/${this.laboralAEliminar}`)
-        .subscribe({
-          next: () => {
-            this.mostrarMensaje("🗑️ Eliminado correctamente");
-            this.cargarHistorial();
-            this.cerrarConfirmacion();
-          },
-          error: () => this.mostrarMensaje("❌ Error al eliminar")
-        });
+      const id = this.laboralAEliminar;
+      this.http.delete(`/egresado/laboral/${id}`).pipe(
+        catchError(() => this.http.delete(`/egresados/laboral/${id}`))
+      ).subscribe({
+        next: () => {
+          this.mostrarMensaje("🗑️ Eliminado correctamente");
+          this.cargarHistorial();
+          this.cerrarConfirmacion();
+        },
+        error: () => this.mostrarMensaje("❌ Error al eliminar")
+      });
     }
   }
 
@@ -219,17 +227,17 @@ this.matriculaUsuario = usuario.matricula;
   agregarOtroPrestacion() {
   if (!this.otroTexto.trim()) return;
 
-  this.http.post<any>("/egresado/prestaciones", { nombre: this.otroTexto })
-    .subscribe({
-      next: (resp) => {
-        this.form.prestacionesSeleccionadas.push(resp);
-
-        this.listaPrestaciones.push(resp); // ✅ AQUÍ VA
-
-        this.otroTexto = '';
-        this.mostrarOtro = false;
-      }
-    });
+  this.http.post<any>("/egresado/prestaciones", { nombre: this.otroTexto }).pipe(
+    catchError(() => this.http.post<any>("/egresados/prestaciones", { nombre: this.otroTexto }))
+  ).subscribe({
+    next: (resp) => {
+      this.form.prestacionesSeleccionadas.push(resp);
+      this.listaPrestaciones.push(resp);
+      this.otroTexto = '';
+      this.mostrarOtro = false;
+    },
+    error: () => this.mostrarMensaje("❌ No se pudo agregar la prestación")
+  });
 }
 
   quitarPrestacion(prestacion: any) {
@@ -280,26 +288,20 @@ this.matriculaUsuario = usuario.matricula;
   agregarPrestacionNuevaEdit() {
   if (!this.otroTexto.trim()) return;
 
-  this.http.post<any>("/egresado/prestaciones", { nombre: this.otroTexto })
-    .subscribe({
-      next: (resp) => {
-
-        // 1. Asegura array
-        if (!this.laboralSeleccionado.prestaciones) {
-          this.laboralSeleccionado.prestaciones = [];
-        }
-
-        // 2. Agrega al chip (UI)
-        this.laboralSeleccionado.prestaciones.push(resp);
-
-        // 3. 🔥 AGREGA AQUÍ (catálogo)
-        this.listaPrestaciones.push(resp);
-
-        // 4. Limpieza
-        this.otroTexto = '';
-        this.mostrarOtroEdit = false;
+  this.http.post<any>("/egresado/prestaciones", { nombre: this.otroTexto }).pipe(
+    catchError(() => this.http.post<any>("/egresados/prestaciones", { nombre: this.otroTexto }))
+  ).subscribe({
+    next: (resp) => {
+      if (!this.laboralSeleccionado.prestaciones) {
+        this.laboralSeleccionado.prestaciones = [];
       }
-    });
+      this.laboralSeleccionado.prestaciones.push(resp);
+      this.listaPrestaciones.push(resp);
+      this.otroTexto = '';
+      this.mostrarOtroEdit = false;
+    },
+    error: () => this.mostrarMensaje("❌ No se pudo agregar la prestación")
+  });
 }
 
   quitarPrestacionEdit(prestacion: any) {

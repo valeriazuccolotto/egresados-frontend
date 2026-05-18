@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Usuario } from '../../models/usuario';
 
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-posgrado',
@@ -64,12 +65,13 @@ export class PosgradoComponent implements OnInit {
 }
 
   cargarHistorial() {
-  this.http.get<any[]>(`/egresado/posgrado/${this.matriculaUsuario}`)
-    .subscribe({
-      next: data => this.historial = data.reverse(),
+    this.http.get<any[]>(`/egresado/posgrado/${this.matriculaUsuario}`).pipe(
+      catchError(() => this.http.get<any[]>(`/egresados/posgrado/${this.matriculaUsuario}`))
+    ).subscribe({
+      next: data => this.historial = (data || []).reverse(),
       error: () => this.mostrarMensaje("❌ Error al cargar historial")
     });
-}
+  }
   cargarBecas() {
     this.http.get<any[]>('/tipo-beca')
       .subscribe({
@@ -142,20 +144,21 @@ export class PosgradoComponent implements OnInit {
     : null
 };
 
-    this.http.post('/egresado/posgrado', datos)
-      .subscribe({
-        next: () => {
-          this.cargarHistorial();
-          this.cargarBecas();
-          this.mostrarMensaje("✓ Posgrado guardado");
-          this.mostrarPosgrado = false;
-          this.resetForm();
-        },
-        error: (err) => {
-          console.error("ERROR BACKEND:", err.error);
-          this.mostrarMensaje("❌ Error al guardar posgrado");
-        }
-      });
+    this.http.post('/egresado/posgrado', datos).pipe(
+      catchError(() => this.http.post('/egresados/posgrado', datos))
+    ).subscribe({
+      next: () => {
+        this.cargarHistorial();
+        this.cargarBecas();
+        this.mostrarMensaje("✓ Posgrado guardado");
+        this.mostrarPosgrado = false;
+        this.resetForm();
+      },
+      error: (err) => {
+        console.error("ERROR BACKEND:", err.error);
+        this.mostrarMensaje("❌ Error al guardar posgrado");
+      }
+    });
   }
 
   verDetalle(item: any) {
@@ -196,9 +199,9 @@ export class PosgradoComponent implements OnInit {
         : null
     };
 
-    this.http.put(
-      `/egresado/posgrado/${this.posgradoSeleccionado.idPosgrado}`,
-      datos
+    const id = this.posgradoSeleccionado.idPosgrado;
+    this.http.put(`/egresado/posgrado/${id}`, datos).pipe(
+      catchError(() => this.http.put(`/egresados/posgrado/${id}`, datos))
     ).subscribe({
       next: () => {
         this.cargarHistorial();
@@ -218,18 +221,20 @@ export class PosgradoComponent implements OnInit {
 
   confirmarEliminacion() {
     if (this.posgradoAEliminar !== null) {
-      this.http.delete(`/egresado/posgrado/${this.posgradoAEliminar}`)
-        .subscribe({
-          next: () => {
-            this.mostrarMensaje("🗑️ Posgrado eliminado correctamente");
-            this.cargarHistorial();
-            this.cerrarConfirmacion();
-          },
-          error: () => {
-            this.mostrarMensaje("❌ Error al eliminar");
-            this.cerrarConfirmacion();
-          }
-        });
+      const id = this.posgradoAEliminar;
+      this.http.delete(`/egresado/posgrado/${id}`).pipe(
+        catchError(() => this.http.delete(`/egresados/posgrado/${id}`))
+      ).subscribe({
+        next: () => {
+          this.mostrarMensaje("🗑️ Posgrado eliminado correctamente");
+          this.cargarHistorial();
+          this.cerrarConfirmacion();
+        },
+        error: () => {
+          this.mostrarMensaje("❌ Error al eliminar");
+          this.cerrarConfirmacion();
+        }
+      });
     }
   }
 
