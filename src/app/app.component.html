@@ -1,8 +1,7 @@
 <!-- LOGIN SIN TOPBAR NI SIDEBAR -->
-<router-outlet *ngIf="esLogin"></router-outlet>
+<router-outlet *ngIf="esLogin || esAdmin"></router-outlet>
 
-<!-- SISTEMA EGRESADOS -->
-<div class="app-shell" *ngIf="!esLogin">
+<div class="app-shell" *ngIf="!esLogin && !esAdmin">
 
   <!-- TOPBAR -->
 <header class="topbar">

@@ -85,7 +85,7 @@ export class LoginComponent {
 
         // 🔀 Redirección
         if (res.rol === 'ADMIN') {
-          this.router.navigate(['/usuarios']);
+          this.router.navigate(['/admin/usuarios']);
         } else {
           this.router.navigate(['/perfil']);
         }

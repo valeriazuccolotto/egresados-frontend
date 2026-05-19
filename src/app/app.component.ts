@@ -18,6 +18,7 @@ import { HttpClient } from '@angular/common/http';
 export class AppComponent implements OnInit, OnDestroy {
   porcentajePerfil = 0;
   esLogin = false;
+  esAdmin = false;
   title = 'egresados-frontend';
   sidebarHidden = false;
 
@@ -39,17 +40,22 @@ export class AppComponent implements OnInit, OnDestroy {
   private router: Router,
   private http: HttpClient
 ) {
-  this.esLogin = this.router.url === '/login';
+  this.actualizarVistaPorRuta(this.router.url);
 
   this.router.events
     .pipe(filter(event => event instanceof NavigationEnd))
     .subscribe((event: NavigationEnd) => {
-      this.esLogin = event.urlAfterRedirects === '/login';
+      this.actualizarVistaPorRuta(event.urlAfterRedirects);
 
-      if (!this.esLogin) {
+      if (!this.esLogin && !this.esAdmin) {
         this.calcularProgreso();
       }
     });
+}
+
+actualizarVistaPorRuta(url: string): void {
+  this.esLogin = url === '/login';
+  this.esAdmin = url.startsWith('/admin');
 }
 ngOnInit(): void {
   this.perfilService.foto$.subscribe(url => {
