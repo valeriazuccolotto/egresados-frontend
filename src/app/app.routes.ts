@@ -16,6 +16,7 @@ import { LaboralComponent as ReporteLaboralComponent } from './pages/reportes/la
 import { PosgradoComponent as ReportePosgradoComponent } from './pages/reportes/posgrado/posgrado.component';
 import { ReconocimientosComponent as ReporteReconocimientosComponent } from './pages/reportes/reconocimientos/reconocimientos.component';
 import { SolicitarInfoComponent } from './pages/solicitar-info/solicitar-info.component';
+import { NuevosAvisosComponent } from './pages/nuevos-avisos/nuevos-avisos.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -28,6 +29,7 @@ export const routes: Routes = [
   { path: 'posgrado', component: PosgradoComponent },
   { path: 'certificaciones', component: CertificacionesComponent },
   { path: 'reconocimientos', component: ReconocimientosComponent },
+  { path: 'nuevos-avisos', component: NuevosAvisosComponent },
   {
     path: 'admin',
     component: AdminLayoutComponent,

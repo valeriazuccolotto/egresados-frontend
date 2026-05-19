@@ -5,6 +5,8 @@ import { PerfilService } from './services/perfil.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { AvisosPendientesService } from './services/avisos-pendientes.service';
+import { Subscription, interval } from 'rxjs';
 
 
 @Component({
@@ -21,6 +23,10 @@ export class AppComponent implements OnInit, OnDestroy {
   esAdmin = false;
   title = 'egresados-frontend';
   sidebarHidden = false;
+  hayAvisosPendientes = false;
+
+  private avisosPendientesSub?: Subscription;
+  private avisosPollSub?: Subscription;
 
   @ViewChild('photoMenuRoot') photoMenuRoot?: ElementRef<HTMLElement>;
   @ViewChild('galleryInput') galleryInput?: ElementRef<HTMLInputElement>;
@@ -39,7 +45,8 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
   private perfilService: PerfilService,
   private router: Router,
-  private http: HttpClient
+  private http: HttpClient,
+  private avisosPendientesService: AvisosPendientesService
 ) {
   this.actualizarVistaPorRuta(this.router.url);
 
@@ -50,6 +57,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
       if (!this.esLogin && !this.esAdmin) {
         this.calcularProgreso();
+        this.actualizarAvisosPendientes();
       }
     });
 }
@@ -63,11 +71,36 @@ ngOnInit(): void {
     this.fotoGlobal = url;
   });
 
+  this.avisosPendientesSub = this.avisosPendientesService.hayPendientes$.subscribe(
+    pendiente => this.hayAvisosPendientes = pendiente
+  );
+
   this.calcularProgreso();
+  this.actualizarAvisosPendientes();
+  this.iniciarPollingAvisos();
 }
 
 ngOnDestroy(): void {
   this.stopCameraStream();
+  this.avisosPendientesSub?.unsubscribe();
+  this.avisosPollSub?.unsubscribe();
+}
+
+private actualizarAvisosPendientes(): void {
+  if (this.esLogin || this.esAdmin) {
+    this.avisosPendientesService.marcarSinPendientes();
+    return;
+  }
+  this.avisosPendientesService.actualizar();
+}
+
+private iniciarPollingAvisos(): void {
+  this.avisosPollSub?.unsubscribe();
+  this.avisosPollSub = interval(45_000).subscribe(() => {
+    if (!this.esLogin && !this.esAdmin) {
+      this.actualizarAvisosPendientes();
+    }
+  });
 }
 
 toggleSidebar(): void {

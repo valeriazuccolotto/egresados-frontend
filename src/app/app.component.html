@@ -120,6 +120,13 @@
   Reconocimientos
 </a>
 
+<a routerLink="/nuevos-avisos" routerLinkActive="active" class="menu-item"
+   [class.menu-item-alerta]="hayAvisosPendientes">
+  <span class="material-icons">campaign</span>
+  Nuevos avisos
+  <span class="menu-alerta-badge" *ngIf="hayAvisosPendientes" aria-hidden="true"></span>
+</a>
+
   </nav>
 </aside>
 

@@ -1,0 +1,120 @@
+<div class="page-section">
+
+  <div class="section-header">
+    <div class="section-title">
+      <h2>Nuevos avisos</h2>
+      <p>Convocatorias vigentes de la universidad que requieren tu respuesta</p>
+    </div>
+  </div>
+
+  <p *ngIf="mensaje" class="save-msg">{{ mensaje }}</p>
+  <p *ngIf="mensajeError" class="error-banner">{{ mensajeError }}</p>
+
+  <!-- LISTA -->
+  <div class="card" *ngIf="vista === 'lista'">
+    <p class="loading-state" *ngIf="cargando">Cargando avisos...</p>
+    <p class="empty-state" *ngIf="!cargando && avisos.length === 0">
+      No tienes avisos pendientes en este momento.
+    </p>
+
+    <div class="historial-grid" *ngIf="!cargando && avisos.length > 0">
+      <div class="historial-card" *ngFor="let a of avisos">
+        <div class="historial-header">
+          <div>
+            <strong>{{ a.titulo }}</strong>
+            <p class="tipo-linea">
+              <span class="badge-tipo" [class.archivos]="a.tipo === 'ARCHIVOS'">
+                {{ etiquetaTipo(a.tipo) }}
+              </span>
+            </p>
+          </div>
+          <span class="badge" [ngClass]="claseEstado(a)">{{ etiquetaEstado(a) }}</span>
+        </div>
+        <p class="descripcion-preview">{{ a.descripcion }}</p>
+        <p class="fechas-linea">
+          <i class="fas fa-calendar-alt"></i>
+          {{ a.fechaInicio }} — {{ a.fechaFin }}
+        </p>
+        <div class="historial-actions">
+          <button type="button" class="btn-ver" (click)="abrirDetalle(a)">
+            {{ a.yaRespondio ? 'Ver respuesta' : 'Responder' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETALLE / RESPONDER -->
+  <div class="card" *ngIf="vista === 'detalle' && avisoSeleccionado">
+    <button type="button" class="btn-volver" (click)="volverLista()">
+      <i class="fas fa-arrow-left"></i> Volver al listado
+    </button>
+
+    <div class="bloque-formulario detalle-aviso">
+      <h3>
+        <i class="fas" [ngClass]="avisoSeleccionado.tipo === 'ARCHIVOS' ? 'fa-folder-open' : 'fa-info-circle'"></i>
+        {{ avisoSeleccionado.titulo }}
+      </h3>
+      <p class="instrucciones">{{ avisoSeleccionado.descripcion }}</p>
+      <p class="fechas-linea">
+        <i class="fas fa-calendar-alt"></i>
+        Periodo: {{ avisoSeleccionado.fechaInicio }} — {{ avisoSeleccionado.fechaFin }}
+      </p>
+      <span class="badge-tipo" [class.archivos]="avisoSeleccionado.tipo === 'ARCHIVOS'">
+        {{ etiquetaTipo(avisoSeleccionado.tipo) }}
+      </span>
+    </div>
+
+    <div class="bloque-respuesta-enviada" *ngIf="avisoSeleccionado.yaRespondio && miRespuesta">
+      <h4><i class="fas fa-check-circle"></i> Tu respuesta</h4>
+      <p *ngIf="miRespuesta.contenido" class="respuesta-texto">{{ miRespuesta.contenido }}</p>
+      <p *ngIf="miRespuesta.comentario" class="respuesta-comentario"><em>{{ miRespuesta.comentario }}</em></p>
+      <ul class="archivos-lista" *ngIf="miRespuesta.archivos?.length">
+        <li *ngFor="let ar of miRespuesta.archivos">
+          <i class="fas fa-paperclip"></i> {{ ar.nombreOriginal || 'Archivo' }}
+        </li>
+      </ul>
+      <p class="fecha-resp" *ngIf="miRespuesta.fechaRespuesta">
+        Enviada: {{ miRespuesta.fechaRespuesta | date:'dd/MM/yyyy HH:mm' }}
+      </p>
+    </div>
+
+    <p class="loading-state" *ngIf="avisoSeleccionado.yaRespondio && !miRespuesta">Cargando tu respuesta...</p>
+
+    <form class="form-respuesta" *ngIf="avisoSeleccionado.puedeResponder" (ngSubmit)="enviarRespuesta()">
+      <div class="bloque-formulario">
+        <h3>{{ avisoSeleccionado.tipo === 'ARCHIVOS' ? 'Subir archivos' : 'Tu respuesta' }}</h3>
+
+        <div class="field-group full" *ngIf="avisoSeleccionado.tipo === 'INFORMACION'">
+          <label><i class="fas fa-align-left"></i>Respuesta <span class="required">*</span></label>
+          <textarea [(ngModel)]="contenido" name="contenido" rows="6" required
+            placeholder="Escribe la información solicitada..."></textarea>
+        </div>
+
+        <div class="field-group full" *ngIf="avisoSeleccionado.tipo === 'ARCHIVOS'">
+          <label><i class="fas fa-upload"></i>Archivos <span class="required">*</span></label>
+          <input type="file" multiple (change)="onArchivosChange($event)" name="archivos">
+          <p class="hint" *ngIf="archivosSeleccionados.length">
+            {{ archivosSeleccionados.length }} archivo(s) seleccionado(s)
+          </p>
+        </div>
+
+        <div class="field-group full">
+          <label><i class="fas fa-comment"></i>Comentario (opcional)</label>
+          <textarea [(ngModel)]="comentario" name="comentario" rows="3"
+            placeholder="Comentario adicional..."></textarea>
+        </div>
+      </div>
+
+      <div class="acciones-form">
+        <button type="submit" class="btn-guardar" [disabled]="enviando">
+          {{ enviando ? 'Enviando...' : 'Enviar respuesta' }}
+        </button>
+        <button type="button" class="btn-secundario" (click)="volverLista()" [disabled]="enviando">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </div>
+
+</div>

@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, map } from 'rxjs';
 import {
   CrearSolicitudDto,
+  EnviarRespuestaInformacionDto,
   RespuestaSolicitud,
   Solicitud,
   TipoSolicitud
@@ -60,6 +61,68 @@ export class SolicitudService {
 
   urlDescargaArchivo(idArchivo: number): string {
     return `/admin/solicitar-info/archivos/${idArchivo}/descargar`;
+  }
+
+  // ——— Egresado ———
+
+  listarParaEgresado(matricula: string): Observable<Solicitud[]> {
+    const m = encodeURIComponent(matricula);
+    return this.http.get<any[]>(`/egresados/solicitar-info/${m}`).pipe(
+      catchError(() => this.http.get<any[]>(`/egresado/solicitar-info/${m}`)),
+      map(list => (list || []).map(s => this.normalizarSolicitud(s)))
+    );
+  }
+
+  obtenerParaEgresado(matricula: string, idSolicitud: number): Observable<Solicitud> {
+    const m = encodeURIComponent(matricula);
+    return this.http.get<any>(`/egresados/solicitar-info/${m}/${idSolicitud}`).pipe(
+      catchError(() => this.http.get<any>(`/egresado/solicitar-info/${m}/${idSolicitud}`)),
+      map(s => this.normalizarSolicitud(s))
+    );
+  }
+
+  obtenerMiRespuesta(matricula: string, idSolicitud: number): Observable<RespuestaSolicitud> {
+    const m = encodeURIComponent(matricula);
+    return this.http.get<any>(`/egresados/solicitar-info/${m}/${idSolicitud}/mi-respuesta`).pipe(
+      catchError(() => this.http.get<any>(`/egresado/solicitar-info/${m}/${idSolicitud}/mi-respuesta`)),
+      map(r => this.normalizarRespuesta(r))
+    );
+  }
+
+  responderInformacion(
+    matricula: string,
+    idSolicitud: number,
+    dto: EnviarRespuestaInformacionDto
+  ): Observable<RespuestaSolicitud> {
+    const m = encodeURIComponent(matricula);
+    return this.http.post<any>(`/egresados/solicitar-info/${m}/${idSolicitud}/respuesta`, dto).pipe(
+      catchError(() => this.http.post<any>(`/egresado/solicitar-info/${m}/${idSolicitud}/respuesta`, dto)),
+      map(r => this.normalizarRespuesta(r))
+    );
+  }
+
+  responderArchivos(
+    matricula: string,
+    idSolicitud: number,
+    archivos: File[],
+    comentario?: string
+  ): Observable<RespuestaSolicitud> {
+    const formData = new FormData();
+    archivos.forEach(f => formData.append('files', f));
+    if (comentario?.trim()) {
+      formData.append('comentario', comentario.trim());
+    }
+    const m = encodeURIComponent(matricula);
+    return this.http.post<any>(
+      `/egresados/solicitar-info/${m}/${idSolicitud}/respuesta-archivos`,
+      formData
+    ).pipe(
+      catchError(() => this.http.post<any>(
+        `/egresado/solicitar-info/${m}/${idSolicitud}/respuesta-archivos`,
+        formData
+      )),
+      map(r => this.normalizarRespuesta(r))
+    );
   }
 
   private normalizarSolicitud(raw: any): Solicitud {

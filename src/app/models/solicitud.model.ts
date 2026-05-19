@@ -21,6 +21,11 @@ export interface CrearSolicitudDto {
   fechaFin: string;
 }
 
+export interface EnviarRespuestaInformacionDto {
+  contenido: string;
+  comentario?: string;
+}
+
 export interface RespuestaArchivo {
   idArchivo?: number;
   nombreOriginal?: string;
