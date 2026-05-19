@@ -24,3 +24,84 @@ body {
   color: #256f66;
   margin-right: 6px;
 }
+
+/* Formularios egresado: botones guardar / cancelar */
+.acciones-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e6eaee;
+}
+
+.acciones-form.full,
+.bloque-formulario > .acciones-form,
+.form-grid > .acciones-form {
+  grid-column: 1 / -1;
+}
+
+.bloque-formulario > .acciones-form {
+  margin-top: 8px;
+  padding-top: 16px;
+}
+
+.acciones-form--solo {
+  margin-top: 24px;
+  padding-top: 20px;
+}
+
+.page-section .btn-guardar,
+.page-section .btn-secundario,
+.form-card .btn-guardar,
+.form-card .btn-secundario,
+.card .btn-guardar,
+.card .btn-secundario,
+.perfil-container .btn-guardar,
+.perfil-container .btn-secundario {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  min-width: unset;
+  height: auto;
+  line-height: 1.25;
+}
+
+.page-section .btn-guardar,
+.form-card .btn-guardar,
+.card .btn-guardar {
+  background: #2f8f83;
+  color: #fff;
+  border: none;
+}
+
+.page-section .btn-guardar:hover,
+.form-card .btn-guardar:hover,
+.card .btn-guardar:hover {
+  background: #277a70;
+}
+
+.page-section .btn-secundario,
+.form-card .btn-secundario,
+.card .btn-secundario {
+  border: 1px solid #2f8f83;
+  background: #fff;
+  color: #2f8f83;
+}
+
+.page-section .btn-secundario:hover,
+.form-card .btn-secundario:hover,
+.card .btn-secundario:hover {
+  background: #f0faf9;
+}
+
+.acciones-modal {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+}

@@ -14,11 +14,8 @@
 
     <!-- BOTONES INICIALES (como agregar en egresados) -->
     <div class="acciones-iniciales full" *ngIf="vista === 'lista'">
-      <button type="button" class="btn-secundario" (click)="abrirFormularioInformacion()">
+      <button type="button" class="btn-secundario" (click)="abrirFormulario()">
         + Solicitar información
-      </button>
-      <button type="button" class="btn-secundario" (click)="abrirFormularioArchivos()">
-        + Solicitar archivos
       </button>
     </div>
 
@@ -32,21 +29,38 @@
       </select>
     </div>
 
-    <!-- FORM INFORMACIÓN -->
-    <form class="form-grid" *ngIf="vista === 'form-informacion'" (ngSubmit)="guardarInformacion()">
+    <!-- FORMULARIO ÚNICO -->
+    <form class="form-grid" *ngIf="vista === 'formulario'" (ngSubmit)="guardar()">
       <div class="bloque-formulario">
-        <h3><i class="fas fa-info-circle"></i> Nueva solicitud de información</h3>
-        <p class="bloque-hint">Los egresados verán la descripción y podrán responder con texto durante el periodo indicado.</p>
+        <div class="bloque-formulario-header">
+          <h3>
+            <i class="fas" [ngClass]="habilitarSubidaArchivos ? 'fa-folder-open' : 'fa-info-circle'"></i>
+            Nueva solicitud
+          </h3>
+          <div class="opcion-tipo-bar">
+            <div class="opcion-tipo-texto">
+              <strong>Permitir subida de archivos</strong>
+              <span>{{ hintTipoRespuesta() }}</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="habilitarSubidaArchivos" name="habilitarSubidaArchivos">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
 
         <div class="field-group full">
           <label><i class="fas fa-heading"></i>Título <span class="required">*</span></label>
-          <input [(ngModel)]="form.titulo" name="titulo" required placeholder="Ej. Actualización de datos 2026">
+          <input [(ngModel)]="form.titulo" name="titulo" required
+            [placeholder]="habilitarSubidaArchivos ? 'Ej. Entrega de título digitalizado' : 'Ej. Actualización de datos 2026'">
         </div>
 
         <div class="field-group full">
           <label><i class="fas fa-align-left"></i>Descripción / instrucciones <span class="required">*</span></label>
           <textarea [(ngModel)]="form.descripcion" name="descripcion" rows="6" required
-            placeholder="Indica qué información deben proporcionar los egresados..."></textarea>
+            [placeholder]="habilitarSubidaArchivos
+              ? 'Formato, nombre del archivo, qué deben subir...'
+              : 'Indica qué información deben proporcionar los egresados...'"></textarea>
         </div>
 
         <div class="field-group">
@@ -66,44 +80,10 @@
       </div>
     </form>
 
-    <!-- FORM ARCHIVOS -->
-    <form class="form-grid" *ngIf="vista === 'form-archivos'" (ngSubmit)="guardarArchivos()">
-      <div class="bloque-formulario">
-        <h3><i class="fas fa-folder-open"></i> Nueva solicitud de archivos</h3>
-        <p class="bloque-hint">Los egresados subirán uno o más archivos según las instrucciones que indiques.</p>
-
-        <div class="field-group full">
-          <label><i class="fas fa-heading"></i>Título <span class="required">*</span></label>
-          <input [(ngModel)]="form.titulo" name="tituloArch" required placeholder="Ej. Entrega de título digitalizado">
-        </div>
-
-        <div class="field-group full">
-          <label><i class="fas fa-align-left"></i>Descripción / instrucciones <span class="required">*</span></label>
-          <textarea [(ngModel)]="form.descripcion" name="descripcionArch" rows="6" required
-            placeholder="Formato, nombre del archivo, qué deben subir..."></textarea>
-        </div>
-
-        <div class="field-group">
-          <label><i class="fas fa-calendar-day"></i>Fecha inicio <span class="required">*</span></label>
-          <input type="date" [(ngModel)]="form.fechaInicio" name="fechaInicioArch" required>
-        </div>
-
-        <div class="field-group">
-          <label><i class="fas fa-calendar-times"></i>Fecha fin <span class="required">*</span></label>
-          <input type="date" [(ngModel)]="form.fechaFin" name="fechaFinArch" required>
-        </div>
-      </div>
-
-      <div class="acciones-form">
-        <button type="submit" class="btn-guardar">Publicar solicitud</button>
-        <button type="button" class="btn-secundario" (click)="cancelarFormulario()">Cancelar</button>
-      </div>
-    </form>
-
     <!-- LISTADO -->
     <div *ngIf="vista === 'lista'">
       <p class="empty-state" *ngIf="!cargando && historial.length === 0">
-        No hay solicitudes publicadas. Usa los botones de arriba para crear una.
+        No hay solicitudes publicadas. Usa el botón de arriba para crear una.
       </p>
       <p class="loading-state" *ngIf="cargando">Cargando solicitudes...</p>
 

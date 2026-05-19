@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { SolicitudService } from '../../services/solicitud.service';
 import { CrearSolicitudDto, RespuestaSolicitud, Solicitud, TipoSolicitud } from '../../models/solicitud.model';
 
-type VistaAdmin = 'lista' | 'form-informacion' | 'form-archivos';
+type VistaAdmin = 'lista' | 'formulario';
 
 @Component({
   selector: 'app-solicitar-info',
@@ -24,6 +24,8 @@ export class SolicitarInfoComponent implements OnInit {
   filtroTipo: '' | TipoSolicitud = '';
 
   form: CrearSolicitudDto = this.formularioVacio();
+  /** Si está activo, la solicitud se publica como ARCHIVOS; si no, como INFORMACION. */
+  habilitarSubidaArchivos = false;
 
   solicitudDetalle: Solicitud | null = null;
   respuestas: RespuestaSolicitud[] = [];
@@ -56,47 +58,47 @@ export class SolicitarInfoComponent implements OnInit {
     });
   }
 
-  abrirFormularioInformacion(): void {
-    this.vista = 'form-informacion';
+  abrirFormulario(): void {
+    this.vista = 'formulario';
     this.form = this.formularioVacio();
-    this.limpiarMensajes();
-  }
-
-  abrirFormularioArchivos(): void {
-    this.vista = 'form-archivos';
-    this.form = this.formularioVacio();
+    this.habilitarSubidaArchivos = false;
     this.limpiarMensajes();
   }
 
   cancelarFormulario(): void {
     this.vista = 'lista';
     this.form = this.formularioVacio();
+    this.habilitarSubidaArchivos = false;
   }
 
-  guardarInformacion(): void {
+  guardar(): void {
     if (!this.validarFormulario()) return;
 
-    this.solicitudService.crearInformacion(this.form).subscribe({
+    const peticion = this.habilitarSubidaArchivos
+      ? this.solicitudService.crearArchivos(this.form)
+      : this.solicitudService.crearInformacion(this.form);
+
+    peticion.subscribe({
       next: () => {
-        this.mensaje = '✓ Solicitud de información publicada';
+        this.mensaje = this.habilitarSubidaArchivos
+          ? '✓ Solicitud publicada (los egresados subirán archivos)'
+          : '✓ Solicitud publicada (respuesta en texto)';
         this.vista = 'lista';
+        this.habilitarSubidaArchivos = false;
         this.cargarHistorial();
       },
-      error: () => this.mensajeError = '❌ Error al crear la solicitud de información'
+      error: () => {
+        this.mensajeError = this.habilitarSubidaArchivos
+          ? '❌ Error al crear la solicitud con subida de archivos'
+          : '❌ Error al crear la solicitud de información';
+      }
     });
   }
 
-  guardarArchivos(): void {
-    if (!this.validarFormulario()) return;
-
-    this.solicitudService.crearArchivos(this.form).subscribe({
-      next: () => {
-        this.mensaje = '✓ Solicitud de archivos publicada';
-        this.vista = 'lista';
-        this.cargarHistorial();
-      },
-      error: () => this.mensajeError = '❌ Error al crear la solicitud de archivos'
-    });
+  hintTipoRespuesta(): string {
+    return this.habilitarSubidaArchivos
+      ? 'Los egresados podrán subir uno o más archivos según tus instrucciones.'
+      : 'Los egresados responderán con texto según tus instrucciones.';
   }
 
   verRespuestas(solicitud: Solicitud): void {
@@ -230,7 +232,15 @@ export class SolicitarInfoComponent implements OnInit {
   }
 
   private formularioVacio(): CrearSolicitudDto {
-    return { titulo: '', descripcion: '', fechaInicio: '', fechaFin: '' };
+    const hoy = this.fechaHoyLocal();
+    return { titulo: '', descripcion: '', fechaInicio: hoy, fechaFin: hoy };
+  }
+
+  private fechaHoyLocal(): string {
+    const d = new Date();
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    const dia = String(d.getDate()).padStart(2, '0');
+    return `${d.getFullYear()}-${mes}-${dia}`;
   }
 
   private limpiarMensajes(): void {

@@ -105,25 +105,3 @@
   color: #b42318;
   border: 1px solid #fecdca;
 }
-
-.form-actions {
-  margin-top: 8px;
-  padding-top: 20px;
-  border-top: 1px solid #e6eaee;
-}
-
-.btn-guardar {
-  min-width: 295px;
-  height: 46px;
-  border: none;
-  border-radius: 8px;
-  background: #2f9a8f;
-  color: #ffffff;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.btn-guardar:hover {
-  background: #277f76;
-}

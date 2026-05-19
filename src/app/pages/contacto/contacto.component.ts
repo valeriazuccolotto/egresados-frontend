@@ -127,4 +127,5 @@ export class ContactoComponent implements OnInit {
     const regex = /^[0-9]{10}$/;
     return regex.test(telefono);
   }
+
 }

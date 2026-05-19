@@ -71,12 +71,11 @@
             <input type="date" [(ngModel)]="form.certObtencion" name="certObtencion" required #certObtencion="ngModel">
             <div class="error" *ngIf="certObtencion.invalid && certObtencion.touched">Campo obligatorio</div>
             </div>
-
         </div>
 
-        <div class="acciones-detalle">
-        <button type="button" (click)="guardar()" class="btn-guardar">Guardar certificación</button>
-        <button type="button" (click)="cancelarFormulario()" class="btn-secundario">Cancelar</button>
+        <div class="acciones-form">
+            <button type="button" (click)="guardar()" class="btn-guardar">Guardar certificación</button>
+            <button type="button" (click)="cancelarFormulario()" class="btn-secundario">Cancelar</button>
         </div>
     </form>
 
@@ -178,9 +177,9 @@
         </div>
         </div>
 
-        <div class="acciones-detalle">
-        <button type="submit" class="btn-guardar">Guardar cambios</button>
-        <button type="button" (click)="cancelarEdicion()" class="btn-secundario">Cancelar</button>
+        <div class="acciones-form">
+            <button type="submit" class="btn-guardar">Guardar cambios</button>
+            <button type="button" (click)="cancelarEdicion()" class="btn-secundario">Cancelar</button>
         </div>
     </form>
     </div>

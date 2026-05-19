@@ -283,4 +283,5 @@ private actualizarAcademico(): void {
     this.academico.tituloMemoria = null;
     this.academico.asesor = null;
   }
+
 }

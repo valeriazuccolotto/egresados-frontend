@@ -144,17 +144,17 @@
                         required
                         #otroBeca="ngModel">
                 </div>
+
+            <div class="acciones-form">
+                <button type="button" (click)="guardar(formPosgrado)" class="btn-guardar">
+                    Guardar posgrado
+                </button>
+                <button type="button" (click)="cancelar()" class="btn-secundario">
+                    Cancelar
+                </button>
+            </div>
             </div>
 
-        <div class="full">
-            <button type="button" (click)="guardar(formPosgrado)" class="btn-guardar">
-                Guardar posgrado
-            </button>
-
-            <button type="button" (click)="cancelar()" class="btn-secundario">
-                Cancelar
-            </button>
-        </div>
     </div>
 
 </form>
@@ -357,22 +357,20 @@
                             name="otroBeca"
                             required>
                     </div>
+
+                <div class="acciones-form">
+                    <button type="submit" class="btn-guardar">
+                        Guardar cambios
+                    </button>
+                    <button type="button"
+                            (click)="cancelarEdicion()"
+                            class="btn-secundario">
+                        Cancelar
+                    </button>
+                </div>
                 </div>
 
-            </div> 
-
-        <!-- BOTONES -->
-        <div class="acciones-detalle">
-            <button type="submit" class="btn-guardar">
-                Guardar cambios
-            </button>
-
-            <button type="button"
-                    (click)="cancelarEdicion()"
-                    class="btn-secundario">
-                Cancelar
-            </button>
-        </div>
+            </div>
 
     </form>
 
