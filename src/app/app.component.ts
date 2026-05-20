@@ -292,6 +292,8 @@ toggleSidebar(): void {
     .subscribe({
 
       next: (data: any) => {
+        console.log('PERFIL:', data);
+
 
         if (data?.nombre) completados++;
         if (data?.apellidoPaterno) completados++;
@@ -312,6 +314,8 @@ toggleSidebar(): void {
     .subscribe({
 
       next: (data: any) => {
+        console.log('CONTACTO:', data);
+
 
         if (data?.correoPersonal) completados++;
         if (data?.telefono) completados++;
@@ -331,6 +335,8 @@ toggleSidebar(): void {
     .subscribe({
 
       next: (data: any) => {
+          console.log('ACADEMICO:', data);
+
 
         if (data?.claveCarrera) completados++;
         if (data?.promedio !== null && data?.promedio !== undefined) completados++;
@@ -354,18 +360,19 @@ this.http.get<any[]>(`http://localhost:8181/egresado/laboral/${matricula}`)
   .subscribe({
 
     next: (data: any[]) => {
+      console.log('LABORAL:', data);
 
       if (data && data.length > 0) {
 
         const laboral = data[0];
 
         if (laboral?.empresa) completados++;
-        if (laboral?.puesto) completados++;
-        if (laboral?.sector) completados++;
-        if (laboral?.medio) completados++;
-        if (laboral?.tiempo) completados++;
-        if (laboral?.contrato) completados++;
-        if (laboral?.salario) completados++;
+if (laboral?.puesto) completados++;
+if (laboral?.sector) completados++;
+if (laboral?.comoConsiguio) completados++;
+if (laboral?.tiempoConseguir) completados++;
+if (laboral?.tipoContrato) completados++;
+if (laboral?.salario) completados++;
       }
 
       this.actualizarPorcentaje(completados, total);
