@@ -19,7 +19,6 @@ export class PerfilComponent implements OnInit {
 
   perfil?: Perfil;
   urlFoto: string = 'assets/favicon-UNPA.ico';
-  private readonly backendOrigin = 'http://localhost:8181';
   carrera: string = '';
   carreras: Carrera[] = [];
 
@@ -55,10 +54,7 @@ export class PerfilComponent implements OnInit {
       next: (data: Perfil) => {
         this.perfil = data;
 
-        const foto = data.urlFoto
-          ? this.normalizarUrlFoto(data.urlFoto)
-          : 'assets/favicon-UNPA.ico';
-
+        const foto = this.perfilService.resolverUrlFoto(data.urlFoto);
         this.urlFoto = foto;
         this.perfilService.setFoto(foto);
 
@@ -103,15 +99,4 @@ export class PerfilComponent implements OnInit {
   });
 }
 
-  private normalizarUrlFoto(url: string): string {
-    if (!url) return 'assets/favicon-UNPA.ico';
-    const cacheBust = `t=${Date.now()}`;
-
-    if (/^(https?:|data:|blob:)/i.test(url)) {
-      return `${url}${url.includes('?') ? '&' : '?'}${cacheBust}`;
-    }
-
-    const ruta = url.startsWith('/') ? url : `/${url}`;
-    return `${this.backendOrigin}${ruta}${ruta.includes('?') ? '&' : '?'}${cacheBust}`;
-  }
 }

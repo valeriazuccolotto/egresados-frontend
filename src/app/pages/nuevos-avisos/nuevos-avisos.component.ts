@@ -150,41 +150,23 @@ export class NuevosAvisosComponent implements OnInit {
   }
 
   etiquetaEstado(aviso: Solicitud): string {
-    const e = this.estadoDe(aviso);
-    if (e === 'RESPONDIDA') return 'Respondida';
-    if (e === 'PENDIENTE') return 'Pendiente';
-    if (e === 'VENCIDA') return 'Vencida';
+    if (aviso.yaRespondio) return 'Respondida';
+    if (aviso.puedeResponder) return 'Pendiente';
     return 'No disponible';
   }
 
   claseEstado(aviso: Solicitud): string {
-    const e = this.estadoDe(aviso);
-    if (e === 'RESPONDIDA') return 'estado-respondida';
-    if (e === 'PENDIENTE') return 'estado-pendiente';
-    if (e === 'VENCIDA') return 'estado-vencida';
+    if (aviso.yaRespondio) return 'estado-respondida';
+    if (aviso.puedeResponder) return 'estado-pendiente';
     return 'estado-cerrada';
   }
 
   mostrarBotonResponder(aviso: Solicitud): boolean {
-    return this.estadoDe(aviso) === 'PENDIENTE';
+    return !!aviso.puedeResponder;
   }
 
   mostrarBotonVerRespuesta(aviso: Solicitud): boolean {
-    return this.estadoDe(aviso) === 'RESPONDIDA';
-  }
-
-  avisoVencidoSinRespuesta(aviso: Solicitud | null): boolean {
-    return !!aviso && this.estadoDe(aviso) === 'VENCIDA';
-  }
-
-  private estadoDe(aviso: Solicitud): 'PENDIENTE' | 'VENCIDA' | 'RESPONDIDA' | '' {
-    const estado = (aviso.estadoEgresado || '').toUpperCase();
-    if (estado === 'PENDIENTE' || estado === 'VENCIDA' || estado === 'RESPONDIDA') {
-      return estado;
-    }
-    if (aviso.yaRespondio) return 'RESPONDIDA';
-    if (aviso.puedeResponder) return 'PENDIENTE';
-    return 'VENCIDA';
+    return !!aviso.yaRespondio;
   }
 
   private cargarMiRespuesta(idSolicitud: number): void {

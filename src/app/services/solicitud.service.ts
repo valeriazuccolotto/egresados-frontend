@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, map, of } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 import {
   CrearSolicitudDto,
   EnviarRespuestaInformacionDto,
@@ -67,24 +67,9 @@ export class SolicitudService {
 
   listarParaEgresado(matricula: string): Observable<Solicitud[]> {
     const m = encodeURIComponent((matricula || '').trim());
-    const urls = [
-      `/egresado/solicitar-info/${m}/mis-avisos`,
-      `/egresados/solicitar-info/${m}/mis-avisos`,
-      `/egresado/solicitar-info/${m}`,
-      `/egresados/solicitar-info/${m}`
-    ];
-    return this.getPrimeraUrlOk<any[]>(urls).pipe(
+    return this.http.get<any[]>(`/egresados/solicitar-info/${m}`).pipe(
+      catchError(() => this.http.get<any[]>(`/egresado/solicitar-info/${m}`)),
       map(list => (list || []).map(s => this.normalizarSolicitud(s)))
-    );
-  }
-
-  private getPrimeraUrlOk<T>(urls: string[]): Observable<T> {
-    if (urls.length === 0) {
-      return of([] as T);
-    }
-    const [url, ...rest] = urls;
-    return this.http.get<T>(url).pipe(
-      catchError(() => rest.length ? this.getPrimeraUrlOk<T>(rest) : of([] as T))
     );
   }
 

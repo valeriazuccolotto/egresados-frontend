@@ -39,6 +39,11 @@ function esPantallaAdmin(url) {
 }
 
 const PROXY_CONFIG = {
+  '/uploads': {
+    target: 'http://localhost:8181',
+    secure: false,
+    changeOrigin: true
+  },
   '/egresados': {
     target: 'http://localhost:8181',
     secure: false,

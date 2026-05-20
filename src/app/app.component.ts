@@ -40,7 +40,6 @@ export class AppComponent implements OnInit, OnDestroy {
   private cameraStream: MediaStream | null = null;
 
   fotoGlobal: string = 'assets/favicon-UNPA.ico';
-  private readonly backendOrigin = 'http://localhost:8181';
 
   constructor(
   private perfilService: PerfilService,
@@ -56,6 +55,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.actualizarVistaPorRuta(event.urlAfterRedirects);
 
       if (!this.esLogin && !this.esAdmin) {
+        this.perfilService.cargarFotoDesdePerfil();
         this.calcularProgreso();
         this.actualizarAvisosPendientes();
       }
@@ -74,6 +74,10 @@ ngOnInit(): void {
   this.avisosPendientesSub = this.avisosPendientesService.hayPendientes$.subscribe(
     pendiente => this.hayAvisosPendientes = pendiente
   );
+
+  if (!this.esLogin && !this.esAdmin) {
+    this.perfilService.cargarFotoDesdePerfil();
+  }
 
   this.calcularProgreso();
   this.actualizarAvisosPendientes();
@@ -239,14 +243,16 @@ toggleSidebar(): void {
       return;
     }
 
-    const matricula = localStorage.getItem('matricula') || '21010048';
+    const matricula = this.perfilService.obtenerMatriculaSesion();
+    if (!matricula) {
+      alert('No hay sesión activa. Vuelve a iniciar sesión.');
+      return;
+    }
 
     this.perfilService.subirFotoPerfil(matricula, archivo).subscribe({
       next: (resp) => {
-        const nuevaUrl = `http://localhost:8181${resp.urlFoto}?t=${Date.now()}`;
-
+        const nuevaUrl = this.perfilService.resolverUrlFoto(resp.urlFoto);
         this.perfilService.setFoto(nuevaUrl);
-        this.fotoGlobal = nuevaUrl;
         this.mostrarPanelFoto = false;
       },
       error: (err) => {
