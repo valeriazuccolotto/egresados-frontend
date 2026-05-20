@@ -272,6 +272,7 @@ toggleSidebar(): void {
   }
   
   calcularProgreso() {
+
   const raw = sessionStorage.getItem('usuario');
 
   if (!raw) return;
@@ -280,101 +281,101 @@ toggleSidebar(): void {
   const matricula = usuario.matricula;
 
   let completados = 0;
-  const total = 7;
 
+  // 5 perfil + 4 contacto + 5 académico + 7 laboral
+  const total = 21;
+
+  // =========================
+  // PERFIL
+  // =========================
   this.http.get<any>(`http://localhost:8181/egresados/${matricula}`)
     .subscribe({
+
       next: (data: any) => {
-        if (
-          data?.nombre &&
-          data?.apellidoPaterno &&
-          data?.apellidoMaterno &&
-          data?.campus &&
-          data?.generacion
-        ) {
-          completados++;
-        }
+
+        if (data?.nombre) completados++;
+        if (data?.apellidoPaterno) completados++;
+        if (data?.apellidoMaterno) completados++;
+        if (data?.generacion) completados++;
+        if (data?.campus) completados++;
 
         this.actualizarPorcentaje(completados, total);
       },
+
       error: () => this.actualizarPorcentaje(completados, total)
     });
 
+  // =========================
+  // CONTACTO
+  // =========================
   this.http.get<any>(`http://localhost:8181/egresados/contacto/${matricula}`)
     .subscribe({
+
       next: (data: any) => {
-        if (data?.correoPersonal && data?.telefono) {
-          completados++;
-        }
+
+        if (data?.correoPersonal) completados++;
+        if (data?.telefono) completados++;
+        if (data?.ciudad) completados++;
+        if (data?.estadoResidencia) completados++;
 
         this.actualizarPorcentaje(completados, total);
       },
+
       error: () => this.actualizarPorcentaje(completados, total)
     });
 
+  // =========================
+  // ACADÉMICO
+  // =========================
   this.http.get<any>(`http://localhost:8181/egresados/academico/${matricula}`)
     .subscribe({
+
       next: (data: any) => {
-        if (data?.claveCarrera) {
-          completados++;
-        }
+
+        if (data?.claveCarrera) completados++;
+        if (data?.promedio !== null && data?.promedio !== undefined) completados++;
+        if (data?.anioEgreso !== null && data?.anioEgreso !== undefined) completados++;
+        if (data?.titulado) completados++;
+        if (data?.cedulaProfesional) completados++;
 
         this.actualizarPorcentaje(completados, total);
       },
+
       error: () => this.actualizarPorcentaje(completados, total)
     });
 
-  this.http.get<any[]>(`http://localhost:8181/egresado/laboral/${matricula}`)
-    .subscribe({
-      next: (data: any[]) => {
-        if (data && data.length > 0) {
-          completados++;
-        }
+  // =========================
+  // LABORAL
+  // =========================
+  // =========================
+// LABORAL
+// =========================
+this.http.get<any[]>(`http://localhost:8181/egresado/laboral/${matricula}`)
+  .subscribe({
 
-        this.actualizarPorcentaje(completados, total);
-      },
-      error: () => this.actualizarPorcentaje(completados, total)
-    });
+    next: (data: any[]) => {
 
-  this.http.get<any[]>(`http://localhost:8181/egresado/posgrado/${matricula}`)
-    .subscribe({
-      next: (data: any[]) => {
-        if (data && data.length > 0) {
-          completados++;
-        }
+      if (data && data.length > 0) {
 
-        this.actualizarPorcentaje(completados, total);
-      },
-      error: () => this.actualizarPorcentaje(completados, total)
-    });
+        const laboral = data[0];
 
-  this.http.get<any[]>(`http://localhost:8181/egresado/certificaciones/${matricula}`)
-    .subscribe({
-      next: (data: any[]) => {
-        if (data && data.length > 0) {
-          completados++;
-        }
+        if (laboral?.empresa) completados++;
+        if (laboral?.puesto) completados++;
+        if (laboral?.sector) completados++;
+        if (laboral?.medio) completados++;
+        if (laboral?.tiempo) completados++;
+        if (laboral?.contrato) completados++;
+        if (laboral?.salario) completados++;
+      }
 
-        this.actualizarPorcentaje(completados, total);
-      },
-      error: () => this.actualizarPorcentaje(completados, total)
-    });
+      this.actualizarPorcentaje(completados, total);
+    },
 
-  this.http.get<any[]>(`http://localhost:8181/egresado/reconocimientos/${matricula}`)
-    .subscribe({
-      next: (data: any[]) => {
-        if (data && data.length > 0) {
-          completados++;
-        }
-
-        this.actualizarPorcentaje(completados, total);
-      },
-      error: () => this.actualizarPorcentaje(completados, total)
-    });
+    error: () => this.actualizarPorcentaje(completados, total)
+  });
 }
 
 actualizarPorcentaje(completados: number, total: number) {
   this.porcentajePerfil = Math.round((completados / total) * 100);
 }
-  
 }
