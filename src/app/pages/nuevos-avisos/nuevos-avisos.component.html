@@ -3,7 +3,7 @@
   <div class="section-header">
     <div class="section-title">
       <h2>Nuevos avisos</h2>
-      <p>Convocatorias vigentes de la universidad que requieren tu respuesta</p>
+      <p>Convocatorias de la universidad: pendientes, respondidas y vencidas</p>
     </div>
   </div>
 
@@ -14,7 +14,7 @@
   <div class="card" *ngIf="vista === 'lista'">
     <p class="loading-state" *ngIf="cargando">Cargando avisos...</p>
     <p class="empty-state" *ngIf="!cargando && avisos.length === 0">
-      No tienes avisos pendientes en este momento.
+      No hay avisos disponibles en este momento.
     </p>
 
     <div class="historial-grid" *ngIf="!cargando && avisos.length > 0">
@@ -36,8 +36,11 @@
           {{ a.fechaInicio }} — {{ a.fechaFin }}
         </p>
         <div class="historial-actions">
-          <button type="button" class="btn-ver" (click)="abrirDetalle(a)">
-            {{ a.yaRespondio ? 'Ver respuesta' : 'Responder' }}
+          <button type="button" class="btn-ver" *ngIf="mostrarBotonResponder(a)" (click)="abrirDetalle(a)">
+            Responder
+          </button>
+          <button type="button" class="btn-ver btn-ver-secundario" *ngIf="mostrarBotonVerRespuesta(a)" (click)="abrirDetalle(a)">
+            Ver respuesta
           </button>
         </div>
       </div>
@@ -63,7 +66,15 @@
       <span class="badge-tipo" [class.archivos]="avisoSeleccionado.tipo === 'ARCHIVOS'">
         {{ etiquetaTipo(avisoSeleccionado.tipo) }}
       </span>
+      <span class="badge detalle-estado" [ngClass]="claseEstado(avisoSeleccionado)">
+        {{ etiquetaEstado(avisoSeleccionado) }}
+      </span>
     </div>
+
+    <p class="aviso-cerrado-msg" *ngIf="avisoVencidoSinRespuesta(avisoSeleccionado)">
+      <i class="fas fa-clock"></i>
+      Esta convocatoria está vencida. Ya no puedes enviar tu respuesta.
+    </p>
 
     <div class="bloque-respuesta-enviada" *ngIf="avisoSeleccionado.yaRespondio && miRespuesta">
       <h4><i class="fas fa-check-circle"></i> Tu respuesta</h4>
@@ -81,7 +92,7 @@
 
     <p class="loading-state" *ngIf="avisoSeleccionado.yaRespondio && !miRespuesta">Cargando tu respuesta...</p>
 
-    <form class="form-respuesta" *ngIf="avisoSeleccionado.puedeResponder" (ngSubmit)="enviarRespuesta()">
+    <form class="form-respuesta" *ngIf="mostrarBotonResponder(avisoSeleccionado)" (ngSubmit)="enviarRespuesta()">
       <div class="bloque-formulario">
         <h3>{{ avisoSeleccionado.tipo === 'ARCHIVOS' ? 'Subir archivos' : 'Tu respuesta' }}</h3>
 

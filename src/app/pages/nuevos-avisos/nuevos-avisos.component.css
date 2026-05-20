@@ -93,7 +93,34 @@
 
 .estado-pendiente { background: #fef3c7; color: #92400e; }
 .estado-respondida { background: #d1fae5; color: #065f46; }
+.estado-vencida { background: #fee2e2; color: #991b1b; }
 .estado-cerrada { background: #f3f4f6; color: #4b5563; }
+
+.detalle-estado {
+  display: inline-block;
+  margin-top: 10px;
+  margin-left: 8px;
+}
+
+.aviso-cerrado-msg {
+  margin: 16px 0 0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: 14px;
+}
+
+.aviso-cerrado-msg.cerrada-admin {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #4b5563;
+}
+
+.aviso-cerrado-msg i {
+  margin-right: 8px;
+}
 
 .badge-tipo {
   display: inline-block;
@@ -142,6 +169,20 @@
 
 .btn-ver:hover {
   background: #277a70;
+}
+
+.historial-actions:empty {
+  display: none;
+}
+
+.btn-ver-secundario {
+  background: #e8f5f3;
+  color: #2f8f83;
+  border: 1px solid #b8e0db;
+}
+
+.btn-ver-secundario:hover {
+  background: #d4eeea;
 }
 
 .btn-volver {

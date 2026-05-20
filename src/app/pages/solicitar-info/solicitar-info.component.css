@@ -531,6 +531,31 @@
   background: #b91c1c;
 }
 
+.modal-icon-cerrar {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.btn-cerrar-confirmar {
+  background: #d97706;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.btn-cerrar-confirmar:hover:not(:disabled) {
+  background: #b45309;
+}
+
+.btn-cerrar-confirmar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 @media (max-width: 700px) {
   .bloque-formulario {
     grid-template-columns: 1fr;

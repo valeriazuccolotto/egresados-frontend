@@ -12,6 +12,7 @@ export interface Solicitud {
   fechaCreacion?: string;
   yaRespondio?: boolean;
   puedeResponder?: boolean;
+  estadoEgresado?: 'PENDIENTE' | 'VENCIDA' | 'RESPONDIDA';
 }
 
 export interface CrearSolicitudDto {

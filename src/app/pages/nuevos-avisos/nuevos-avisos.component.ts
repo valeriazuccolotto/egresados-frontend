@@ -44,7 +44,7 @@ export class NuevosAvisosComponent implements OnInit {
       return;
     }
     const usuario: Usuario = JSON.parse(raw);
-    this.matricula = usuario.matricula;
+    this.matricula = (usuario.matricula || '').trim();
     this.cargarAvisos();
   }
 
@@ -54,7 +54,7 @@ export class NuevosAvisosComponent implements OnInit {
     this.limpiarMensajes();
     this.solicitudService.listarParaEgresado(this.matricula).subscribe({
       next: (data) => {
-        this.avisos = data;
+        this.avisos = (data || []).filter(a => !!a.idSolicitud);
         this.cargando = false;
         this.avisosPendientesService.actualizar(this.matricula);
       },
@@ -150,15 +150,41 @@ export class NuevosAvisosComponent implements OnInit {
   }
 
   etiquetaEstado(aviso: Solicitud): string {
-    if (aviso.yaRespondio) return 'Respondida';
-    if (aviso.puedeResponder) return 'Pendiente';
+    const e = this.estadoDe(aviso);
+    if (e === 'RESPONDIDA') return 'Respondida';
+    if (e === 'PENDIENTE') return 'Pendiente';
+    if (e === 'VENCIDA') return 'Vencida';
     return 'No disponible';
   }
 
   claseEstado(aviso: Solicitud): string {
-    if (aviso.yaRespondio) return 'estado-respondida';
-    if (aviso.puedeResponder) return 'estado-pendiente';
+    const e = this.estadoDe(aviso);
+    if (e === 'RESPONDIDA') return 'estado-respondida';
+    if (e === 'PENDIENTE') return 'estado-pendiente';
+    if (e === 'VENCIDA') return 'estado-vencida';
     return 'estado-cerrada';
+  }
+
+  mostrarBotonResponder(aviso: Solicitud): boolean {
+    return this.estadoDe(aviso) === 'PENDIENTE';
+  }
+
+  mostrarBotonVerRespuesta(aviso: Solicitud): boolean {
+    return this.estadoDe(aviso) === 'RESPONDIDA';
+  }
+
+  avisoVencidoSinRespuesta(aviso: Solicitud | null): boolean {
+    return !!aviso && this.estadoDe(aviso) === 'VENCIDA';
+  }
+
+  private estadoDe(aviso: Solicitud): 'PENDIENTE' | 'VENCIDA' | 'RESPONDIDA' | '' {
+    const estado = (aviso.estadoEgresado || '').toUpperCase();
+    if (estado === 'PENDIENTE' || estado === 'VENCIDA' || estado === 'RESPONDIDA') {
+      return estado;
+    }
+    if (aviso.yaRespondio) return 'RESPONDIDA';
+    if (aviso.puedeResponder) return 'PENDIENTE';
+    return 'VENCIDA';
   }
 
   private cargarMiRespuesta(idSolicitud: number): void {

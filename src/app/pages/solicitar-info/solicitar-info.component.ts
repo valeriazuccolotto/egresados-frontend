@@ -36,6 +36,10 @@ export class SolicitarInfoComponent implements OnInit {
   solicitudAEliminar: Solicitud | null = null;
   eliminando = false;
 
+  mostrarModalCerrar = false;
+  solicitudACerrar: Solicitud | null = null;
+  cerrando = false;
+
   constructor(private solicitudService: SolicitudService) {}
 
   ngOnInit(): void {
@@ -127,16 +131,35 @@ export class SolicitarInfoComponent implements OnInit {
     this.respuestas = [];
   }
 
-  cerrarSolicitud(solicitud: Solicitud): void {
+  abrirModalCerrar(solicitud: Solicitud): void {
     if (!solicitud.idSolicitud) return;
-    if (!confirm('¿Cerrar anticipadamente esta convocatoria? Los egresados ya no podrán responder antes de la fecha fin.')) return;
+    this.solicitudACerrar = solicitud;
+    this.mostrarModalCerrar = true;
+  }
 
+  cerrarModalCerrar(): void {
+    if (this.cerrando) return;
+    this.mostrarModalCerrar = false;
+    this.solicitudACerrar = null;
+  }
+
+  confirmarCerrar(): void {
+    const solicitud = this.solicitudACerrar;
+    if (!solicitud?.idSolicitud || this.cerrando) return;
+
+    this.cerrando = true;
     this.solicitudService.cerrarSolicitud(solicitud.idSolicitud).subscribe({
       next: () => {
+        this.cerrando = false;
+        this.mostrarModalCerrar = false;
+        this.solicitudACerrar = null;
         this.mensaje = '✓ Solicitud cerrada';
         this.cargarHistorial();
       },
-      error: () => this.mensajeError = '❌ No se pudo cerrar la solicitud'
+      error: () => {
+        this.cerrando = false;
+        this.mensajeError = '❌ No se pudo cerrar la solicitud';
+      }
     });
   }
 

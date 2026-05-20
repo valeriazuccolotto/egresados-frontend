@@ -112,7 +112,7 @@
           <div class="historial-actions">
             <button type="button" class="btn-ver" (click)="verRespuestas(s)">Ver respuestas</button>
             <button type="button" class="btn-secundario" *ngIf="puedeCerrarAnticipadamente(s)"
-              (click)="cerrarSolicitud(s)">Cerrar anticipadamente</button>
+              (click)="abrirModalCerrar(s)">Cerrar anticipadamente</button>
             <button type="button" class="btn-eliminar" (click)="abrirModalEliminar(s)">Eliminar</button>
           </div>
         </div>
@@ -169,6 +169,35 @@
 
     <div class="cert-footer">
       <button type="button" class="cert-btn-secondary" (click)="cerrarModalRespuestas()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAR CERRAR -->
+<div class="modal-overlay" *ngIf="mostrarModalCerrar" (click)="cerrarModalCerrar()">
+  <div class="modal-card modal-confirmar" (click)="$event.stopPropagation()">
+
+    <div class="modal-header modal-header-compact">
+      <div class="modal-icon modal-icon-cerrar">
+        <i class="fas fa-lock"></i>
+      </div>
+      <div>
+        <h3>¿Cerrar anticipadamente?</h3>
+        <p class="modal-subtitulo">{{ solicitudACerrar?.titulo }}</p>
+      </div>
+    </div>
+
+    <div class="modal-body modal-body-compact">
+      <p>Los egresados ya no podrán responder antes de la fecha fin de la convocatoria.</p>
+    </div>
+
+    <div class="cert-footer modal-footer-acciones">
+      <button type="button" class="cert-btn-secondary" [disabled]="cerrando" (click)="cerrarModalCerrar()">
+        No
+      </button>
+      <button type="button" class="btn-cerrar-confirmar" [disabled]="cerrando" (click)="confirmarCerrar()">
+        {{ cerrando ? 'Cerrando...' : 'Sí, cerrar' }}
+      </button>
     </div>
   </div>
 </div>
