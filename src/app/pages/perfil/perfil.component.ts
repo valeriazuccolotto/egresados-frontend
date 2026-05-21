@@ -23,7 +23,7 @@ export class PerfilComponent implements OnInit {
   carreras: Carrera[] = [];
 
   constructor(
-    private perfilService: PerfilService,
+    public perfilService: PerfilService,
     private academicoService: AcademicoService
   ) {}
 
@@ -44,8 +44,8 @@ export class PerfilComponent implements OnInit {
     }
 
     const usuario: Usuario = JSON.parse(raw);
-    const matricula = usuario.matricula;
-    if (!/^\d+$/.test(String(matricula || '').trim())) {
+    const matricula = this.perfilService.normalizarMatricula(usuario.matricula);
+    if (!matricula || !/^\d{8}$/.test(matricula)) {
       console.warn('La vista de perfil de egresado no aplica para cuentas administrativas.');
       return;
     }

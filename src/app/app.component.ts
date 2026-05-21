@@ -54,10 +54,7 @@ export class AppComponent implements OnInit, OnDestroy {
     .subscribe((event: NavigationEnd) => {
       this.actualizarVistaPorRuta(event.urlAfterRedirects);
 
-      if (this.esLogin) {
-        sessionStorage.removeItem('usuario');
-        this.actualizarAvisosPendientes();
-      } else if (!this.esAdmin) {
+      if (!this.esLogin && !this.esAdmin) {
         this.perfilService.cargarFotoDesdePerfil();
         this.calcularProgreso();
         this.actualizarAvisosPendientes();
@@ -84,9 +81,7 @@ ngOnInit(): void {
     pendiente => this.hayAvisosPendientes = pendiente
   );
 
-  if (this.esLogin) {
-    sessionStorage.removeItem('usuario');
-  } else if (!this.esAdmin) {
+  if (!this.esAdmin && !this.esLogin) {
     this.perfilService.cargarFotoDesdePerfil();
     this.calcularProgreso();
   }
@@ -262,15 +257,22 @@ toggleSidebar(): void {
 
     this.perfilService.subirFotoPerfil(matricula, archivo).subscribe({
       next: (resp) => {
-        const nuevaUrl = this.perfilService.resolverUrlFoto(resp.urlFoto);
-        this.perfilService.setFoto(nuevaUrl);
+        if (!resp?.urlFoto) {
+          alert('La foto se subió pero no se recibió la URL. Recarga la página.');
+          this.perfilService.cargarFotoDesdePerfil(matricula);
+        }
         this.mostrarPanelFoto = false;
       },
       error: (err) => {
         console.error('Error al subir foto:', err);
-        alert('Error al subir la foto');
+        const detalle = err?.error?.message ?? err?.statusText ?? '';
+        alert(detalle ? `Error al subir la foto: ${detalle}` : 'Error al subir la foto. Revisa que el backend esté en el puerto 8181.');
       }
     });
+  }
+
+  onFotoError(): void {
+    this.fotoGlobal = this.perfilService.fotoPorDefecto();
   }
 
   private dataUrlToFile(dataUrl: string, filename: string): File {

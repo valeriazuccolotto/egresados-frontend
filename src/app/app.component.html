@@ -38,7 +38,7 @@
 
       <div class="user-menu" #photoMenuRoot>
         <div class="avatar" (click)="togglePhotoMenu()">
-          <img [src]="fotoGlobal" class="avatar-img" />
+          <img [src]="fotoGlobal" class="avatar-img" alt="Foto de perfil" (error)="onFotoError()" />
         </div>
 
         <span class="user-name"></span>

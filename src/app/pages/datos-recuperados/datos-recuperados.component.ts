@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { catchError, forkJoin, of } from 'rxjs';
 
 import { EgresadoService } from '../../services/egresado/egresado.service';
+import { PerfilService } from '../../services/perfil.service';
 
 @Component({
   selector: 'app-datos-recuperados',
@@ -66,7 +67,10 @@ export class DatosRecuperadosComponent implements OnInit {
   // =========================
   // CONSTRUCTOR
   // =========================
-  constructor(private egresadoService: EgresadoService) {}
+  constructor(
+    private egresadoService: EgresadoService,
+    public perfilService: PerfilService
+  ) {}
 
   ngOnInit(): void {}
 
@@ -165,7 +169,8 @@ export class DatosRecuperadosComponent implements OnInit {
   }
 
   abrirDetalleEgresado(matricula: string): void {
-    if (!matricula) {
+    const m = this.perfilService.normalizarMatricula(matricula);
+    if (!m) {
       return;
     }
 
@@ -179,13 +184,13 @@ export class DatosRecuperadosComponent implements OnInit {
     this.certificacionSeleccionada = null;
 
     forkJoin({
-      perfil: this.egresadoService.getPerfilCompleto(matricula).pipe(catchError(() => of(null))),
-      contacto: this.egresadoService.getContactoPorMatricula(matricula).pipe(catchError(() => of(null))),
-      academico: this.egresadoService.getAcademicoPorMatricula(matricula).pipe(catchError(() => of(null))),
-      laboral: this.egresadoService.getLaboralPorMatricula(matricula).pipe(catchError(() => of([]))),
-      posgrado: this.egresadoService.getPosgradoPorMatricula(matricula).pipe(catchError(() => of([]))),
-      reconocimientos: this.egresadoService.getReconocimientosPorMatricula(matricula).pipe(catchError(() => of([]))),
-      certificaciones: this.egresadoService.getCertificacionesPorMatricula(matricula).pipe(catchError(() => of([])))
+      perfil: this.egresadoService.getPerfilCompleto(m).pipe(catchError(() => of(null))),
+      contacto: this.egresadoService.getContactoPorMatricula(m).pipe(catchError(() => of(null))),
+      academico: this.egresadoService.getAcademicoPorMatricula(m).pipe(catchError(() => of(null))),
+      laboral: this.egresadoService.getLaboralPorMatricula(m).pipe(catchError(() => of([]))),
+      posgrado: this.egresadoService.getPosgradoPorMatricula(m).pipe(catchError(() => of([]))),
+      reconocimientos: this.egresadoService.getReconocimientosPorMatricula(m).pipe(catchError(() => of([]))),
+      certificaciones: this.egresadoService.getCertificacionesPorMatricula(m).pipe(catchError(() => of([])))
     }).subscribe({
       next: ({ perfil, contacto, academico, laboral, posgrado, reconocimientos, certificaciones }) => {
         const combinado = {
@@ -291,6 +296,10 @@ export class DatosRecuperadosComponent implements OnInit {
   obtenerPrestaciones(laboral: any): string {
     const texto = this.nombresSeparadosPorComa(laboral?.prestaciones ?? []);
     return texto || 'No cuenta con prestaciones';
+  }
+
+  urlFotoResultado(egresado: any): string {
+    return this.perfilService.resolverUrlFoto(egresado?.urlFoto);
   }
 
   obtenerBecas(posgrado: any): string {

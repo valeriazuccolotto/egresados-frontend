@@ -11,7 +11,7 @@
   <!-- TARJETA PRINCIPAL -->
   <div class="perfil-card">
 
-    <img [src]="urlFoto" class="perfil-img" />
+    <img [src]="urlFoto" class="perfil-img" alt="Foto de perfil" (error)="urlFoto = perfilService.fotoPorDefecto()" />
 
     <div class="perfil-info">
       <h2>

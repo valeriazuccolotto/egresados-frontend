@@ -243,10 +243,9 @@
                 <!-- FOTO -->
                 <img
                     class="foto-perfil"
-                    [src]="resultado.urlFoto
-                        ? resultado.urlFoto
-                        : 'assets/favicon-UNPA.ico'"
+                    [src]="urlFotoResultado(resultado)"
                     alt="Foto de perfil"
+                    (error)="$any($event.target).src = perfilService.fotoPorDefecto()"
                 >
 
                 <!-- INFO -->
