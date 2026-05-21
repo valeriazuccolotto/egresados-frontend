@@ -1,0 +1,54 @@
+<div class="main-container">
+
+  <div class="header-content">
+    <img
+      src="assets/images/unpa-logo.png"
+      alt="Universidad del Papaloapan - UNPA"
+      class="logo-unpa"
+    >
+  </div>
+
+  <div class="auth-wrapper">
+
+    <h1 class="page-title">Recuperar contraseña</h1>
+
+    <p class="page-subtitle" *ngIf="!enviado">
+      Ingresa el correo personal registrado en tu perfil. Si no existe, verás «Correo no registrado».
+    </p>
+
+    <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+    <div class="success-msg" *ngIf="exitoMsg">{{ exitoMsg }}</div>
+
+    <ng-container *ngIf="!enviado">
+      <div class="input-container">
+        <input
+          type="email"
+          class="unpa-input"
+          placeholder="Correo electrónico"
+          autocomplete="email"
+          [(ngModel)]="correo"
+          [class.input-error]="errorCorreo"
+          (input)="errorCorreo = false; errorMsg = ''"
+          (keydown.enter)="enviarEnlace()"
+        >
+      </div>
+
+      <button
+        type="button"
+        class="btn-login"
+        (click)="enviarEnlace()"
+        [disabled]="cargando"
+      >
+        {{ cargando ? 'ENVIANDO...' : 'ENVIAR ENLACE' }}
+      </button>
+    </ng-container>
+
+    <a routerLink="/login" class="link-volver">Volver al inicio de sesión</a>
+
+  </div>
+
+  <p class="footer-text">
+    Desarrollado por alumnos y profesores de Ingeniería en Computación
+  </p>
+
+</div>

@@ -453,6 +453,12 @@
     grid-column: 1 / -1;
 }
 
+.texto-lista-separada {
+    margin: 0;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
 .mensaje-vacio-seccion {
     margin: 6px 0;
     color: #6b7280;

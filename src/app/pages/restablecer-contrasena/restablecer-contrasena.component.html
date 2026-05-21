@@ -1,0 +1,98 @@
+<div class="main-container">
+
+  <div class="header-content">
+    <img
+      src="assets/images/unpa-logo.png"
+      alt="Universidad del Papaloapan - UNPA"
+      class="logo-unpa"
+    >
+  </div>
+
+  <div class="auth-wrapper">
+
+    <h1 class="page-title">Nueva contraseña</h1>
+
+    <p class="page-subtitle" *ngIf="validandoToken">Verificando enlace...</p>
+
+    <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+    <div class="success-msg" *ngIf="exitoMsg">{{ exitoMsg }}</div>
+
+    <ng-container *ngIf="!validandoToken && tokenValido && !exitoMsg">
+      <div class="input-container password-container">
+        <input
+          [type]="mostrarNueva ? 'text' : 'password'"
+          class="unpa-input"
+          placeholder="Nueva contraseña"
+          autocomplete="new-password"
+          [(ngModel)]="nuevaPassword"
+          [class.input-error]="errorNueva"
+          (input)="errorNueva = false; errorMsg = ''"
+          (keydown.enter)="guardar()"
+        >
+        <button type="button" class="eye-icon" (click)="toggleNueva()" aria-label="Mostrar u ocultar contraseña">
+          <svg *ngIf="!mostrarNueva" xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+            viewBox="0 0 24 24" fill="none" stroke="#5D9B9B"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+          </svg>
+          <svg *ngIf="mostrarNueva" xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+            viewBox="0 0 24 24" fill="none" stroke="#5D9B9B"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="input-container password-container">
+        <input
+          [type]="mostrarConfirmar ? 'text' : 'password'"
+          class="unpa-input"
+          placeholder="Repetir contraseña"
+          autocomplete="new-password"
+          [(ngModel)]="confirmarPassword"
+          [class.input-error]="errorConfirmar"
+          (input)="errorConfirmar = false; errorMsg = ''"
+          (keydown.enter)="guardar()"
+        >
+        <button type="button" class="eye-icon" (click)="toggleConfirmar()" aria-label="Mostrar u ocultar contraseña">
+          <svg *ngIf="!mostrarConfirmar" xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+            viewBox="0 0 24 24" fill="none" stroke="#5D9B9B"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+            <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+            <line x1="1" y1="1" x2="23" y2="23"/>
+          </svg>
+          <svg *ngIf="mostrarConfirmar" xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+            viewBox="0 0 24 24" fill="none" stroke="#5D9B9B"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+
+      <button
+        type="button"
+        class="btn-login"
+        (click)="guardar()"
+        [disabled]="cargando"
+      >
+        {{ cargando ? 'GUARDANDO...' : 'GUARDAR CONTRASEÑA' }}
+      </button>
+    </ng-container>
+
+    <a routerLink="/login" class="link-volver">Volver al inicio de sesión</a>
+    <a routerLink="/recuperar-contrasena" class="link-volver" *ngIf="!tokenValido && !validandoToken">
+      Solicitar nuevo enlace
+    </a>
+
+  </div>
+
+  <p class="footer-text">
+    Desarrollado por alumnos y profesores de Ingeniería en Computación
+  </p>
+
+</div>

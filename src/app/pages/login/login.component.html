@@ -8,7 +8,7 @@
     >
   </div>
 
-  <div class="login-wrapper">
+  <div class="auth-wrapper">
 
     <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
 
@@ -63,7 +63,7 @@
       {{ cargando ? 'VERIFICANDO...' : 'INICIAR SESIÓN' }}
     </button>
 
-    <p class="note">* NOTA: Para recuperar tu contraseña acude a Servicios Escolares</p>
+    <a routerLink="/recuperar-contrasena" class="link-recuperar">Recuperar contraseña</a>
 
   </div>
 

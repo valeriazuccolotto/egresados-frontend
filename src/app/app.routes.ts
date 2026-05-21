@@ -3,6 +3,8 @@ import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.compone
 import { DatosRecuperadosComponent } from './pages/datos-recuperados/datos-recuperados.component';
 import { UsuariosAdmComponent } from './pages/usuarios-adm/usuarios-adm.component';
 import { LoginComponent } from './pages/login/login.component';
+import { RecuperarContrasenaComponent } from './pages/recuperar-contrasena/recuperar-contrasena.component';
+import { RestablecerContrasenaComponent } from './pages/restablecer-contrasena/restablecer-contrasena.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { ContactoComponent } from './pages/contacto/contacto.component';
 import { AcademicoComponent } from './pages/academico/academico.component';
@@ -21,6 +23,8 @@ import { NuevosAvisosComponent } from './pages/nuevos-avisos/nuevos-avisos.compo
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
+  { path: 'recuperar-contrasena', component: RecuperarContrasenaComponent },
+  { path: 'restablecer-contrasena', component: RestablecerContrasenaComponent },
   { path: 'perfil', component: PerfilComponent },
   { path: 'datos-personales', component: DatosPersonalesComponent },
   { path: 'contacto', component: ContactoComponent },

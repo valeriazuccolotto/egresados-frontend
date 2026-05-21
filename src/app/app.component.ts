@@ -54,17 +54,26 @@ export class AppComponent implements OnInit, OnDestroy {
     .subscribe((event: NavigationEnd) => {
       this.actualizarVistaPorRuta(event.urlAfterRedirects);
 
-      if (!this.esLogin && !this.esAdmin) {
+      if (this.esLogin) {
+        sessionStorage.removeItem('usuario');
+        this.actualizarAvisosPendientes();
+      } else if (!this.esAdmin) {
         this.perfilService.cargarFotoDesdePerfil();
         this.calcularProgreso();
+        this.actualizarAvisosPendientes();
+      } else {
         this.actualizarAvisosPendientes();
       }
     });
 }
 
 actualizarVistaPorRuta(url: string): void {
-  this.esLogin = url === '/login';
-  this.esAdmin = url.startsWith('/admin');
+  const ruta = url.split('?')[0];
+  this.esLogin =
+    ruta === '/login' ||
+    ruta === '/recuperar-contrasena' ||
+    ruta === '/restablecer-contrasena';
+  this.esAdmin = ruta.startsWith('/admin');
 }
 ngOnInit(): void {
   this.perfilService.foto$.subscribe(url => {
@@ -75,11 +84,13 @@ ngOnInit(): void {
     pendiente => this.hayAvisosPendientes = pendiente
   );
 
-  if (!this.esLogin && !this.esAdmin) {
+  if (this.esLogin) {
+    sessionStorage.removeItem('usuario');
+  } else if (!this.esAdmin) {
     this.perfilService.cargarFotoDesdePerfil();
+    this.calcularProgreso();
   }
 
-  this.calcularProgreso();
   this.actualizarAvisosPendientes();
   this.iniciarPollingAvisos();
 }
@@ -278,6 +289,9 @@ toggleSidebar(): void {
   }
   
   calcularProgreso() {
+  if (this.esLogin || this.esAdmin) {
+    return;
+  }
 
   const raw = sessionStorage.getItem('usuario');
 

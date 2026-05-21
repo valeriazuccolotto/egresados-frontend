@@ -273,11 +273,36 @@ export class DatosRecuperadosComponent implements OnInit {
     this.certificacionSeleccionada = item;
   }
 
-  obtenerPrestaciones(laboral: any): string {
-    if (!laboral?.prestaciones?.length) {
-      return 'No cuenta con prestaciones';
+  private nombresSeparadosPorComa(items: any[]): string {
+    if (!items?.length) {
+      return '';
     }
-    return laboral.prestaciones.map((p: any) => p.nombre).join(', ');
+    return items
+      .map((item: any) => {
+        if (typeof item === 'string') {
+          return item.trim();
+        }
+        return (item?.nombre ?? item?.nombrePrestacion ?? '').trim();
+      })
+      .filter((nombre: string) => !!nombre)
+      .join(', ');
+  }
+
+  obtenerPrestaciones(laboral: any): string {
+    const texto = this.nombresSeparadosPorComa(laboral?.prestaciones ?? []);
+    return texto || 'No cuenta con prestaciones';
+  }
+
+  obtenerBecas(posgrado: any): string {
+    if (!posgrado?.tieneBeca) {
+      return 'No aplica';
+    }
+    const desdeLista = this.nombresSeparadosPorComa(posgrado?.tiposBeca ?? []);
+    if (desdeLista) {
+      return desdeLista;
+    }
+    const legacy = posgrado?.tipoBeca?.nombre?.trim();
+    return legacy || 'No aplica';
   }
 
   // =========================
