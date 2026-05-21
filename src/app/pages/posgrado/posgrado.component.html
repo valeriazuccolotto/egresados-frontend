@@ -83,7 +83,7 @@
             </div>
 
             <div class="field-group">
-                <label><i class="fas fa-link"></i>Relación <span class="required">*</span></label>
+                <label><i class="fas fa-link"></i>Relación con la carrera<span class="required">*</span></label>
                 <select [(ngModel)]="form.relacion" name="relacion" required #relacion="ngModel">
                     <option value="">Seleccione</option>
                     <option>Si</option>
@@ -94,13 +94,13 @@
             </div>
 
             <div class="field-group">
-                <label><i class="fas fa-calendar-day"></i>Inicio <span class="required">*</span></label>
+                <label><i class="fas fa-calendar-day"></i>Fecha Inicio <span class="required">*</span></label>
                 <input type="date" [(ngModel)]="form.inicio" name="inicio" required #inicio="ngModel">
                 <div class="error" *ngIf="inicio.invalid && inicio.touched">Campo obligatorio</div>
             </div>
 
             <div class="field-group">
-                <label><i class="fas fa-calendar-times"></i>Fin</label>
+                <label><i class="fas fa-calendar-times"></i>Fecha Fin</label>
                 <input type="date" [(ngModel)]="form.fin" name="fin">
             </div>
         </div>
@@ -289,7 +289,7 @@
                 </div>
 
                 <div class="field-group">
-                    <label><i class="fas fa-link"></i>Relación <span class="required">*</span></label>
+                    <label><i class="fas fa-link"></i>Relación con la carrera<span class="required">*</span></label>
                     <select [(ngModel)]="posgradoSeleccionado.relacionadoCarrera"
                             name="relacionadoCarrera"
                             required
@@ -305,7 +305,7 @@
                 </div>
 
                 <div class="field-group">
-                    <label><i class="fas fa-calendar-day"></i>Inicio <span class="required">*</span></label>
+                    <label><i class="fas fa-calendar-day"></i>Fecha Inicio <span class="required">*</span></label>
                     <input type="date"
                             [(ngModel)]="posgradoSeleccionado.fechaInicio"
                             name="fechaInicio"
@@ -317,7 +317,7 @@
                 </div>
 
                 <div class="field-group">
-                    <label><i class="fas fa-calendar-times"></i>Fin</label>
+                    <label><i class="fas fa-calendar-times"></i>Fecha Fin</label>
                     <input type="date"
                             [(ngModel)]="posgradoSeleccionado.fechaFin"
                             name="fechaFin">
