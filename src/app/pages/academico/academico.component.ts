@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { Academico } from '../../models/academico';
 import { Carrera } from '../../models/carrera';
 import { AcademicoService } from '../../services/academico.service';
+import { fechaHoyLocal } from '../../utils/fecha-hoy.util';
 
 @Component({
   selector: 'app-academico',
@@ -241,6 +242,21 @@ private actualizarAcademico(): void {
         this.mensajeError = 'Error al actualizar información académica.';
       }
     });
+  }
+
+  onTituladoChange(): void {
+    if (this.academico.titulado === 'Si' && !this.academico.fechaTitulacion) {
+      this.academico.fechaTitulacion = fechaHoyLocal();
+    }
+  }
+
+  onTipoTitulacionChange(): void {
+    const requiereExamen =
+      this.academico.tipoTitulacion === 'CENEVAL' ||
+      this.academico.tipoTitulacion === 'Experiencia laboral';
+    if (requiereExamen && !this.academico.fechaExamen) {
+      this.academico.fechaExamen = fechaHoyLocal();
+    }
   }
 
   private prepararDatosAntesDeGuardar(): void {

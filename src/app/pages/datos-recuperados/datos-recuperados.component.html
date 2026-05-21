@@ -625,7 +625,16 @@
                             <div class="detalle-item"><div class="info-icon"><i class="fas fa-calendar-day"></i></div><div><label>Inicio</label><p>{{ posgradoSeleccionado.fechaInicio || 'No registrada' }}</p></div></div>
                             <div class="detalle-item"><div class="info-icon"><i class="fas fa-calendar-times"></i></div><div><label>Fin</label><p>{{ posgradoSeleccionado.fechaFin || 'No registrada' }}</p></div></div>
                             <div class="detalle-item"><div class="info-icon"><i class="fas fa-award"></i></div><div><label>Tiene beca</label><p>{{ posgradoSeleccionado.tieneBeca ? 'Sí' : 'No' }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-gift"></i></div><div><label>Tipo beca</label><p>{{ posgradoSeleccionado.tipoBeca?.nombre || 'No aplica' }}</p></div></div>
+                            <div class="detalle-item detalle-item--full">
+                                <div class="info-icon"><i class="fas fa-gift"></i></div>
+                                <div>
+                                    <label>Tipos de beca</label>
+                                    <p *ngIf="!posgradoSeleccionado.tiposBeca?.length">No aplica</p>
+                                    <div class="prestaciones-inline" *ngIf="posgradoSeleccionado.tiposBeca?.length">
+                                        <span *ngFor="let b of posgradoSeleccionado.tiposBeca">{{ b.nombre }}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

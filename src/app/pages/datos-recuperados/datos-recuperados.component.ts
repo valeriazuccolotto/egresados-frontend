@@ -346,7 +346,10 @@ export class DatosRecuperadosComponent implements OnInit {
         fechaInicio: this.pick(item, ['fechaInicio', 'fecha_inicio']),
         fechaFin: this.pick(item, ['fechaFin', 'fecha_fin']),
         tieneBeca: this.pick(item, ['tieneBeca', 'tiene_beca']),
-        tipoBeca: item?.tipoBeca || item?.tipo_beca || null
+        tipoBeca: item?.tipoBeca || item?.tipo_beca || null,
+        tiposBeca: Array.isArray(item?.tiposBeca)
+          ? item.tiposBeca
+          : (item?.tipoBeca || item?.tipo_beca ? [item.tipoBeca || item.tipo_beca] : [])
       })),
       reconocimientos: reconocimientosRaw.map((item: any) => ({
         ...item,

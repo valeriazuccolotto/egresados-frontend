@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SolicitudService } from '../../services/solicitud.service';
+import { fechaHoyLocal } from '../../utils/fecha-hoy.util';
 import { CrearSolicitudDto, RespuestaSolicitud, Solicitud, TipoSolicitud } from '../../models/solicitud.model';
 
 type VistaAdmin = 'lista' | 'formulario';
@@ -255,15 +256,8 @@ export class SolicitarInfoComponent implements OnInit {
   }
 
   private formularioVacio(): CrearSolicitudDto {
-    const hoy = this.fechaHoyLocal();
+    const hoy = fechaHoyLocal();
     return { titulo: '', descripcion: '', fechaInicio: hoy, fechaFin: hoy };
-  }
-
-  private fechaHoyLocal(): string {
-    const d = new Date();
-    const mes = String(d.getMonth() + 1).padStart(2, '0');
-    const dia = String(d.getDate()).padStart(2, '0');
-    return `${d.getFullYear()}-${mes}-${dia}`;
   }
 
   private limpiarMensajes(): void {

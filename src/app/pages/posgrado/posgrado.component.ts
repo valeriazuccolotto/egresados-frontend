@@ -1,11 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { Usuario } from '../../models/usuario';
-
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
+import { fechaHoyLocal } from '../../utils/fecha-hoy.util';
 
 @Component({
   selector: 'app-posgrado',
@@ -16,25 +14,34 @@ import { catchError } from 'rxjs/operators';
 })
 export class PosgradoComponent implements OnInit {
 
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(private http: HttpClient) {}
 
   matriculaUsuario: string = '';
 
-  // ===== UI =====
   menuOculto = false;
   mostrarPopup = false;
   mostrarPosgrado = false;
-  mostrarConfirmacion = false;   // 🔥 modal confirmación
+  mostrarConfirmacion = false;
   mensaje = '';
 
-  // ===== DATA =====
   historial: any[] = [];
   posgradoSeleccionado: any = null;
-  posgradoAEliminar: number | null = null; // 🔥 id temporal para eliminar
+  posgradoAEliminar: number | null = null;
 
   listaBecas: any[] = [];
+  mostrarOtro = false;
+  mostrarOtroEdit = false;
+  otroTexto = '';
 
-  // ===== FORM =====
+  /** Catálogo sin la fila "Otros" de BD; "Otro" solo abre el input personalizado */
+  get listaBecasCatalogo(): any[] {
+    return this.listaBecas.filter(b => !this.esOtroCatalogo(b.nombre));
+  }
+
+  private esOtroCatalogo(nombre: string): boolean {
+    return /^(otros?)$/i.test((nombre || '').trim());
+  }
+
   form: any = {
     nivel: '',
     institucion: '',
@@ -45,46 +52,44 @@ export class PosgradoComponent implements OnInit {
     inicio: '',
     fin: '',
     tieneBeca: null,
-    idTipoBeca: null,
-    otroBeca: ''
+    becasSeleccionadas: [] as any[]
   };
 
   ngOnInit() {
-  const raw = sessionStorage.getItem('usuario');
+    const raw = sessionStorage.getItem('usuario');
 
-  if (!raw) {
-    this.mostrarMensaje("❌ No hay sesión activa");
-    return;
+    if (!raw) {
+      this.mostrarMensaje('❌ No hay sesión activa');
+      return;
+    }
+
+    const usuario = JSON.parse(raw);
+    this.matriculaUsuario = usuario.matricula;
+
+    this.cargarHistorial();
+    this.cargarBecas();
   }
-
-  const usuario = JSON.parse(raw);
-  this.matriculaUsuario = usuario.matricula;
-
-  this.cargarHistorial();
-  this.cargarBecas();
-}
 
   cargarHistorial() {
     this.http.get<any[]>(`/egresado/posgrado/${this.matriculaUsuario}`).pipe(
       catchError(() => this.http.get<any[]>(`/egresados/posgrado/${this.matriculaUsuario}`))
     ).subscribe({
       next: data => this.historial = (data || []).reverse(),
-      error: () => this.mostrarMensaje("❌ Error al cargar historial")
+      error: () => this.mostrarMensaje('❌ Error al cargar historial')
     });
   }
+
   cargarBecas() {
-    this.http.get<any[]>('/tipo-beca')
-      .subscribe({
-        next: data => {
-          this.listaBecas = [...data, { idTipoBeca: 0, nombre: 'Otros' }];
-        },
-        error: () => this.mostrarMensaje("❌ Error al cargar becas")
-      });
+    this.http.get<any[]>('/tipo-beca').subscribe({
+      next: data => this.listaBecas = data || [],
+      error: () => this.mostrarMensaje('❌ Error al cargar becas')
+    });
   }
 
   abrirFormulario() {
     this.mostrarPosgrado = true;
     this.posgradoSeleccionado = null;
+    this.resetForm();
   }
 
   cancelar() {
@@ -93,6 +98,7 @@ export class PosgradoComponent implements OnInit {
   }
 
   resetForm() {
+    const hoy = fechaHoyLocal();
     this.form = {
       nivel: '',
       institucion: '',
@@ -100,120 +106,318 @@ export class PosgradoComponent implements OnInit {
       modalidad: '',
       estatus: '',
       relacion: '',
-      inicio: '',
+      inicio: hoy,
       fin: '',
       tieneBeca: null,
-      idTipoBeca: null,
-      otroBeca: ''
+      becasSeleccionadas: []
     };
+    this.mostrarOtro = false;
+    this.otroTexto = '';
   }
 
   onBecaChange() {
     if (!this.form.tieneBeca) {
-      this.form.idTipoBeca = null;
-      this.form.otroBeca = '';
+      this.form.becasSeleccionadas = [];
+      this.mostrarOtro = false;
+      this.otroTexto = '';
     }
   }
 
+  private normalizarTiposBeca(item: any): any[] {
+    if (item?.tiposBeca?.length) {
+      return [...item.tiposBeca];
+    }
+    if (item?.tipoBeca) {
+      return [item.tipoBeca];
+    }
+    return [];
+  }
+
+  construirDatosPosgrado(base: any, becas: any[], tieneBeca: boolean) {
+    const finRaw = base.fechaFin ?? base.fin ?? '';
+    const fechaFin =
+      typeof finRaw === 'string' && finRaw.trim() ? finRaw.trim() : null;
+
+    return {
+      ...base,
+      fechaFin,
+      tieneBeca,
+      tiposBeca: tieneBeca
+        ? becas.map((b: any) => ({ idTipoBeca: b.idTipoBeca }))
+        : []
+    };
+  }
+
+  private mensajeErrorHttp(err: any, fallback: string): string {
+    const body = err?.error;
+    if (typeof body === 'string' && body.trim()) {
+      return body;
+    }
+    if (body?.message) {
+      return body.message;
+    }
+    return fallback;
+  }
+
+  private validarFormularioAlta(): string | null {
+    const f = this.form;
+    if (!f.nivel || !f.institucion || !f.programa || !f.modalidad || !f.estatus || !f.relacion) {
+      return '⚠️ Completa todos los campos obligatorios';
+    }
+    if (!f.inicio) {
+      return '⚠️ Indica la fecha de inicio';
+    }
+    if (f.tieneBeca === null || f.tieneBeca === undefined) {
+      return '⚠️ Indica si tienes beca';
+    }
+    if (f.tieneBeca && f.becasSeleccionadas.length === 0) {
+      return '⚠️ Selecciona al menos un tipo de beca';
+    }
+    if (this.mostrarOtro && this.otroTexto.trim()) {
+      return '⚠️ Pulsa + para agregar la beca escrita antes de guardar';
+    }
+    return null;
+  }
+
+  private validarFormularioEdicion(): string | null {
+    const p = this.posgradoSeleccionado;
+    if (!p?.nivelEstudio || !p?.institucion || !p?.nombrePrograma || !p?.modalidad || !p?.estatus || !p?.relacionadoCarrera) {
+      return '⚠️ Completa todos los campos obligatorios';
+    }
+    if (!p?.fechaInicio) {
+      return '⚠️ Indica la fecha de inicio';
+    }
+    if (p.tieneBeca === null || p.tieneBeca === undefined) {
+      return '⚠️ Indica si tienes beca';
+    }
+    if (p.tieneBeca && !p.tiposBeca?.length) {
+      return '⚠️ Selecciona al menos un tipo de beca';
+    }
+    if (this.mostrarOtroEdit && this.otroTexto.trim()) {
+      return '⚠️ Pulsa + para agregar la beca escrita antes de guardar';
+    }
+    return null;
+  }
+
   guardar(form: any) {
-    if (form.invalid) {
-      Object.values(form.controls).forEach((c: any) => c.markAsTouched());
-      this.mostrarMensaje("⚠️ Completa todos los campos obligatorios");
+    const error = this.validarFormularioAlta();
+    if (error) {
+      if (form?.controls) {
+        Object.values(form.controls).forEach((c: any) => c.markAsTouched?.());
+      }
+      this.mostrarMensaje(error);
       return;
     }
 
-    const becaSeleccionada = this.listaBecas.find(b => b.idTipoBeca === this.form.idTipoBeca);
+    const datos = this.construirDatosPosgrado({
+      matricula: this.matriculaUsuario,
+      nivelEstudio: this.form.nivel,
+      institucion: this.form.institucion,
+      nombrePrograma: this.form.programa,
+      modalidad: this.form.modalidad,
+      estatus: this.form.estatus,
+      relacionadoCarrera: this.form.relacion,
+      fechaInicio: this.form.inicio,
+      fin: this.form.fin
+    }, this.form.becasSeleccionadas, this.form.tieneBeca);
 
-    const datos = {
-  matricula: this.matriculaUsuario,
-  nivelEstudio: this.form.nivel,
-  institucion: this.form.institucion,
-  nombrePrograma: this.form.programa,
-  modalidad: this.form.modalidad,
-  estatus: this.form.estatus,
-  relacionadoCarrera: this.form.relacion,
-  fechaInicio: this.form.inicio,
-  fechaFin: this.form.fin,
-  tieneBeca: this.form.tieneBeca,
-  tipoBeca: this.form.tieneBeca && becaSeleccionada
-    ? {
-        nombre: this.form.idTipoBeca === 0
-          ? this.form.otroBeca
-          : becaSeleccionada.nombre
-      }
-    : null
-};
-
-    this.http.post('/egresado/posgrado', datos).pipe(
-      catchError(() => this.http.post('/egresados/posgrado', datos))
-    ).subscribe({
+    this.http.post('/egresado/posgrado', datos).subscribe({
       next: () => {
         this.cargarHistorial();
         this.cargarBecas();
-        this.mostrarMensaje("✓ Posgrado guardado");
+        this.mostrarMensaje('✓ Posgrado guardado');
         this.mostrarPosgrado = false;
         this.resetForm();
       },
       error: (err) => {
-        console.error("ERROR BACKEND:", err.error);
-        this.mostrarMensaje("❌ Error al guardar posgrado");
+        console.error('ERROR BACKEND:', err.error);
+        this.mostrarMensaje('❌ ' + this.mensajeErrorHttp(err, 'Error al guardar posgrado'));
       }
     });
   }
 
   verDetalle(item: any) {
     this.posgradoSeleccionado = { ...item };
-
-    if (this.posgradoSeleccionado.tieneBeca && this.posgradoSeleccionado.tipoBeca) {
-      this.posgradoSeleccionado.idTipoBeca = this.posgradoSeleccionado.tipoBeca.idTipoBeca;
-
-      const existe = this.listaBecas.find(b => b.nombre === this.posgradoSeleccionado.tipoBeca.nombre);
-      if (!existe) {
-        this.posgradoSeleccionado.idTipoBeca = 0;
-        this.posgradoSeleccionado.otroBeca = this.posgradoSeleccionado.tipoBeca.nombre;
-      }
-    }
+    this.posgradoSeleccionado.tiposBeca = this.normalizarTiposBeca(item).filter(
+      (b: any) => !this.esOtroCatalogo(b.nombre)
+    );
+    this.mostrarOtroEdit = false;
+    this.otroTexto = '';
+    this.mostrarPosgrado = false;
   }
 
   cancelarEdicion() {
     this.posgradoSeleccionado = null;
+    this.mostrarOtroEdit = false;
+    this.otroTexto = '';
   }
 
   actualizarPosgrado(formEdit: any) {
-    if (formEdit.invalid) {
-      Object.values(formEdit.controls).forEach((c: any) => c.markAsTouched());
-      this.mostrarMensaje("⚠️ Completa todos los campos");
+    const error = this.validarFormularioEdicion();
+    if (error) {
+      if (formEdit?.controls) {
+        Object.values(formEdit.controls).forEach((c: any) => c.markAsTouched?.());
+      }
+      this.mostrarMensaje(error);
       return;
     }
 
-    const becaSeleccionada = this.listaBecas.find(b => b.idTipoBeca === this.posgradoSeleccionado.idTipoBeca);
-
-    const datos = {
-      ...this.posgradoSeleccionado,
-      tipoBeca: this.posgradoSeleccionado.tieneBeca && becaSeleccionada
-        ? {
-            nombre: this.posgradoSeleccionado.idTipoBeca === 0
-              ? this.posgradoSeleccionado.otroBeca
-              : becaSeleccionada.nombre
-          }
-        : null
-    };
+    const datos = this.construirDatosPosgrado(
+      this.posgradoSeleccionado,
+      this.posgradoSeleccionado.tiposBeca || [],
+      this.posgradoSeleccionado.tieneBeca
+    );
 
     const id = this.posgradoSeleccionado.idPosgrado;
-    this.http.put(`/egresado/posgrado/${id}`, datos).pipe(
-      catchError(() => this.http.put(`/egresados/posgrado/${id}`, datos))
-    ).subscribe({
+    this.http.put(`/egresado/posgrado/${id}`, datos).subscribe({
       next: () => {
         this.cargarHistorial();
         this.cargarBecas();
-        this.mostrarMensaje("✓ Posgrado actualizado");
+        this.mostrarMensaje('✓ Posgrado actualizado');
         this.posgradoSeleccionado = null;
       },
-      error: () => this.mostrarMensaje("❌ Error al actualizar")
+      error: (err) => {
+        console.error('ERROR BACKEND:', err.error);
+        this.mostrarMensaje('❌ ' + this.mensajeErrorHttp(err, 'Error al actualizar'));
+      }
     });
   }
 
-  // ================= ELIMINAR CON CONFIRMACIÓN =================
+  // ================= BECAS (FORM) =================
+  toggleBecaById(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const value = select.value;
+
+    if (!value) return;
+
+    if (value === 'otro') {
+      this.mostrarOtro = true;
+    } else {
+      const beca = this.listaBecas.find(b => b.idTipoBeca == value);
+
+      if (beca && this.esOtroCatalogo(beca.nombre)) {
+        this.mostrarOtro = true;
+      } else {
+        this.mostrarOtro = false;
+
+        if (beca && !this.form.becasSeleccionadas.some(
+          (b: any) => b.idTipoBeca === beca.idTipoBeca
+        )) {
+          this.form.becasSeleccionadas.push(beca);
+        }
+
+        this.otroTexto = '';
+      }
+    }
+
+    select.value = '';
+  }
+
+  agregarOtraBeca() {
+    if (!this.otroTexto.trim()) return;
+
+    this.http.post<any>('/tipo-beca', { nombre: this.otroTexto.trim() }).subscribe({
+      next: (resp) => {
+        if (!this.listaBecas.some((b: any) => b.idTipoBeca === resp.idTipoBeca)) {
+          this.listaBecas.push(resp);
+        }
+        if (!this.form.becasSeleccionadas.some((b: any) => b.idTipoBeca === resp.idTipoBeca)) {
+          this.form.becasSeleccionadas.push(resp);
+        }
+        this.otroTexto = '';
+        this.mostrarOtro = false;
+        this.mostrarMensaje('✓ Beca agregada');
+      },
+      error: () => this.mostrarMensaje('❌ No se pudo agregar la beca')
+    });
+  }
+
+  quitarBeca(beca: any) {
+    this.form.becasSeleccionadas = this.form.becasSeleccionadas.filter(
+      (b: any) => b.idTipoBeca !== beca.idTipoBeca
+    );
+  }
+
+  get becasDisponiblesEdit() {
+    if (!this.posgradoSeleccionado) return [];
+
+    return this.listaBecasCatalogo.filter(b =>
+      !this.posgradoSeleccionado.tiposBeca?.some(
+        (sel: any) => sel.idTipoBeca === b.idTipoBeca
+      )
+    );
+  }
+
+  onSelectBecaEdit(event: Event) {
+    const select = event.target as HTMLSelectElement;
+    const value = select.value;
+
+    if (!value) return;
+
+    if (value === 'otro') {
+      this.mostrarOtroEdit = true;
+    } else {
+      const beca = this.listaBecas.find(b => b.idTipoBeca == value);
+
+      if (beca && this.esOtroCatalogo(beca.nombre)) {
+        this.mostrarOtroEdit = true;
+      } else {
+        this.mostrarOtroEdit = false;
+
+        if (!this.posgradoSeleccionado.tiposBeca) {
+          this.posgradoSeleccionado.tiposBeca = [];
+        }
+
+        if (beca && !this.posgradoSeleccionado.tiposBeca.some(
+          (b: any) => b.idTipoBeca === beca.idTipoBeca
+        )) {
+          this.posgradoSeleccionado.tiposBeca.push(beca);
+        }
+
+        this.otroTexto = '';
+      }
+    }
+
+    select.value = '';
+  }
+
+  agregarBecaNuevaEdit() {
+    if (!this.otroTexto.trim()) return;
+
+    this.http.post<any>('/tipo-beca', { nombre: this.otroTexto.trim() }).subscribe({
+      next: (resp) => {
+        if (!this.posgradoSeleccionado.tiposBeca) {
+          this.posgradoSeleccionado.tiposBeca = [];
+        }
+        if (!this.posgradoSeleccionado.tiposBeca.some(
+          (b: any) => b.idTipoBeca === resp.idTipoBeca
+        )) {
+          this.posgradoSeleccionado.tiposBeca.push(resp);
+        }
+        if (!this.listaBecas.some((b: any) => b.idTipoBeca === resp.idTipoBeca)) {
+          this.listaBecas.push(resp);
+        }
+        this.otroTexto = '';
+        this.mostrarOtroEdit = false;
+      },
+      error: () => this.mostrarMensaje('❌ No se pudo agregar la beca')
+    });
+  }
+
+  quitarBecaEdit(beca: any) {
+    this.posgradoSeleccionado.tiposBeca = this.posgradoSeleccionado.tiposBeca.filter(
+      (b: any) => b.idTipoBeca !== beca.idTipoBeca
+    );
+  }
+
+  onBecaChangeEdit() {
+    if (!this.posgradoSeleccionado.tieneBeca) {
+      this.posgradoSeleccionado.tiposBeca = [];
+      this.mostrarOtroEdit = false;
+      this.otroTexto = '';
+    }
+  }
+
   abrirConfirmacion(id: number) {
     this.posgradoAEliminar = id;
     this.mostrarConfirmacion = true;
@@ -226,12 +430,12 @@ export class PosgradoComponent implements OnInit {
         catchError(() => this.http.delete(`/egresados/posgrado/${id}`))
       ).subscribe({
         next: () => {
-          this.mostrarMensaje("🗑️ Posgrado eliminado correctamente");
+          this.mostrarMensaje('🗑️ Posgrado eliminado correctamente');
           this.cargarHistorial();
           this.cerrarConfirmacion();
         },
         error: () => {
-          this.mostrarMensaje("❌ Error al eliminar");
+          this.mostrarMensaje('❌ Error al eliminar');
           this.cerrarConfirmacion();
         }
       });
@@ -248,17 +452,21 @@ export class PosgradoComponent implements OnInit {
     setTimeout(() => this.mensaje = '', 3000);
   }
 
-  // ================= CONSULTA =================
-mostrarConsulta = false;
-posgradoConsulta: any = null;
+  mostrarConsulta = false;
+  posgradoConsulta: any = null;
 
-abrirConsulta(pos: any) {
-  this.posgradoConsulta = pos;
-  this.mostrarConsulta = true;
-}
+  abrirConsulta(pos: any) {
+    this.posgradoConsulta = {
+      ...pos,
+      tiposBeca: this.normalizarTiposBeca(pos).filter(
+        (b: any) => !this.esOtroCatalogo(b.nombre)
+      )
+    };
+    this.mostrarConsulta = true;
+  }
 
-cerrarConsulta() {
-  this.mostrarConsulta = false;
-  this.posgradoConsulta = null;
-}
+  cerrarConsulta() {
+    this.mostrarConsulta = false;
+    this.posgradoConsulta = null;
+  }
 }

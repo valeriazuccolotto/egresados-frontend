@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 import { Usuario } from '../../models/usuario';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
+import { fechaHoyLocal } from '../../utils/fecha-hoy.util';
 
 @Component({
   selector: 'app-certificaciones',
@@ -79,23 +80,9 @@ export class CertificacionesComponent implements OnInit {
   // ================= CREAR =================
   abrirFormulario() {
     this.mostrarFormulario = true;
-    this.certSeleccionado = null; // 🔥 ocultar historial
-    const hoy = this.getToday();
-    this.form = {
-      certNombre: '',
-      certInicio: hoy,
-      certFin: hoy,
-      certObtencion: hoy,
-      certInstitucion: ''
-    };
+    this.certSeleccionado = null;
+    this.resetForm();
   }
-  getToday(): string {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
 
 
 
@@ -199,12 +186,13 @@ export class CertificacionesComponent implements OnInit {
 
   // ================= RESET =================
   resetForm() {
+    const hoy = fechaHoyLocal();
     this.form = {
       certNombre: '',
-      certInicio: '',
-      certFin: '',
-      certObtencion: '',
-      certInstitucion: ''   // 🔥 nuevo campo
+      certInicio: hoy,
+      certFin: hoy,
+      certObtencion: hoy,
+      certInstitucion: ''
     };
   }
 

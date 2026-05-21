@@ -55,6 +55,7 @@
           id="titulado"
           name="titulado"
           [(ngModel)]="academico.titulado"
+          (ngModelChange)="onTituladoChange()"
           required>
           <option value="No">No</option>
           <option value="Si">Sí</option>
@@ -90,7 +91,8 @@
           <select
             id="tipoTitulacion"
             name="tipoTitulacion"
-            [(ngModel)]="academico.tipoTitulacion">
+            [(ngModel)]="academico.tipoTitulacion"
+            (ngModelChange)="onTipoTitulacionChange()">
             <option value="">Selecciona una opción</option>
             <option value="Tesis">Tesis</option>
             <option value="Promedio">Promedio</option>

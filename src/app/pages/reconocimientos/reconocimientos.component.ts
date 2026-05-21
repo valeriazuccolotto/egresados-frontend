@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
+import { fechaHoyLocal } from '../../utils/fecha-hoy.util';
 
 @Component({
   selector: 'app-reconocimientos',
@@ -61,14 +62,14 @@ matriculaUsuario: string = '';
   }
   // ================= FORM =================
   resetForm() {
-  this.form = {
-    matricula: this.matriculaUsuario,
-    recoNombre: '',
-    recoTipo: '',
-    recoFecha: '',
-    recoInstitucion: ''
-  };
-}
+    this.form = {
+      matricula: this.matriculaUsuario,
+      recoNombre: '',
+      recoTipo: '',
+      recoFecha: fechaHoyLocal(),
+      recoInstitucion: ''
+    };
+  }
   nuevo() {
     this.mostrarFormulario = true;
     this.resetForm();
