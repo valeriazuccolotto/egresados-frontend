@@ -62,7 +62,7 @@
                     <option value="">Seleccione</option>
                     <option>Presencial</option>
                     <option>Virtual</option>
-                    <option>Hibrido</option>
+                    <option>Hibrida</option>
                 </select>
                 <div class="error" *ngIf="modalidad.invalid && modalidad.touched">Campo obligatorio</div>
             </div>
@@ -83,7 +83,7 @@
             </div>
 
             <div class="field-group">
-                <label><i class="fas fa-link"></i>Relación <span class="required">*</span></label>
+                <label><i class="fas fa-link"></i>Relación con la carrera<span class="required">*</span></label>
                 <select [(ngModel)]="form.relacion" name="relacion" required #relacion="ngModel">
                     <option value="">Seleccione</option>
                     <option>Si</option>
@@ -94,15 +94,14 @@
             </div>
 
             <div class="field-group">
-                <label><i class="fas fa-calendar-day"></i>Inicio <span class="required">*</span></label>
+                <label><i class="fas fa-calendar-day"></i>Fecha Inicio <span class="required">*</span></label>
                 <input type="date" [(ngModel)]="form.inicio" name="inicio" required #inicio="ngModel">
                 <div class="error" *ngIf="inicio.invalid && inicio.touched">Campo obligatorio</div>
             </div>
 
             <div class="field-group">
-                <label><i class="fas fa-calendar-times"></i>Fin <span class="required">*</span></label>
-                <input type="date" [(ngModel)]="form.fin" name="fin" required #fin="ngModel">
-                <div class="error" *ngIf="fin.invalid && fin.touched">Campo obligatorio</div>
+                <label><i class="fas fa-calendar-times"></i>Fecha Fin</label>
+                <input type="date" [(ngModel)]="form.fin" name="fin">
             </div>
         </div>
 
@@ -124,37 +123,45 @@
                     </select>
                 </div>
 
-                <div class="field-group" *ngIf="form.tieneBeca === true">
-                    <label><i class="fas fa-medal"></i>Tipo de beca <span class="required">*</span></label>
-                    <select [(ngModel)]="form.idTipoBeca"
-                            name="idTipoBeca"
-                            required
-                            #tipoBeca="ngModel">
-                    <option [ngValue]="null">Seleccione</option>
-                    <option *ngFor="let b of listaBecas" [ngValue]="b.idTipoBeca">
-                        {{ b.nombre }}
-                    </option>
-                    </select>
-                </div>
+                <div class="field-group field-group--full" *ngIf="form.tieneBeca === true">
+                    <label><i class="fas fa-medal"></i>Tipos de beca <span class="required">*</span></label>
 
-                <div class="field-group" *ngIf="form.idTipoBeca === 0">
-                    <label><i class="fas fa-pen"></i>Especifica la beca <span class="required">*</span></label>
-                    <input [(ngModel)]="form.otroBeca"
-                        name="otroBeca"
-                        required
-                        #otroBeca="ngModel">
+                    <select (change)="toggleBecaById($event)">
+                        <option value="">Selecciona</option>
+                        <option *ngFor="let b of listaBecasCatalogo" [value]="b.idTipoBeca">
+                            {{ b.nombre }}
+                        </option>
+                        <option value="otro">Otro</option>
+                    </select>
+
+                    <div *ngIf="mostrarOtro" class="otro-container">
+                        <input
+                            [(ngModel)]="otroTexto"
+                            [ngModelOptions]="{ standalone: true }"
+                            placeholder="Escribe el nombre de la beca"
+                            (keydown.enter)="$event.preventDefault(); agregarOtraBeca()"
+                        >
+                        <button type="button" class="btn-add" (click)="agregarOtraBeca()">+</button>
+                    </div>
+
+                    <div class="seleccionadas" *ngIf="form.becasSeleccionadas.length > 0">
+                        <span class="chip" *ngFor="let sel of form.becasSeleccionadas">
+                            {{ sel.nombre }}
+                            <button type="button" class="chip-close" (click)="quitarBeca(sel)">✕</button>
+                        </span>
+                    </div>
                 </div>
             </div>
 
-        <div class="full">
+        <div class="acciones-form full">
             <button type="button" (click)="guardar(formPosgrado)" class="btn-guardar">
                 Guardar posgrado
             </button>
-
             <button type="button" (click)="cancelar()" class="btn-secundario">
                 Cancelar
             </button>
         </div>
+
     </div>
 
 </form>
@@ -253,7 +260,7 @@
                         <option value="">Seleccione</option>
                         <option>Presencial</option>
                         <option>Virtual</option>
-                        <option>Hibrido</option>
+                        <option>Hibrida</option>
                     </select>
                     <div class="error" *ngIf="modEdit.invalid && modEdit.touched">
                         Campo obligatorio
@@ -282,7 +289,7 @@
                 </div>
 
                 <div class="field-group">
-                    <label><i class="fas fa-link"></i>Relación <span class="required">*</span></label>
+                    <label><i class="fas fa-link"></i>Relación con la carrera<span class="required">*</span></label>
                     <select [(ngModel)]="posgradoSeleccionado.relacionadoCarrera"
                             name="relacionadoCarrera"
                             required
@@ -298,7 +305,7 @@
                 </div>
 
                 <div class="field-group">
-                    <label><i class="fas fa-calendar-day"></i>Inicio <span class="required">*</span></label>
+                    <label><i class="fas fa-calendar-day"></i>Fecha Inicio <span class="required">*</span></label>
                     <input type="date"
                             [(ngModel)]="posgradoSeleccionado.fechaInicio"
                             name="fechaInicio"
@@ -310,15 +317,10 @@
                 </div>
 
                 <div class="field-group">
-                    <label><i class="fas fa-calendar-times"></i>Fin <span class="required">*</span></label>
+                    <label><i class="fas fa-calendar-times"></i>Fecha Fin</label>
                     <input type="date"
                             [(ngModel)]="posgradoSeleccionado.fechaFin"
-                            name="fechaFin"
-                            required
-                            #finEdit="ngModel">
-                    <div class="error" *ngIf="finEdit.invalid && finEdit.touched">
-                        Campo obligatorio
-                    </div>
+                            name="fechaFin">
                 </div>
             </div>
 
@@ -332,6 +334,7 @@
                         <select [(ngModel)]="posgradoSeleccionado.tieneBeca"
                                 name="tieneBeca"
                                 required
+                                (change)="onBecaChangeEdit()"
                                 #becaEdit="ngModel">
                         <option [ngValue]="null">Seleccione</option>
                         <option [ngValue]="true">Sí</option>
@@ -339,40 +342,48 @@
                         </select>
                     </div>
 
-                    <div class="field-group" *ngIf="posgradoSeleccionado.tieneBeca === true">
-                        <label><i class="fas fa-medal"></i>Tipo de beca <span class="required">*</span></label>
-                        <select [(ngModel)]="posgradoSeleccionado.idTipoBeca"
-                                name="idTipoBeca"
-                                required>
-                        <option [ngValue]="null">Seleccione</option>
-                        <option *ngFor="let b of listaBecas" [ngValue]="b.idTipoBeca">
-                            {{ b.nombre }}
-                        </option>
+                    <div class="field-group field-group--full" *ngIf="posgradoSeleccionado.tieneBeca === true">
+                        <label><i class="fas fa-medal"></i>Tipos de beca <span class="required">*</span></label>
+
+                        <div class="seleccionadas" *ngIf="posgradoSeleccionado.tiposBeca?.length > 0">
+                            <span class="chip" *ngFor="let sel of posgradoSeleccionado.tiposBeca">
+                                {{ sel.nombre }}
+                                <button type="button" class="chip-close" (click)="quitarBecaEdit(sel)">✕</button>
+                            </span>
+                        </div>
+
+                        <select (change)="onSelectBecaEdit($event)">
+                            <option value="">Agregar beca</option>
+                            <option *ngFor="let b of becasDisponiblesEdit" [value]="b.idTipoBeca">
+                                {{ b.nombre }}
+                            </option>
+                            <option value="otro">Otro</option>
                         </select>
+
+                        <div *ngIf="mostrarOtroEdit" class="otro-container">
+                            <input
+                                [(ngModel)]="otroTexto"
+                                [ngModelOptions]="{ standalone: true }"
+                                placeholder="Escribe el nombre de la beca"
+                                (keydown.enter)="$event.preventDefault(); agregarBecaNuevaEdit()"
+                            >
+                            <button type="button" class="btn-add" (click)="agregarBecaNuevaEdit()">+</button>
+                        </div>
                     </div>
 
-                    <div class="field-group" *ngIf="posgradoSeleccionado.idTipoBeca === 0">
-                        <label><i class="fas fa-pen"></i>Especifica la beca <span class="required">*</span></label>
-                        <input [(ngModel)]="posgradoSeleccionado.otroBeca"
-                            name="otroBeca"
-                            required>
-                    </div>
+                <div class="acciones-form">
+                    <button type="submit" class="btn-guardar">
+                        Guardar cambios
+                    </button>
+                    <button type="button"
+                            (click)="cancelarEdicion()"
+                            class="btn-secundario">
+                        Cancelar
+                    </button>
+                </div>
                 </div>
 
-            </div> 
-
-        <!-- BOTONES -->
-        <div class="acciones-detalle">
-            <button type="submit" class="btn-guardar">
-                Guardar cambios
-            </button>
-
-            <button type="button"
-                    (click)="cancelarEdicion()"
-                    class="btn-secundario">
-                Cancelar
-            </button>
-        </div>
+            </div>
 
     </form>
 
@@ -466,7 +477,7 @@
                         <div class="info-icon"><i class="fas fa-calendar-times"></i></div>
                         <div>
                             <label>Fin</label>
-                            <p>{{ posgradoConsulta.fechaFin }}</p>
+                            <p>{{ posgradoConsulta.fechaFin || 'No registrada' }}</p>
                         </div>
                     </div>
                 </div>
@@ -489,12 +500,15 @@
                     </div>
                 </div>
 
-                <!-- TIPO BECA -->
-                <div class="detalle-item" *ngIf="posgradoConsulta.tieneBeca">
+                <!-- TIPOS DE BECA -->
+                <div class="detalle-item detalle-item--full detalle-item--becas" *ngIf="posgradoConsulta.tieneBeca">
                     <div class="info-icon"><i class="fas fa-gift"></i></div>
                     <div>
-                        <label>Tipo de beca</label>
-                        <p>{{ posgradoConsulta.tipoBeca?.nombre || posgradoConsulta.nombreBeca || posgradoConsulta.otroBeca || 'No especificado' }}</p>
+                        <label>Tipos de beca</label>
+                        <p *ngIf="!posgradoConsulta.tiposBeca?.length">No especificado</p>
+                        <div class="becas-inline" *ngIf="posgradoConsulta.tiposBeca?.length">
+                            <span *ngFor="let b of posgradoConsulta.tiposBeca">{{ b.nombre }}</span>
+                        </div>
                     </div>
                 </div>
 

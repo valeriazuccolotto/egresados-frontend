@@ -269,13 +269,6 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-.acciones-detalle {
-    display: flex;
-    gap: 15px;
-    margin-top: 10px;
-}
-
-
 /* =========================
     VALIDACIÓN DE CAMPOS
 ========================= */

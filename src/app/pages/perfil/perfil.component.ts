@@ -19,12 +19,11 @@ export class PerfilComponent implements OnInit {
 
   perfil?: Perfil;
   urlFoto: string = 'assets/favicon-UNPA.ico';
-  private readonly backendOrigin = 'http://localhost:8181';
   carrera: string = '';
   carreras: Carrera[] = [];
 
   constructor(
-    private perfilService: PerfilService,
+    public perfilService: PerfilService,
     private academicoService: AcademicoService
   ) {}
 
@@ -45,8 +44,8 @@ export class PerfilComponent implements OnInit {
     }
 
     const usuario: Usuario = JSON.parse(raw);
-    const matricula = usuario.matricula;
-    if (!/^\d+$/.test(String(matricula || '').trim())) {
+    const matricula = this.perfilService.normalizarMatricula(usuario.matricula);
+    if (!matricula || !/^\d{8}$/.test(matricula)) {
       console.warn('La vista de perfil de egresado no aplica para cuentas administrativas.');
       return;
     }
@@ -55,10 +54,7 @@ export class PerfilComponent implements OnInit {
       next: (data: Perfil) => {
         this.perfil = data;
 
-        const foto = data.urlFoto
-          ? this.normalizarUrlFoto(data.urlFoto)
-          : 'assets/favicon-UNPA.ico';
-
+        const foto = this.perfilService.resolverUrlFoto(data.urlFoto);
         this.urlFoto = foto;
         this.perfilService.setFoto(foto);
 
@@ -103,15 +99,4 @@ export class PerfilComponent implements OnInit {
   });
 }
 
-  private normalizarUrlFoto(url: string): string {
-    if (!url) return 'assets/favicon-UNPA.ico';
-    const cacheBust = `t=${Date.now()}`;
-
-    if (/^(https?:|data:|blob:)/i.test(url)) {
-      return `${url}${url.includes('?') ? '&' : '?'}${cacheBust}`;
-    }
-
-    const ruta = url.startsWith('/') ? url : `/${url}`;
-    return `${this.backendOrigin}${ruta}${ruta.includes('?') ? '&' : '?'}${cacheBust}`;
-  }
 }

@@ -1,0 +1,232 @@
+<div class="page-section">
+
+  <div class="section-header">
+    <div class="section-title">
+      <h2>Solicitar información</h2>
+      <p>Crea solicitudes para que los egresados respondan en un periodo definido</p>
+    </div>
+  </div>
+
+  <p *ngIf="mensaje" class="save-msg">{{ mensaje }}</p>
+  <p *ngIf="mensajeError" class="error-banner">{{ mensajeError }}</p>
+
+  <div class="card">
+
+    <!-- BOTONES INICIALES (como agregar en egresados) -->
+    <div class="acciones-iniciales full" *ngIf="vista === 'lista'">
+      <button type="button" class="btn-secundario" (click)="abrirFormulario()">
+        + Solicitar información
+      </button>
+    </div>
+
+    <!-- FILTRO -->
+    <div class="filtro-tipo" *ngIf="vista === 'lista'">
+      <label>Filtrar por tipo</label>
+      <select [(ngModel)]="filtroTipo" (change)="cargarHistorial()">
+        <option value="">Todas</option>
+        <option value="INFORMACION">Información</option>
+        <option value="ARCHIVOS">Archivos</option>
+      </select>
+    </div>
+
+    <!-- FORMULARIO ÚNICO -->
+    <form class="form-grid" *ngIf="vista === 'formulario'" (ngSubmit)="guardar()">
+      <div class="bloque-formulario">
+        <div class="bloque-formulario-header">
+          <h3>
+            <i class="fas" [ngClass]="habilitarSubidaArchivos ? 'fa-folder-open' : 'fa-info-circle'"></i>
+            Nueva solicitud
+          </h3>
+          <div class="opcion-tipo-bar">
+            <div class="opcion-tipo-texto">
+              <strong>Permitir subida de archivos</strong>
+              <span>{{ hintTipoRespuesta() }}</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" [(ngModel)]="habilitarSubidaArchivos" name="habilitarSubidaArchivos">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field-group full">
+          <label><i class="fas fa-heading"></i>Título <span class="required">*</span></label>
+          <input [(ngModel)]="form.titulo" name="titulo" required
+            [placeholder]="habilitarSubidaArchivos ? 'Ej. Entrega de título digitalizado' : 'Ej. Actualización de datos 2026'">
+        </div>
+
+        <div class="field-group full">
+          <label><i class="fas fa-align-left"></i>Descripción / instrucciones <span class="required">*</span></label>
+          <textarea [(ngModel)]="form.descripcion" name="descripcion" rows="6" required
+            [placeholder]="habilitarSubidaArchivos
+              ? 'Formato, nombre del archivo, qué deben subir...'
+              : 'Indica qué información deben proporcionar los egresados...'"></textarea>
+        </div>
+
+        <div class="field-group">
+          <label><i class="fas fa-calendar-day"></i>Fecha inicio <span class="required">*</span></label>
+          <input type="date" [(ngModel)]="form.fechaInicio" name="fechaInicio" required>
+        </div>
+
+        <div class="field-group">
+          <label><i class="fas fa-calendar-times"></i>Fecha fin <span class="required">*</span></label>
+          <input type="date" [(ngModel)]="form.fechaFin" name="fechaFin" required>
+        </div>
+      </div>
+
+      <div class="acciones-form">
+        <button type="submit" class="btn-guardar">Publicar solicitud</button>
+        <button type="button" class="btn-secundario" (click)="cancelarFormulario()">Cancelar</button>
+      </div>
+    </form>
+
+    <!-- LISTADO -->
+    <div *ngIf="vista === 'lista'">
+      <p class="empty-state" *ngIf="!cargando && historial.length === 0">
+        No hay solicitudes publicadas. Usa el botón de arriba para crear una.
+      </p>
+      <p class="loading-state" *ngIf="cargando">Cargando solicitudes...</p>
+
+      <div class="historial-grid" *ngIf="!cargando && historial.length > 0">
+        <div class="historial-card" *ngFor="let s of historial">
+          <div class="historial-header">
+            <div>
+              <strong>{{ s.titulo }}</strong>
+              <p class="tipo-linea">
+                <span class="badge-tipo" [class.archivos]="s.tipo === 'ARCHIVOS'">
+                  {{ etiquetaTipo(s.tipo) }}
+                </span>
+              </p>
+            </div>
+            <span class="badge" [ngClass]="claseEstado(s)">{{ estadoSolicitud(s) }}</span>
+          </div>
+
+          <div class="historial-body">
+            <p class="descripcion-preview">{{ s.descripcion }}</p>
+            <p class="fechas-linea">
+              <i class="fas fa-calendar-alt"></i>
+              {{ s.fechaInicio }} — {{ s.fechaFin }}
+            </p>
+          </div>
+
+          <div class="historial-actions">
+            <button type="button" class="btn-ver" (click)="verRespuestas(s)">Ver respuestas</button>
+            <button type="button" class="btn-secundario" *ngIf="puedeCerrarAnticipadamente(s)"
+              (click)="abrirModalCerrar(s)">Cerrar anticipadamente</button>
+            <button type="button" class="btn-eliminar" (click)="abrirModalEliminar(s)">Eliminar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL RESPUESTAS -->
+<div class="modal-overlay" *ngIf="mostrarModalRespuestas">
+  <div class="modal-card modal-detalle">
+
+    <button type="button" class="modal-close" (click)="cerrarModalRespuestas()" aria-label="Cerrar">&times;</button>
+
+    <div class="modal-header">
+      <div class="modal-icon">
+        <i class="fas" [ngClass]="solicitudDetalle?.tipo === 'ARCHIVOS' ? 'fa-folder-open' : 'fa-info-circle'"></i>
+      </div>
+      <div>
+        <h3>{{ solicitudDetalle?.titulo }}</h3>
+        <p>Respuestas de egresados</p>
+      </div>
+    </div>
+
+    <div class="modal-body">
+      <p *ngIf="cargandoRespuestas">Cargando respuestas...</p>
+      <p *ngIf="!cargandoRespuestas && respuestas.length === 0" class="empty-state">
+        Aún no hay respuestas para esta solicitud.
+      </p>
+
+      <div class="respuesta-lista" *ngIf="!cargandoRespuestas && respuestas.length > 0">
+        <div class="respuesta-item" *ngFor="let r of respuestas">
+          <div class="respuesta-header">
+            <strong>{{ nombreCompleto(r) }}</strong>
+            <span class="fecha-resp">{{ r.fechaRespuesta | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+
+          <p *ngIf="r.contenido" class="respuesta-texto">{{ r.contenido }}</p>
+          <p *ngIf="r.comentario" class="respuesta-comentario"><em>{{ r.comentario }}</em></p>
+
+          <div class="archivos-lista" *ngIf="r.archivos?.length">
+            <a *ngFor="let a of r.archivos"
+               class="archivo-link"
+               [href]="urlDescarga(a.idArchivo)"
+               target="_blank"
+               rel="noopener">
+              <i class="fas fa-paperclip"></i> {{ a.nombreOriginal || 'Archivo' }}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cert-footer">
+      <button type="button" class="cert-btn-secondary" (click)="cerrarModalRespuestas()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAR CERRAR -->
+<div class="modal-overlay" *ngIf="mostrarModalCerrar" (click)="cerrarModalCerrar()">
+  <div class="modal-card modal-confirmar" (click)="$event.stopPropagation()">
+
+    <div class="modal-header modal-header-compact">
+      <div class="modal-icon modal-icon-cerrar">
+        <i class="fas fa-lock"></i>
+      </div>
+      <div>
+        <h3>¿Cerrar anticipadamente?</h3>
+        <p class="modal-subtitulo">{{ solicitudACerrar?.titulo }}</p>
+      </div>
+    </div>
+
+    <div class="modal-body modal-body-compact">
+      <p>Los egresados ya no podrán responder antes de la fecha fin de la convocatoria.</p>
+    </div>
+
+    <div class="cert-footer modal-footer-acciones">
+      <button type="button" class="cert-btn-secondary" [disabled]="cerrando" (click)="cerrarModalCerrar()">
+        No
+      </button>
+      <button type="button" class="btn-cerrar-confirmar" [disabled]="cerrando" (click)="confirmarCerrar()">
+        {{ cerrando ? 'Cerrando...' : 'Sí, cerrar' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAR ELIMINAR -->
+<div class="modal-overlay" *ngIf="mostrarModalEliminar" (click)="cerrarModalEliminar()">
+  <div class="modal-card modal-confirmar" (click)="$event.stopPropagation()">
+
+    <div class="modal-header modal-header-compact">
+      <div class="modal-icon modal-icon-alerta">
+        <i class="fas fa-exclamation-triangle"></i>
+      </div>
+      <div>
+        <h3>¿Eliminar solicitud?</h3>
+        <p class="modal-subtitulo">{{ solicitudAEliminar?.titulo }}</p>
+      </div>
+    </div>
+
+    <div class="modal-body modal-body-compact">
+      <p>Se borrarán también las respuestas y archivos asociados. Esta acción no se puede deshacer.</p>
+    </div>
+
+    <div class="cert-footer modal-footer-acciones">
+      <button type="button" class="cert-btn-secondary" [disabled]="eliminando" (click)="cerrarModalEliminar()">
+        No
+      </button>
+      <button type="button" class="btn-eliminar-confirmar" [disabled]="eliminando" (click)="confirmarEliminar()">
+        {{ eliminando ? 'Eliminando...' : 'Sí, eliminar' }}
+      </button>
+    </div>
+  </div>
+</div>

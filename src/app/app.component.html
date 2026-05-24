@@ -8,7 +8,7 @@
 <header class="topbar">
   <div class="topbar-left">
 
-    <button class="menu-button" type="button" (click)="toggleSidebar()">
+    <button class="menu-btn" type="button" (click)="toggleSidebar()" aria-label="Abrir menú">
       <span class="material-icons">menu</span>
     </button>
 
@@ -38,7 +38,7 @@
 
       <div class="user-menu" #photoMenuRoot>
         <div class="avatar" (click)="togglePhotoMenu()">
-          <img [src]="fotoGlobal" class="avatar-img" />
+          <img [src]="fotoGlobal" class="avatar-img" alt="Foto de perfil" (error)="onFotoError()" />
         </div>
 
         <span class="user-name"></span>
@@ -118,6 +118,13 @@
 <a routerLink="/reconocimientos" routerLinkActive="active" class="menu-item">
   <span class="material-icons">emoji_events</span>
   Reconocimientos
+</a>
+
+<a routerLink="/nuevos-avisos" routerLinkActive="active" class="menu-item"
+   [class.menu-item-alerta]="hayAvisosPendientes">
+  <span class="material-icons">campaign</span>
+  Nuevos avisos
+  <span class="menu-alerta-badge" *ngIf="hayAvisosPendientes" aria-hidden="true"></span>
 </a>
 
   </nav>

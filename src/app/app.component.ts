@@ -5,6 +5,8 @@ import { PerfilService } from './services/perfil.service';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { AvisosPendientesService } from './services/avisos-pendientes.service';
+import { Subscription, interval } from 'rxjs';
 
 
 @Component({
@@ -21,6 +23,10 @@ export class AppComponent implements OnInit, OnDestroy {
   esAdmin = false;
   title = 'egresados-frontend';
   sidebarHidden = false;
+  hayAvisosPendientes = false;
+
+  private avisosPendientesSub?: Subscription;
+  private avisosPollSub?: Subscription;
 
   @ViewChild('photoMenuRoot') photoMenuRoot?: ElementRef<HTMLElement>;
   @ViewChild('galleryInput') galleryInput?: ElementRef<HTMLInputElement>;
@@ -34,35 +40,77 @@ export class AppComponent implements OnInit, OnDestroy {
   private cameraStream: MediaStream | null = null;
 
   fotoGlobal: string = 'assets/favicon-UNPA.ico';
-  private readonly backendOrigin = 'http://localhost:8181';
 
   constructor(
   private perfilService: PerfilService,
   private router: Router,
-  private http: HttpClient
+  private http: HttpClient,
+  private avisosPendientesService: AvisosPendientesService
 ) {
-  this.actualizarEstadoLayout(this.router.url);
+  this.actualizarVistaPorRuta(this.router.url);
 
   this.router.events
     .pipe(filter(event => event instanceof NavigationEnd))
     .subscribe((event: NavigationEnd) => {
-      this.actualizarEstadoLayout(event.urlAfterRedirects);
+      this.actualizarVistaPorRuta(event.urlAfterRedirects);
 
       if (!this.esLogin && !this.esAdmin) {
+        this.perfilService.cargarFotoDesdePerfil();
         this.calcularProgreso();
+        this.actualizarAvisosPendientes();
+      } else {
+        this.actualizarAvisosPendientes();
       }
     });
+}
+
+actualizarVistaPorRuta(url: string): void {
+  const ruta = url.split('?')[0];
+  this.esLogin =
+    ruta === '/login' ||
+    ruta === '/recuperar-contrasena' ||
+    ruta === '/restablecer-contrasena';
+  this.esAdmin = ruta.startsWith('/admin');
 }
 ngOnInit(): void {
   this.perfilService.foto$.subscribe(url => {
     this.fotoGlobal = url;
   });
 
-  this.calcularProgreso();
+  this.avisosPendientesSub = this.avisosPendientesService.hayPendientes$.subscribe(
+    pendiente => this.hayAvisosPendientes = pendiente
+  );
+
+  if (!this.esAdmin && !this.esLogin) {
+    this.perfilService.cargarFotoDesdePerfil();
+    this.calcularProgreso();
+  }
+
+  this.actualizarAvisosPendientes();
+  this.iniciarPollingAvisos();
 }
 
 ngOnDestroy(): void {
   this.stopCameraStream();
+  this.avisosPendientesSub?.unsubscribe();
+  this.avisosPollSub?.unsubscribe();
+}
+
+private actualizarAvisosPendientes(): void {
+  if (this.esLogin || this.esAdmin) {
+    this.avisosPendientesService.marcarSinPendientes();
+    return;
+  }
+  this.avisosPendientesService.actualizar();
+}
+
+private iniciarPollingAvisos(): void {
+  this.avisosPollSub?.unsubscribe();
+  this.avisosPollSub = interval(45_000).subscribe(() => {
+    if (!this.esLogin && !this.esAdmin) {
+      this.actualizarAvisosPendientes();
+    }
+  });
 }
 
 toggleSidebar(): void {
@@ -138,24 +186,18 @@ toggleSidebar(): void {
       return;
     }
 
-    // Reduce resolution to avoid files >5MB from high-res cameras.
-    const maxDimension = 1280;
-    const scale = Math.min(1, maxDimension / Math.max(video.videoWidth, video.videoHeight));
-    const targetWidth = Math.round(video.videoWidth * scale);
-    const targetHeight = Math.round(video.videoHeight * scale);
-
     const canvas = document.createElement('canvas');
-    canvas.width = targetWidth;
-    canvas.height = targetHeight;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.translate(targetWidth, 0);
+    ctx.translate(canvas.width, 0);
     ctx.scale(-1, 1);
-    ctx.drawImage(video, 0, 0, targetWidth, targetHeight);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    this.cameraCapturedPreview = canvas.toDataURL('image/jpeg', 0.85);
+    this.cameraCapturedPreview = canvas.toDataURL('image/jpeg', 0.92);
     this.stopCameraStream();
   }
 
@@ -167,12 +209,13 @@ toggleSidebar(): void {
   confirmCapturedPhoto(): void {
     if (!this.cameraCapturedPreview) return;
 
-    const archivo = this.dataUrlToFile(this.cameraCapturedPreview);
-    if (!archivo) {
-      this.cameraError = 'No se pudo procesar la foto capturada.';
-      return;
-    }
-    this.subirArchivo(archivo, true);
+    const archivo = this.dataUrlToFile(
+      this.cameraCapturedPreview,
+      `foto-perfil-${Date.now()}.jpg`
+    );
+
+    this.subirArchivo(archivo);
+    this.closeCameraModal();
   }
 
   closeCameraModal(): void {
@@ -200,119 +243,42 @@ toggleSidebar(): void {
     input.value = '';
   }
 
-  private subirArchivo(archivo: File, desdeCamara = false): void {
+  private subirArchivo(archivo: File): void {
     if (archivo.size > 5 * 1024 * 1024) {
-      const mensaje = 'La imagen no debe pesar más de 5MB';
-      if (desdeCamara) {
-        this.cameraError = `${mensaje}. Intenta de nuevo con mejor iluminación o menor resolución.`;
-      } else {
-        alert(mensaje);
-      }
+      alert('La imagen no debe pesar más de 5MB');
       return;
     }
 
-    const raw = sessionStorage.getItem('usuario');
-    const matricula = raw ? JSON.parse(raw)?.matricula : null;
-
+    const matricula = this.perfilService.obtenerMatriculaSesion();
     if (!matricula) {
-      const mensaje = 'No se encontró la matrícula en sesión. Inicia sesión de nuevo.';
-      if (desdeCamara) {
-        this.cameraError = mensaje;
-      } else {
-        alert(mensaje);
-      }
-      return;
-    }
-
-    if (!this.esMatriculaEgresado(matricula)) {
-      const mensaje = 'La foto de perfil en este modulo solo aplica para cuentas de egresado.';
-      if (desdeCamara) {
-        this.cameraError = mensaje;
-      } else {
-        alert(mensaje);
-      }
+      alert('No hay sesión activa. Vuelve a iniciar sesión.');
       return;
     }
 
     this.perfilService.subirFotoPerfil(matricula, archivo).subscribe({
       next: (resp) => {
-        // Some backends return only a message on upload. Re-read profile to get urlFoto safely.
-        this.perfilService.obtenerPerfil(matricula).subscribe({
-          next: (perfil) => {
-            const rutaFoto = perfil?.urlFoto || resp?.urlFoto || resp?.fotoUrl || resp?.url || resp?.path;
-            if (!rutaFoto) {
-              const mensaje = 'La foto se subio, pero no se pudo obtener la ruta de la imagen.';
-              if (desdeCamara) {
-                this.cameraError = mensaje;
-              } else {
-                alert(mensaje);
-              }
-              return;
-            }
-
-            const nuevaUrl = this.normalizarUrlFoto(rutaFoto);
-            this.perfilService.setFoto(nuevaUrl);
-            this.fotoGlobal = nuevaUrl;
-            this.mostrarPanelFoto = false;
-            if (desdeCamara) {
-              this.closeCameraModal();
-            }
-          },
-          error: () => {
-            const rutaFoto = resp?.urlFoto || resp?.fotoUrl || resp?.url || resp?.path;
-            if (!rutaFoto) {
-              const mensaje = 'La foto se subio, pero no se pudo refrescar el perfil.';
-              if (desdeCamara) {
-                this.cameraError = mensaje;
-              } else {
-                alert(mensaje);
-              }
-              return;
-            }
-
-            const nuevaUrl = this.normalizarUrlFoto(rutaFoto);
-            this.perfilService.setFoto(nuevaUrl);
-            this.fotoGlobal = nuevaUrl;
-            this.mostrarPanelFoto = false;
-            if (desdeCamara) {
-              this.closeCameraModal();
-            }
-          }
-        });
+        if (!resp?.urlFoto) {
+          alert('La foto se subió pero no se recibió la URL. Recarga la página.');
+          this.perfilService.cargarFotoDesdePerfil(matricula);
+        }
+        this.mostrarPanelFoto = false;
       },
       error: (err) => {
         console.error('Error al subir foto:', err);
-        const mensajeBackend =
-          err?.error?.message ||
-          err?.error?.mensaje ||
-          err?.message ||
-          '';
-        const mensaje = mensajeBackend
-          ? `Error al subir la foto: ${mensajeBackend}`
-          : 'Error al subir la foto. Intenta nuevamente.';
-        if (desdeCamara) {
-          this.cameraError = mensaje;
-        } else {
-          alert(mensaje);
-        }
+        const detalle = err?.error?.message ?? err?.statusText ?? '';
+        alert(detalle ? `Error al subir la foto: ${detalle}` : 'Error al subir la foto. Revisa que el backend esté en el puerto 8181.');
       }
     });
   }
 
-  private actualizarEstadoLayout(url: string): void {
-    const cleanUrl = url.split('?')[0].split('#')[0];
-    this.esLogin = cleanUrl === '/login';
-    this.esAdmin = cleanUrl.startsWith('/admin');
+  onFotoError(): void {
+    this.fotoGlobal = this.perfilService.fotoPorDefecto();
   }
 
-  private dataUrlToFile(dataUrl: string): File | null {
+  private dataUrlToFile(dataUrl: string, filename: string): File {
     const [meta, payload] = dataUrl.split(',');
-    if (!meta || !payload) return null;
-
     const mimeMatch = /data:(.*?);base64/.exec(meta);
     const mimeType = mimeMatch?.[1] || 'image/jpeg';
-    const extension = mimeType.includes('png') ? 'png' : 'jpg';
-    const filename = `foto-perfil-${Date.now()}.${extension}`;
 
     const binary = atob(payload);
     const bytes = new Uint8Array(binary.length);
@@ -323,127 +289,122 @@ toggleSidebar(): void {
 
     return new File([bytes], filename, { type: mimeType });
   }
-
-  private normalizarUrlFoto(url: string): string {
-    if (!url) return this.fotoGlobal;
-    const cacheBust = `t=${Date.now()}`;
-    if (/^(https?:|data:|blob:)/i.test(url)) {
-      return `${url}${url.includes('?') ? '&' : '?'}${cacheBust}`;
-    }
-
-    const ruta = url.startsWith('/') ? url : `/${url}`;
-    return `${this.backendOrigin}${ruta}${ruta.includes('?') ? '&' : '?'}${cacheBust}`;
-  }
   
   calcularProgreso() {
+  if (this.esLogin || this.esAdmin) {
+    return;
+  }
+
   const raw = sessionStorage.getItem('usuario');
 
   if (!raw) return;
 
   const usuario = JSON.parse(raw);
   const matricula = usuario.matricula;
-  if (!this.esMatriculaEgresado(matricula)) return;
 
   let completados = 0;
-  const total = 7;
 
-  this.http.get<any>(`/egresados/${matricula}`)
+  // 5 perfil + 4 contacto + 5 académico + 7 laboral
+  const total = 21;
+
+  // =========================
+  // PERFIL
+  // =========================
+  this.http.get<any>(`http://localhost:8181/egresados/${matricula}`)
     .subscribe({
+
       next: (data: any) => {
-        if (
-          data?.nombre &&
-          data?.apellidoPaterno &&
-          data?.apellidoMaterno &&
-          data?.campus &&
-          data?.generacion
-        ) {
-          completados++;
-        }
+        console.log('PERFIL:', data);
+
+
+        if (data?.nombre) completados++;
+        if (data?.apellidoPaterno) completados++;
+        if (data?.apellidoMaterno) completados++;
+        if (data?.generacion) completados++;
+        if (data?.campus) completados++;
 
         this.actualizarPorcentaje(completados, total);
       },
+
       error: () => this.actualizarPorcentaje(completados, total)
     });
 
-  this.http.get<any>(`/egresados/contacto/${matricula}`)
+  // =========================
+  // CONTACTO
+  // =========================
+  this.http.get<any>(`http://localhost:8181/egresados/contacto/${matricula}`)
     .subscribe({
+
       next: (data: any) => {
-        if (data?.correoPersonal && data?.telefono) {
-          completados++;
-        }
+        console.log('CONTACTO:', data);
+
+
+        if (data?.correoPersonal) completados++;
+        if (data?.telefono) completados++;
+        if (data?.ciudad) completados++;
+        if (data?.estadoResidencia) completados++;
 
         this.actualizarPorcentaje(completados, total);
       },
+
       error: () => this.actualizarPorcentaje(completados, total)
     });
 
-  this.http.get<any>(`/egresados/academico/${matricula}`)
+  // =========================
+  // ACADÉMICO
+  // =========================
+  this.http.get<any>(`http://localhost:8181/egresados/academico/${matricula}`)
     .subscribe({
+
       next: (data: any) => {
-        if (data?.claveCarrera) {
-          completados++;
-        }
+          console.log('ACADEMICO:', data);
+
+
+        if (data?.claveCarrera) completados++;
+        if (data?.promedio !== null && data?.promedio !== undefined) completados++;
+        if (data?.anioEgreso !== null && data?.anioEgreso !== undefined) completados++;
+        if (data?.titulado) completados++;
+        if (data?.cedulaProfesional) completados++;
 
         this.actualizarPorcentaje(completados, total);
       },
+
       error: () => this.actualizarPorcentaje(completados, total)
     });
 
-  this.http.get<any[]>(`/egresado/laboral/${matricula}`)
-    .subscribe({
-      next: (data: any[]) => {
-        if (data && data.length > 0) {
-          completados++;
-        }
+  // =========================
+  // LABORAL
+  // =========================
+  // =========================
+// LABORAL
+// =========================
+this.http.get<any[]>(`http://localhost:8181/egresado/laboral/${matricula}`)
+  .subscribe({
 
-        this.actualizarPorcentaje(completados, total);
-      },
-      error: () => this.actualizarPorcentaje(completados, total)
-    });
+    next: (data: any[]) => {
+      console.log('LABORAL:', data);
 
-  this.http.get<any[]>(`/egresado/posgrado/${matricula}`)
-    .subscribe({
-      next: (data: any[]) => {
-        if (data && data.length > 0) {
-          completados++;
-        }
+      if (data && data.length > 0) {
 
-        this.actualizarPorcentaje(completados, total);
-      },
-      error: () => this.actualizarPorcentaje(completados, total)
-    });
+        const laboral = data[0];
 
-  this.http.get<any[]>(`/egresado/certificaciones/${matricula}`)
-    .subscribe({
-      next: (data: any[]) => {
-        if (data && data.length > 0) {
-          completados++;
-        }
+        if (laboral?.empresa) completados++;
+if (laboral?.puesto) completados++;
+if (laboral?.sector) completados++;
+if (laboral?.comoConsiguio) completados++;
+if (laboral?.tiempoConseguir) completados++;
+if (laboral?.tipoContrato) completados++;
+if (laboral?.salario) completados++;
+      }
 
-        this.actualizarPorcentaje(completados, total);
-      },
-      error: () => this.actualizarPorcentaje(completados, total)
-    });
+      this.actualizarPorcentaje(completados, total);
+    },
 
-  this.http.get<any[]>(`/egresado/reconocimientos/${matricula}`)
-    .subscribe({
-      next: (data: any[]) => {
-        if (data && data.length > 0) {
-          completados++;
-        }
-
-        this.actualizarPorcentaje(completados, total);
-      },
-      error: () => this.actualizarPorcentaje(completados, total)
-    });
+    error: () => this.actualizarPorcentaje(completados, total)
+  });
 }
 
 actualizarPorcentaje(completados: number, total: number) {
   this.porcentajePerfil = Math.round((completados / total) * 100);
 }
-
-private esMatriculaEgresado(matricula: string): boolean {
-  return /^\d+$/.test(String(matricula || '').trim());
-}
-  
 }

@@ -5,6 +5,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { catchError, forkJoin, of } from 'rxjs';
 
 import { EgresadoService } from '../../services/egresado/egresado.service';
+import { PerfilService } from '../../services/perfil.service';
 
 @Component({
   selector: 'app-datos-recuperados',
@@ -66,7 +67,10 @@ export class DatosRecuperadosComponent implements OnInit {
   // =========================
   // CONSTRUCTOR
   // =========================
-  constructor(private egresadoService: EgresadoService) {}
+  constructor(
+    private egresadoService: EgresadoService,
+    public perfilService: PerfilService
+  ) {}
 
   ngOnInit(): void {}
 
@@ -165,7 +169,8 @@ export class DatosRecuperadosComponent implements OnInit {
   }
 
   abrirDetalleEgresado(matricula: string): void {
-    if (!matricula) {
+    const m = this.perfilService.normalizarMatricula(matricula);
+    if (!m) {
       return;
     }
 
@@ -179,13 +184,13 @@ export class DatosRecuperadosComponent implements OnInit {
     this.certificacionSeleccionada = null;
 
     forkJoin({
-      perfil: this.egresadoService.getPerfilCompleto(matricula).pipe(catchError(() => of(null))),
-      contacto: this.egresadoService.getContactoPorMatricula(matricula).pipe(catchError(() => of(null))),
-      academico: this.egresadoService.getAcademicoPorMatricula(matricula).pipe(catchError(() => of(null))),
-      laboral: this.egresadoService.getLaboralPorMatricula(matricula).pipe(catchError(() => of([]))),
-      posgrado: this.egresadoService.getPosgradoPorMatricula(matricula).pipe(catchError(() => of([]))),
-      reconocimientos: this.egresadoService.getReconocimientosPorMatricula(matricula).pipe(catchError(() => of([]))),
-      certificaciones: this.egresadoService.getCertificacionesPorMatricula(matricula).pipe(catchError(() => of([])))
+      perfil: this.egresadoService.getPerfilCompleto(m).pipe(catchError(() => of(null))),
+      contacto: this.egresadoService.getContactoPorMatricula(m).pipe(catchError(() => of(null))),
+      academico: this.egresadoService.getAcademicoPorMatricula(m).pipe(catchError(() => of(null))),
+      laboral: this.egresadoService.getLaboralPorMatricula(m).pipe(catchError(() => of([]))),
+      posgrado: this.egresadoService.getPosgradoPorMatricula(m).pipe(catchError(() => of([]))),
+      reconocimientos: this.egresadoService.getReconocimientosPorMatricula(m).pipe(catchError(() => of([]))),
+      certificaciones: this.egresadoService.getCertificacionesPorMatricula(m).pipe(catchError(() => of([])))
     }).subscribe({
       next: ({ perfil, contacto, academico, laboral, posgrado, reconocimientos, certificaciones }) => {
         const combinado = {
@@ -273,11 +278,40 @@ export class DatosRecuperadosComponent implements OnInit {
     this.certificacionSeleccionada = item;
   }
 
-  obtenerPrestaciones(laboral: any): string {
-    if (!laboral?.prestaciones?.length) {
-      return 'No cuenta con prestaciones';
+  private nombresSeparadosPorComa(items: any[]): string {
+    if (!items?.length) {
+      return '';
     }
-    return laboral.prestaciones.map((p: any) => p.nombre).join(', ');
+    return items
+      .map((item: any) => {
+        if (typeof item === 'string') {
+          return item.trim();
+        }
+        return (item?.nombre ?? item?.nombrePrestacion ?? '').trim();
+      })
+      .filter((nombre: string) => !!nombre)
+      .join(', ');
+  }
+
+  obtenerPrestaciones(laboral: any): string {
+    const texto = this.nombresSeparadosPorComa(laboral?.prestaciones ?? []);
+    return texto || 'No cuenta con prestaciones';
+  }
+
+  urlFotoResultado(egresado: any): string {
+    return this.perfilService.resolverUrlFoto(egresado?.urlFoto);
+  }
+
+  obtenerBecas(posgrado: any): string {
+    if (!posgrado?.tieneBeca) {
+      return 'No aplica';
+    }
+    const desdeLista = this.nombresSeparadosPorComa(posgrado?.tiposBeca ?? []);
+    if (desdeLista) {
+      return desdeLista;
+    }
+    const legacy = posgrado?.tipoBeca?.nombre?.trim();
+    return legacy || 'No aplica';
   }
 
   // =========================
@@ -346,7 +380,10 @@ export class DatosRecuperadosComponent implements OnInit {
         fechaInicio: this.pick(item, ['fechaInicio', 'fecha_inicio']),
         fechaFin: this.pick(item, ['fechaFin', 'fecha_fin']),
         tieneBeca: this.pick(item, ['tieneBeca', 'tiene_beca']),
-        tipoBeca: item?.tipoBeca || item?.tipo_beca || null
+        tipoBeca: item?.tipoBeca || item?.tipo_beca || null,
+        tiposBeca: Array.isArray(item?.tiposBeca)
+          ? item.tiposBeca
+          : (item?.tipoBeca || item?.tipo_beca ? [item.tipoBeca || item.tipo_beca] : [])
       })),
       reconocimientos: reconocimientosRaw.map((item: any) => ({
         ...item,

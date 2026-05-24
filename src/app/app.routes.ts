@@ -3,6 +3,8 @@ import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.compone
 import { DatosRecuperadosComponent } from './pages/datos-recuperados/datos-recuperados.component';
 import { UsuariosAdmComponent } from './pages/usuarios-adm/usuarios-adm.component';
 import { LoginComponent } from './pages/login/login.component';
+import { RecuperarContrasenaComponent } from './pages/recuperar-contrasena/recuperar-contrasena.component';
+import { RestablecerContrasenaComponent } from './pages/restablecer-contrasena/restablecer-contrasena.component';
 import { PerfilComponent } from './pages/perfil/perfil.component';
 import { ContactoComponent } from './pages/contacto/contacto.component';
 import { AcademicoComponent } from './pages/academico/academico.component';
@@ -11,6 +13,8 @@ import { PosgradoComponent } from './pages/posgrado/posgrado.component';
 import { CertificacionesComponent } from './pages/certificaciones/certificaciones.component';
 import { ReconocimientosComponent } from './pages/reconocimientos/reconocimientos.component';
 import { DatosPersonalesComponent } from './pages/datos-personales/datos-personales.component';
+import { SolicitarInfoComponent } from './pages/solicitar-info/solicitar-info.component';
+import { NuevosAvisosComponent } from './pages/nuevos-avisos/nuevos-avisos.component';
 
 // Reportes nivel 1
 import { AcademicoComponent as ReporteAcademicoComponent } from './pages/reportes/academico/academico.component';
@@ -53,6 +57,8 @@ import { ListadoComponent } from './pages/reportes/reconocimientos/listado/lista
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
+  { path: 'recuperar-contrasena', component: RecuperarContrasenaComponent },
+  { path: 'restablecer-contrasena', component: RestablecerContrasenaComponent },
   { path: 'perfil', component: PerfilComponent },
   { path: 'datos-personales', component: DatosPersonalesComponent },
   { path: 'contacto', component: ContactoComponent },
@@ -61,6 +67,7 @@ export const routes: Routes = [
   { path: 'posgrado', component: PosgradoComponent },
   { path: 'certificaciones', component: CertificacionesComponent },
   { path: 'reconocimientos', component: ReconocimientosComponent },
+  { path: 'nuevos-avisos', component: NuevosAvisosComponent },
   {
     path: 'admin',
     component: AdminLayoutComponent,
@@ -69,6 +76,7 @@ export const routes: Routes = [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'usuarios', component: UsuariosAdmComponent },
       { path: 'datos-recuperados', component: DatosRecuperadosComponent },
+      { path: 'solicitar-info', component: SolicitarInfoComponent },
       // Reportes nivel 1
       { path: 'reportes/academico', component: ReporteAcademicoComponent },
       { path: 'reportes/laboral', component: ReporteLaboralComponent },

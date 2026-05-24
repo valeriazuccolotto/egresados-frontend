@@ -133,9 +133,16 @@ export class PosgradoComponent implements OnInit, OnDestroy {
     );
 
     // 5. Tipo de beca - bar
-    const tiposBeca = ['CONACYT', 'Gobierno del estado', 'Institucional', 'Otra'];
+    const nombresBeca = new Set<string>();
+    posgrados.forEach(p => {
+      (p.tiposBeca || []).forEach((b: any) => b?.nombre && nombresBeca.add(b.nombre));
+      if (p.tipoBeca?.nombre) nombresBeca.add(p.tipoBeca.nombre);
+    });
+    const tiposBeca = Array.from(nombresBeca);
     const datosBeca = tiposBeca.map(t =>
-      posgrados.filter(p => p.tipoBeca && p.tipoBeca.nombre === t).length
+      posgrados.filter(p =>
+        (p.tiposBeca || []).some((b: any) => b.nombre === t) || p.tipoBeca?.nombre === t
+      ).length
     );
     this.crearGraficaBarDirecta('chartTipoBeca',
       tiposBeca, datosBeca, [V1, V2, V3, AZ]

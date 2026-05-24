@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { UsuarioService } from '../../services/usuario.service';
 import { Usuario } from '../../models/usuario';
@@ -9,11 +9,11 @@ import { Usuario } from '../../models/usuario';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['../../styles/login-auth.css']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
 
   matricula = '';
   password = '';
@@ -27,6 +27,10 @@ export class LoginComponent {
     private usuarioService: UsuarioService,
     private router: Router
   ) {}
+
+  ngOnInit(): void {
+    sessionStorage.removeItem('usuario');
+  }
 
   togglePassword() {
     this.mostrarPassword = !this.mostrarPassword;
@@ -64,8 +68,11 @@ export class LoginComponent {
     this.errorMsg = '';
 
     // 🚀 LOGIN usando service
+    const matriculaNorm = this.matricula.trim();
     const usuario: Usuario = {
-      matricula: this.matricula.trim(),
+      matricula: /^\d+$/.test(matriculaNorm) && matriculaNorm.length <= 8
+        ? matriculaNorm.padStart(8, '0')
+        : matriculaNorm,
       password: this.password.trim()
     };
 

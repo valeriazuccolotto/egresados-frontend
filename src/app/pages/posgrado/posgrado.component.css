@@ -269,12 +269,6 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
-.acciones-detalle {
-    display: flex;
-    gap: 15px;
-    margin-top: 10px;
-}
-
 .error {
     color: #e74c3c;
     font-size: 12px;
@@ -610,4 +604,93 @@
     border-radius: 20px;
     font-size: 12px;
     border: 1px solid #bfe7e2;
+}
+
+.field-group--full {
+    grid-column: 1 / -1;
+}
+
+/* BECAS — mismo estilo que prestaciones en laboral */
+.seleccionadas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #e0f2f0;
+    color: #2f8f83;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    border: 1px solid #bfe7e2;
+    margin: 4px;
+}
+
+.chip-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    color: #2f8f83;
+}
+
+.chip-close:hover {
+    color: #dc2626;
+}
+
+.otro-container {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.otro-container input {
+    flex: 1;
+}
+
+.btn-add {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    border-radius: 50%;
+    border: none;
+    background: #2f8f83;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+}
+
+.btn-add:hover {
+    background: #256f66;
+    transform: scale(1.05);
+}
+
+.becas-inline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.becas-inline span {
+    background: #e0f2f0;
+    color: #2f8f83;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    border: 1px solid #bfe7e2;
+}
+
+.modal-card.modal-detalle .detalle-item--becas .becas-inline {
+    margin-top: 4px;
 }
