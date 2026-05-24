@@ -1,0 +1,45 @@
+<div class="pagina-individual">
+  <div class="encabezado">
+    <div>
+      <h2><span class="material-icons">list_alt</span> Listado de reconocimientos</h2>
+      <p>Detalle completo de todos los reconocimientos registrados</p>
+    </div>
+    <div class="campus-box">
+      <span class="material-icons">location_on</span>
+      <select [(ngModel)]="campusSeleccionado" (change)="filtrar()">
+        <option *ngFor="let c of campus">{{ c }}</option>
+      </select>
+    </div>
+  </div>
+  <div class="tabla-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Matrícula</th>
+          <th>Reconocimiento</th>
+          <th>Tipo</th>
+          <th>Institución</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of filtrados">
+          <td>{{ r.matricula }}</td>
+          <td>{{ r.nombreReconocimiento }}</td>
+          <td>
+            <span class="badge" [ngClass]="{
+              'badge-academico': r.tipoReconocimiento==='Academico',
+              'badge-cultural': r.tipoReconocimiento==='Cultural',
+              'badge-deportivo': r.tipoReconocimiento==='Deportivo'
+            }">{{ r.tipoReconocimiento }}</span>
+          </td>
+          <td>{{ r.institucion }}</td>
+          <td>{{ r.fechaEntrega | date:'dd/MM/yyyy' }}</td>
+        </tr>
+        <tr *ngIf="filtrados.length === 0">
+          <td colspan="5" class="sin-datos">Sin registros</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

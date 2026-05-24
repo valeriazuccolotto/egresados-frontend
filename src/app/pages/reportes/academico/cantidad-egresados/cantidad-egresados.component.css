@@ -1,0 +1,10 @@
+.pagina-individual { padding: 30px; font-family: 'Segoe UI', sans-serif; }
+.encabezado { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
+.encabezado h2 { display: flex; align-items: center; gap: 8px; font-size: 22px; color: #2f8f83; font-weight: 700; margin-bottom: 4px; }
+.encabezado h2 .material-icons { font-size: 26px; }
+.encabezado p { font-size: 13px; color: #888; }
+.campus-box { display: flex; align-items: center; gap: 8px; background: white; padding: 10px 16px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.campus-box .material-icons { color: #2f8f83; font-size: 18px; }
+.campus-box select { border: 1px solid #ddd; border-radius: 6px; padding: 5px 10px; font-size: 14px; outline: none; cursor: pointer; }
+.grafica-grande { background: white; border-radius: 12px; padding: 30px; box-shadow: 0 3px 10px rgba(0,0,0,0.07); position: relative; height: 500px; }
+.grafica-grande canvas { position: absolute; top: 30px; left: 30px; right: 30px; bottom: 30px; width: calc(100% - 60px) !important; height: calc(100% - 60px) !important; }

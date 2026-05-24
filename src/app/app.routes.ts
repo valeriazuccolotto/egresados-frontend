@@ -11,10 +11,44 @@ import { PosgradoComponent } from './pages/posgrado/posgrado.component';
 import { CertificacionesComponent } from './pages/certificaciones/certificaciones.component';
 import { ReconocimientosComponent } from './pages/reconocimientos/reconocimientos.component';
 import { DatosPersonalesComponent } from './pages/datos-personales/datos-personales.component';
+
+// Reportes nivel 1
 import { AcademicoComponent as ReporteAcademicoComponent } from './pages/reportes/academico/academico.component';
 import { LaboralComponent as ReporteLaboralComponent } from './pages/reportes/laboral/laboral.component';
 import { PosgradoComponent as ReportePosgradoComponent } from './pages/reportes/posgrado/posgrado.component';
 import { ReconocimientosComponent as ReporteReconocimientosComponent } from './pages/reportes/reconocimientos/reconocimientos.component';
+
+// Dashboard
+import { DashboardComponent } from './pages/dashboard/dashboard.component';
+
+// Académico hijos
+import { TituladoComponent } from './pages/reportes/academico/titulado/titulado.component';
+import { TipoTitulacionComponent } from './pages/reportes/academico/tipo-titulacion/tipo-titulacion.component';
+import { AnioEgresoComponent } from './pages/reportes/academico/anio-egreso/anio-egreso.component';
+import { CantidadEgresadosComponent } from './pages/reportes/academico/cantidad-egresados/cantidad-egresados.component';
+
+// Laboral hijos
+import { SectorComponent } from './pages/reportes/laboral/sector/sector.component';
+import { ConsiguioEmpleoComponent } from './pages/reportes/laboral/consiguio-empleo/consiguio-empleo.component';
+import { TiempoEmpleoComponent } from './pages/reportes/laboral/tiempo-empleo/tiempo-empleo.component';
+import { TipoContratoComponent } from './pages/reportes/laboral/tipo-contrato/tipo-contrato.component';
+import { ModalidadLaboralComponent } from './pages/reportes/laboral/modalidad/modalidad.component';
+import { RangoSalarioComponent } from './pages/reportes/laboral/rango-salario/rango-salario.component';
+import { RelacionCarreraComponent } from './pages/reportes/laboral/relacion-carrera/relacion-carrera.component';
+import { PrestacionesComponent } from './pages/reportes/laboral/prestaciones/prestaciones.component';
+
+// Posgrado hijos
+import { NivelComponent } from './pages/reportes/posgrado/nivel/nivel.component';
+import { ModalidadPosgradoComponent } from './pages/reportes/posgrado/modalidad/modalidad.component';
+import { EstatusComponent } from './pages/reportes/posgrado/estatus/estatus.component';
+import { BecaComponent } from './pages/reportes/posgrado/beca/beca.component';
+import { RelacionComponent } from './pages/reportes/posgrado/relacion/relacion.component';
+import { TipoBecaComponent } from './pages/reportes/posgrado/tipo-beca/tipo-beca.component';
+
+// Reconocimientos hijos
+import { TipoComponent } from './pages/reportes/reconocimientos/tipo/tipo.component';
+import { PorInstitucionComponent } from './pages/reportes/reconocimientos/por-institucion/por-institucion.component';
+import { ListadoComponent } from './pages/reportes/reconocimientos/listado/listado.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -31,15 +65,41 @@ export const routes: Routes = [
     path: 'admin',
     component: AdminLayoutComponent,
     children: [
-      { path: '', redirectTo: 'usuarios', pathMatch: 'full' },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'dashboard', component: DashboardComponent },
       { path: 'usuarios', component: UsuariosAdmComponent },
       { path: 'datos-recuperados', component: DatosRecuperadosComponent },
+      // Reportes nivel 1
       { path: 'reportes/academico', component: ReporteAcademicoComponent },
       { path: 'reportes/laboral', component: ReporteLaboralComponent },
       { path: 'reportes/posgrado', component: ReportePosgradoComponent },
-      { path: 'reportes/reconocimientos', component: ReporteReconocimientosComponent }
+      { path: 'reportes/reconocimientos', component: ReporteReconocimientosComponent },
+      // Académico hijos
+      { path: 'reportes/academico/titulado', component: TituladoComponent },
+      { path: 'reportes/academico/tipo-titulacion', component: TipoTitulacionComponent },
+      { path: 'reportes/academico/anio-egreso', component: AnioEgresoComponent },
+      { path: 'reportes/academico/cantidad-egresados', component: CantidadEgresadosComponent },
+      // Laboral hijos
+      { path: 'reportes/laboral/sector', component: SectorComponent },
+      { path: 'reportes/laboral/consiguio-empleo', component: ConsiguioEmpleoComponent },
+      { path: 'reportes/laboral/tiempo-empleo', component: TiempoEmpleoComponent },
+      { path: 'reportes/laboral/tipo-contrato', component: TipoContratoComponent },
+      { path: 'reportes/laboral/modalidad', component: ModalidadLaboralComponent },
+      { path: 'reportes/laboral/rango-salario', component: RangoSalarioComponent },
+      { path: 'reportes/laboral/relacion-carrera', component: RelacionCarreraComponent },
+      { path: 'reportes/laboral/prestaciones', component: PrestacionesComponent },
+      // Posgrado hijos
+      { path: 'reportes/posgrado/nivel', component: NivelComponent },
+      { path: 'reportes/posgrado/modalidad', component: ModalidadPosgradoComponent },
+      { path: 'reportes/posgrado/estatus', component: EstatusComponent },
+      { path: 'reportes/posgrado/beca', component: BecaComponent },
+      { path: 'reportes/posgrado/relacion', component: RelacionComponent },
+      { path: 'reportes/posgrado/tipo-beca', component: TipoBecaComponent },
+      // Reconocimientos hijos
+      { path: 'reportes/reconocimientos/tipo', component: TipoComponent },
+      { path: 'reportes/reconocimientos/por-institucion', component: PorInstitucionComponent },
+      { path: 'reportes/reconocimientos/listado', component: ListadoComponent },
     ]
   },
-
   { path: '**', redirectTo: 'login' }
 ];

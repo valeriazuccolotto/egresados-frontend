@@ -48,7 +48,6 @@ a.activo {
   font-size: 20px;
 }
 
-/* FLECHA que rota al abrir */
 .flecha {
   margin-left: auto;
   transition: transform 0.3s;
@@ -58,7 +57,6 @@ a.activo {
   transform: rotate(180deg);
 }
 
-/* SUBMENÚ */
 .submenu {
   max-height: 0;
   overflow: hidden;
@@ -67,7 +65,7 @@ a.activo {
 }
 
 .submenu.visible {
-  max-height: 300px;
+  max-height: 1000px;
 }
 
 .submenu a {
@@ -83,4 +81,63 @@ a.activo {
 
 .submenu .material-icons {
   font-size: 17px;
+}
+
+/* NIVEL 3 */
+.submenu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.submenu-item a {
+  flex: 1;
+  border: none;
+  padding: 11px 20px 11px 38px;
+  font-size: 13px;
+}
+
+.mini-flecha {
+  font-size: 16px;
+  color: white;
+  padding-right: 10px;
+  transition: transform 0.3s;
+}
+
+.submenu-item.activo .mini-flecha {
+  transform: rotate(180deg);
+}
+
+.submenu-nivel3 {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  background: rgba(0,0,0,0.2);
+}
+
+.submenu-nivel3.visible {
+  max-height: 500px;
+}
+
+.submenu-nivel3 a {
+  padding: 9px 20px 9px 52px;
+  font-size: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  border-top: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  text-decoration: none;
+}
+
+.submenu-nivel3 .material-icons {
+  font-size: 15px;
+}
+
+.submenu-nivel3 a.activo {
+  background: rgba(255,255,255,0.15);
+  font-weight: 600;
 }

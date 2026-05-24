@@ -1,0 +1,15 @@
+<div class="pagina-individual">
+  <div class="encabezado">
+    <div>
+      <h2><span class="material-icons">description</span> Tipo de contrato</h2>
+      <p>Modalidad contractual de los egresados empleados</p>
+    </div>
+    <div class="campus-box">
+      <span class="material-icons">location_on</span>
+      <select [(ngModel)]="campusSeleccionado" (change)="cambiar()">
+        <option *ngFor="let c of campus">{{ c }}</option>
+      </select>
+    </div>
+  </div>
+  <div class="grafica-grande"><canvas id="chart"></canvas></div>
+</div>

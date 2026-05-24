@@ -1,0 +1,19 @@
+.pagina-individual { padding: 30px; font-family: 'Segoe UI', sans-serif; }
+.encabezado { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
+.encabezado h2 { display: flex; align-items: center; gap: 8px; font-size: 22px; color: #2f8f83; font-weight: 700; margin-bottom: 4px; }
+.encabezado h2 .material-icons { font-size: 26px; }
+.encabezado p { font-size: 13px; color: #888; }
+.campus-box { display: flex; align-items: center; gap: 8px; background: white; padding: 10px 16px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+.campus-box .material-icons { color: #2f8f83; font-size: 18px; }
+.campus-box select { border: 1px solid #ddd; border-radius: 6px; padding: 5px 10px; font-size: 14px; outline: none; cursor: pointer; }
+.tabla-card { background: white; border-radius: 12px; padding: 22px; box-shadow: 0 3px 10px rgba(0,0,0,0.07); overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+thead tr { background: #f4f6f7; }
+th { padding: 12px 14px; text-align: left; color: #555; font-weight: 600; border-bottom: 2px solid #eee; }
+td { padding: 11px 14px; border-bottom: 1px solid #f0f0f0; color: #444; }
+tbody tr:hover { background: #f9fbfb; }
+.sin-datos { text-align: center; color: #aaa; padding: 30px; }
+.badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.badge-academico { background: #e0f4f2; color: #2f8f83; }
+.badge-cultural { background: #fff3cd; color: #856404; }
+.badge-deportivo { background: #d1ecf1; color: #0c5460; }

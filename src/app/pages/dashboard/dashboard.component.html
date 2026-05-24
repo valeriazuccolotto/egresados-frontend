@@ -1,0 +1,112 @@
+<div class="pagina">
+
+  <!-- ENCABEZADO -->
+  <div class="encabezado">
+    <div>
+      <h2>Concentrado de métricas de egresados</h2>
+      <p>Resumen general de indicadores por campus</p>
+    </div>
+    <div class="campus-box">
+      <span class="campus-label">Campus</span>
+      <select [(ngModel)]="campusSeleccionado" (change)="cambiarCampus()">
+        <option *ngFor="let c of campus">{{ c }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- MÉTRICAS -->
+  <div class="metricas">
+    <div class="metrica-card">
+      <span class="material-icons icono">people</span>
+      <h3>{{ totalEgresados }}</h3>
+      <p>Egresados registrados</p>
+    </div>
+    <div class="metrica-card">
+      <span class="material-icons icono">work</span>
+      <h3>{{ tasaEmpleabilidad }}</h3>
+      <p>Tasa de empleabilidad</p>
+    </div>
+    <div class="metrica-card">
+      <span class="material-icons icono">connect_without_contact</span>
+      <h3>{{ trabajanEnArea }}</h3>
+      <p>Trabajan en su área</p>
+    </div>
+    <div class="metrica-card">
+      <span class="material-icons icono">workspace_premium</span>
+      <h3>{{ conCertificaciones }}</h3>
+      <p>Con certificaciones</p>
+    </div>
+  </div>
+
+  <!-- FILA 1: Empleabilidad por carrera + Sectores laborales -->
+  <div class="graficas-fila fila-2-1">
+    <div class="grafica-card">
+      <div class="grafica-titulo"><span class="material-icons">bar_chart</span> Empleabilidad por carrera</div>
+      <p class="grafica-desc">Porcentaje de egresados empleados por carrera</p>
+      <div class="grafica-wrap alta"><canvas id="g1"></canvas></div>
+    </div>
+    <div class="grafica-card">
+      <div class="grafica-titulo"><span class="material-icons">donut_large</span> Sectores laborales</div>
+      <p class="grafica-desc">Distribución por sector de trabajo</p>
+      <div class="grafica-wrap normal"><canvas id="g2"></canvas></div>
+    </div>
+  </div>
+
+  <!-- FILA 2: Tiempo para conseguir empleo + Titulación por carrera -->
+  <div class="graficas-fila fila-igual">
+    <div class="grafica-card">
+      <div class="grafica-titulo"><span class="material-icons">schedule</span> Tiempo para conseguir empleo por carrera</div>
+      <p class="grafica-desc">Desglose por carrera y rango de tiempo</p>
+      <div class="grafica-wrap normal"><canvas id="g3"></canvas></div>
+    </div>
+    <div class="grafica-card">
+      <div class="grafica-titulo"><span class="material-icons">verified</span> Titulación por carrera</div>
+      <p class="grafica-desc">Titulados vs no titulados por carrera</p>
+      <div class="grafica-wrap normal"><canvas id="g4"></canvas></div>
+    </div>
+  </div>
+
+  <!-- FILA 3: Posgrados por maestría + Certificaciones por carrera -->
+  <div class="graficas-fila fila-igual">
+    <div class="grafica-card">
+      <div class="grafica-titulo"><span class="material-icons">menu_book</span> Egresados con posgrado por programa</div>
+      <p class="grafica-desc">Cantidad de egresados con posgrado por programa</p>
+      <div class="grafica-wrap normal"><canvas id="g5"></canvas></div>
+    </div>
+    <div class="grafica-card">
+      <div class="grafica-titulo"><span class="material-icons">workspace_premium</span> Certificaciones por carrera</div>
+      <p class="grafica-desc">Egresados con al menos una certificación</p>
+      <div class="grafica-wrap normal"><canvas id="g6"></canvas></div>
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="tabla-card">
+    <div class="grafica-titulo"><span class="material-icons">history</span> Actividad reciente</div>
+    <p class="grafica-desc">Últimos egresados registrados en el sistema</p>
+    <div class="tabla-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Carrera</th>
+            <th>Empresa</th>
+            <th>Generación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let e of egresadosRecientes">
+            <td>{{ e.nombre }}</td>
+            <td>{{ e.carrera }}</td>
+            <td>{{ e.empresa }}</td>
+            <td>{{ e.generacion }}</td>
+          </tr>
+          <tr *ngIf="egresadosRecientes.length === 0">
+            <td colspan="4" class="sin-datos">Sin datos</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

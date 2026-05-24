@@ -1,26 +1,15 @@
 <aside class="sidebar" [class.oculto]="!abierto">
   <nav>
 
-    <!-- DEJADO TAL CUAL -->
-    <a routerLink="/dashboard" routerLinkActive="activo">
+    <a routerLink="/admin/dashboard" routerLinkActive="activo">
       <span class="material-icons">dashboard</span>
       Dashboard
     </a>
 
-    <!-- CORREGIDO -->
     <a routerLink="/admin/datos-recuperados" routerLinkActive="activo">
       <span class="material-icons">assignment</span>
       Datos recuperados
     </a>
-
-    <!-- (IMPORTANTE) este NO existe en tus rutas -->
-    <!-- lo dejo comentado para que no rompa -->
-    <!--
-    <a routerLink="/empresas" routerLinkActive="activo">
-      <span class="material-icons">business</span>
-      Empresas
-    </a>
-    -->
 
     <!-- REPORTES -->
     <div class="menu-item" [class.abierto]="reportesAbierto" (click)="toggleReportes()">
@@ -31,29 +20,115 @@
 
     <div class="submenu" [class.visible]="reportesAbierto">
 
-      <a routerLink="/admin/reportes/laboral" routerLinkActive="activo">
-        <span class="material-icons">work</span>
-        Laboral
-      </a>
+      <!-- LABORAL -->
+      <div class="submenu-item" [class.activo]="subMenuAbierto==='laboral'"
+           (click)="toggleSubMenu('laboral'); $event.stopPropagation()">
+        <a routerLink="/admin/reportes/laboral" (click)="$event.stopPropagation()">
+          <span class="material-icons">work</span>Laboral
+        </a>
+        <span class="material-icons mini-flecha">expand_more</span>
+      </div>
+      <div class="submenu-nivel3" [class.visible]="subMenuAbierto==='laboral'">
+        <a routerLink="/admin/reportes/laboral/sector" routerLinkActive="activo">
+          <span class="material-icons">category</span>Sector laboral
+        </a>
+        <a routerLink="/admin/reportes/laboral/consiguio-empleo" routerLinkActive="activo">
+          <span class="material-icons">search</span>Cómo consiguió empleo
+        </a>
+        <a routerLink="/admin/reportes/laboral/tiempo-empleo" routerLinkActive="activo">
+          <span class="material-icons">schedule</span>Tiempo para empleo
+        </a>
+        <a routerLink="/admin/reportes/laboral/tipo-contrato" routerLinkActive="activo">
+          <span class="material-icons">description</span>Tipo de contrato
+        </a>
+        <a routerLink="/admin/reportes/laboral/modalidad" routerLinkActive="activo">
+          <span class="material-icons">home_work</span>Modalidad
+        </a>
+        <a routerLink="/admin/reportes/laboral/rango-salario" routerLinkActive="activo">
+          <span class="material-icons">attach_money</span>Rango salarial
+        </a>
+        <a routerLink="/admin/reportes/laboral/relacion-carrera" routerLinkActive="activo">
+          <span class="material-icons">connect_without_contact</span>Relación carrera
+        </a>
+        <a routerLink="/admin/reportes/laboral/prestaciones" routerLinkActive="activo">
+          <span class="material-icons">card_giftcard</span>Prestaciones
+        </a>
+      </div>
 
-      <a routerLink="/admin/reportes/academico" routerLinkActive="activo">
-        <span class="material-icons">school</span>
-        Académico
-      </a>
+      <!-- ACADÉMICO -->
+      <div class="submenu-item" [class.activo]="subMenuAbierto==='academico'"
+           (click)="toggleSubMenu('academico'); $event.stopPropagation()">
+        <a routerLink="/admin/reportes/academico" (click)="$event.stopPropagation()">
+          <span class="material-icons">school</span>Académico
+        </a>
+        <span class="material-icons mini-flecha">expand_more</span>
+      </div>
+      <div class="submenu-nivel3" [class.visible]="subMenuAbierto==='academico'">
+        <a routerLink="/admin/reportes/academico/titulado" routerLinkActive="activo">
+          <span class="material-icons">verified</span>Titulados
+        </a>
+        <a routerLink="/admin/reportes/academico/tipo-titulacion" routerLinkActive="activo">
+          <span class="material-icons">workspace_premium</span>Tipo titulación
+        </a>
+        <a routerLink="/admin/reportes/academico/anio-egreso" routerLinkActive="activo">
+          <span class="material-icons">calendar_month</span>Año de egreso
+        </a>
+        <a routerLink="/admin/reportes/academico/cantidad-egresados" routerLinkActive="activo">
+          <span class="material-icons">menu_book</span>Por carrera
+        </a>
+      </div>
 
-      <a routerLink="/admin/reportes/posgrado" routerLinkActive="activo">
-        <span class="material-icons">menu_book</span>
-        Posgrado
-      </a>
+      <!-- POSGRADO -->
+      <div class="submenu-item" [class.activo]="subMenuAbierto==='posgrado'"
+           (click)="toggleSubMenu('posgrado'); $event.stopPropagation()">
+        <a routerLink="/admin/reportes/posgrado" (click)="$event.stopPropagation()">
+          <span class="material-icons">menu_book</span>Posgrado
+        </a>
+        <span class="material-icons mini-flecha">expand_more</span>
+      </div>
+      <div class="submenu-nivel3" [class.visible]="subMenuAbierto==='posgrado'">
+        <a routerLink="/admin/reportes/posgrado/nivel" routerLinkActive="activo">
+          <span class="material-icons">school</span>Nivel de estudio
+        </a>
+        <a routerLink="/admin/reportes/posgrado/modalidad" routerLinkActive="activo">
+          <span class="material-icons">laptop</span>Modalidad
+        </a>
+        <a routerLink="/admin/reportes/posgrado/estatus" routerLinkActive="activo">
+          <span class="material-icons">flag</span>Estatus
+        </a>
+        <a routerLink="/admin/reportes/posgrado/beca" routerLinkActive="activo">
+          <span class="material-icons">card_giftcard</span>Beca
+        </a>
+        <a routerLink="/admin/reportes/posgrado/relacion" routerLinkActive="activo">
+          <span class="material-icons">connect_without_contact</span>Relación carrera
+        </a>
+        <a routerLink="/admin/reportes/posgrado/tipo-beca" routerLinkActive="activo">
+          <span class="material-icons">workspace_premium</span>Tipo de beca
+        </a>
+      </div>
 
-      <a routerLink="/admin/reportes/reconocimientos" routerLinkActive="activo">
-        <span class="material-icons">emoji_events</span>
-        Reconocimientos
-      </a>
+      <!-- RECONOCIMIENTOS -->
+      <div class="submenu-item" [class.activo]="subMenuAbierto==='reconocimientos'"
+           (click)="toggleSubMenu('reconocimientos'); $event.stopPropagation()">
+        <a routerLink="/admin/reportes/reconocimientos" (click)="$event.stopPropagation()">
+          <span class="material-icons">emoji_events</span>Reconocimientos
+        </a>
+        <span class="material-icons mini-flecha">expand_more</span>
+      </div>
+      <div class="submenu-nivel3" [class.visible]="subMenuAbierto==='reconocimientos'">
+        <a routerLink="/admin/reportes/reconocimientos/tipo" routerLinkActive="activo">
+          <span class="material-icons">emoji_events</span>Tipo
+        </a>
+        <a routerLink="/admin/reportes/reconocimientos/por-institucion" routerLinkActive="activo">
+          <span class="material-icons">account_balance</span>Por institución
+        </a>
+        <a routerLink="/admin/reportes/reconocimientos/listado" routerLinkActive="activo">
+          <span class="material-icons">list_alt</span>Listado
+        </a>
+      </div>
 
     </div>
 
-    <!-- CORREGIDO -->
     <a routerLink="/admin/usuarios" routerLinkActive="activo">
       <span class="material-icons">people</span>
       Egresados
