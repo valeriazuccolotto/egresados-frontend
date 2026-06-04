@@ -1,0 +1,139 @@
+<div class="pagina" (click)="panelFijado && cerrarPanel()">
+
+  <div class="encabezado">
+    <div class="encabezado-texto">
+      <h2>Mapa de ubicación laboral</h2>
+      <p>Ubicación de egresados según el estado donde trabajan</p>
+    </div>
+    <div class="campus-box">
+      <span class="material-icons">location_on</span>
+      <label>Campus</label>
+      <select [(ngModel)]="campusSeleccionado" (change)="cambiarCampus()">
+        <option *ngFor="let c of campus">{{ c }}</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="metricas-resumen" *ngIf="!cargando && mapaListo">
+    <div class="metrica-mini">
+      <span class="material-icons">place</span>
+      <div>
+        <strong>{{ marcadores.length }}</strong>
+        <span>ubicaciones con registro</span>
+      </div>
+    </div>
+    <div class="metrica-mini">
+      <span class="material-icons">groups</span>
+      <div>
+        <strong>{{ totalEgresadosEnMapa() }}</strong>
+        <span>registros laborales en el mapa</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="ayuda-mapa" *ngIf="!cargando && mapaListo && !sinDatos">
+    Pasa el cursor sobre un estado o pin para ver el resumen. Haz clic para fijar el detalle.
+  </p>
+
+  <div class="mapa-layout" *ngIf="!cargando && mapaListo">
+
+    <div class="mapa-card" (click)="$event.stopPropagation()">
+      <svg
+        class="mapa-svg"
+        viewBox="0 0 1000 650"
+        role="img"
+        aria-label="Mapa de la República Mexicana con división por estados">
+        <rect class="mapa-fondo" x="0" y="0" width="1000" height="650"/>
+
+        <g class="capa-estados">
+          <path
+            *ngFor="let estado of estadosMapa"
+            [attr.d]="estado.d"
+            class="estado-path"
+            [class.estado-path--con-datos]="conteoPorEstado[estado.estado]"
+            [class.estado-path--activo]="marcadorActivo?.estado === estado.estado"
+            (mouseenter)="onEstadoHover(estado.estado)"
+            (mouseleave)="onEstadoLeave()"
+            (click)="onEstadoClick(estado.estado, $event)">
+            <title>{{ estado.estado }}</title>
+          </path>
+        </g>
+
+        <g
+          *ngFor="let m of marcadoresMexico"
+          class="marcador-grupo"
+          [class.marcador-grupo--activo]="marcadorActivo?.estado === m.estado"
+          [attr.transform]="pinTransform(m)"
+          (mouseenter)="onEstadoHover(m.estado)"
+          (mouseleave)="onEstadoLeave()"
+          (click)="fijarMarcador(m, $event)">
+          <path
+            class="marcador-pin"
+            transform="translate(0,-12)"
+            d="M0,0 C-7,-11 -9,-17 -9,-21 a4.5,4.5 0 0 1 18,0 c0,4 -2,10 -9,21z"/>
+          <text class="marcador-contador" x="0" y="-30" text-anchor="middle">{{ m.egresados.length }}</text>
+          <title>{{ m.estado }} — {{ m.egresados.length }} egresado(s)</title>
+        </g>
+      </svg>
+
+      <button
+        type="button"
+        class="extranjero-orbe"
+        *ngIf="marcadorExtranjero as ext"
+        [class.extranjero-orbe--activo]="marcadorActivo?.esExtranjero"
+        (mouseenter)="onEstadoHover(ext.estado)"
+        (mouseleave)="onEstadoLeave()"
+        (click)="fijarMarcador(ext, $event)">
+        <span class="material-icons">public</span>
+        <span class="extranjero-titulo">Extranjero</span>
+        <span class="extranjero-count">{{ ext.egresados.length }}</span>
+      </button>
+
+      <div class="mapa-leyenda">
+        <span><i class="leyenda-muestra estado-muestra"></i> Sin registro</span>
+        <span><i class="leyenda-muestra estado-muestra--datos"></i> Con egresados</span>
+        <span><i class="leyenda-muestra pin-muestra"></i> Ubicación</span>
+      </div>
+    </div>
+
+    <aside
+      class="panel-detalle"
+      *ngIf="marcadorActivo"
+      (click)="$event.stopPropagation()">
+      <div class="panel-header">
+        <div>
+          <h3>
+            <span class="material-icons">{{ marcadorActivo.esExtranjero ? 'public' : 'location_on' }}</span>
+            {{ marcadorActivo.estado }}
+          </h3>
+          <p>{{ marcadorActivo.egresados.length }} egresado(s) en esta ubicación</p>
+        </div>
+        <button type="button" class="panel-cerrar" (click)="cerrarPanel()" aria-label="Cerrar">&times;</button>
+      </div>
+
+      <div class="panel-lista">
+        <article class="egresado-card" *ngFor="let eg of marcadorActivo.egresados">
+          <h4>{{ eg.nombreCompleto }}</h4>
+          <p class="matricula">Matrícula: {{ eg.matricula }}</p>
+          <ul>
+            <li><strong>Campus:</strong> {{ eg.campus }}</li>
+            <li><strong>Carrera:</strong> {{ eg.carrera }}</li>
+            <li><strong>Empresa:</strong> {{ eg.empresa }}</li>
+            <li><strong>Puesto:</strong> {{ eg.puesto }}</li>
+            <li><strong>Sector:</strong> {{ eg.sector }}</li>
+            <li><strong>Modalidad:</strong> {{ eg.modalidadTrabajo }}</li>
+            <li><strong>Contrato:</strong> {{ eg.tipoContrato }}</li>
+            <li><strong>Salario:</strong> {{ eg.salario }}</li>
+          </ul>
+        </article>
+      </div>
+    </aside>
+
+    <p class="estado-vacio" *ngIf="sinDatos">
+      No hay registros laborales con estado de trabajo para el campus seleccionado.
+    </p>
+  </div>
+
+  <p class="cargando" *ngIf="cargando">Cargando mapa…</p>
+
+</div>

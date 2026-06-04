@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { LaboralService } from '../../../services/laboral.service';
 import { Chart, registerables } from 'chart.js';
 
@@ -9,7 +10,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-laboral',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './laboral.component.html',
   styleUrl: './laboral.component.css'
 })

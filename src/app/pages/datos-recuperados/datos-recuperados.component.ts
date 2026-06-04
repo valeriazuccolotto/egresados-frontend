@@ -359,6 +359,7 @@ export class DatosRecuperadosComponent implements OnInit {
         empresa: this.pick(item, ['empresa']),
         puesto: this.pick(item, ['puesto']),
         sector: this.pick(item, ['sector']),
+        estadoTrabajo: this.pick(item, ['estadoTrabajo', 'estado_trabajo']),
         tipoContrato: this.pick(item, ['tipoContrato', 'tipo_contrato']),
         modalidadTrabajo: this.pick(item, ['modalidadTrabajo', 'modalidad_trabajo']),
         salario: this.pick(item, ['salario']),

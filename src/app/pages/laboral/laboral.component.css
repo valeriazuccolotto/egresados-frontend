@@ -34,6 +34,7 @@
     border: 1px solid #dbe3e8;
     border-radius: 14px;
     padding: 22px 24px;
+    overflow: visible;
 }
 
 .form-grid{
@@ -49,11 +50,105 @@
     border:1px solid #e5e5e5;
     border-radius:14px;
     background:#fafafa;
+    overflow: visible;
 
     display:grid;
     grid-template-columns:repeat(2,1fr);
     gap:18px;
     margin-bottom:20px;
+}
+
+.field-group--estado {
+    position: relative;
+    z-index: 2;
+}
+
+.field-group--estado:has(.estado-select-list) {
+    z-index: 30;
+}
+
+.estado-select-wrap {
+    position: relative;
+}
+
+.estado-select-trigger {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: inherit;
+    color: #333;
+    text-align: left;
+}
+
+.estado-select-trigger.placeholder span:first-child {
+    color: #888;
+}
+
+.estado-select-trigger.ng-invalid {
+    border: 1px solid #e74c3c;
+    background-color: #fff5f5;
+}
+
+.estado-select-trigger.ng-valid {
+    border: 1px solid #2ecc71;
+    background-color: #f0fff4;
+}
+
+.estado-select-trigger:focus {
+    outline: none;
+    border: 1px solid #2f8f83;
+    box-shadow: 0 0 0 2px rgba(47, 143, 131, 0.2);
+}
+
+.estado-select-chevron {
+    font-size: 12px;
+    color: #6b7280;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+}
+
+.estado-select-chevron.abierto {
+    transform: rotate(180deg);
+}
+
+.estado-select-list {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 100;
+    margin: 0;
+    padding: 6px 0;
+    list-style: none;
+    background: #fff;
+    border: 1px solid #dbe3e8;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    max-height: 260px;
+    overflow-y: auto;
+}
+
+.estado-select-list li {
+    padding: 10px 14px;
+    cursor: pointer;
+    color: #333;
+}
+
+.estado-select-list li:hover {
+    background: #e0f2f0;
+}
+
+.estado-select-list li.activo {
+    background: #e0f2f0;
+    color: #2f8f83;
+    font-weight: 600;
 }
 
 .bloque-formulario h3{

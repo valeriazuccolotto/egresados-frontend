@@ -54,6 +54,47 @@
   cursor: pointer;
 }
 
+.mapa-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  background: linear-gradient(135deg, #e8f6f3, #ffffff);
+  border: 1px solid #bfe7e2;
+  border-radius: 14px;
+  text-decoration: none;
+  color: inherit;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.mapa-banner:hover {
+  box-shadow: 0 6px 18px rgba(47, 143, 131, 0.18);
+  transform: translateY(-1px);
+}
+
+.mapa-banner > .material-icons:first-child {
+  color: #2f8f83;
+  font-size: 32px;
+}
+
+.mapa-banner strong {
+  display: block;
+  color: #2f8f83;
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.mapa-banner p {
+  margin: 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.flecha-banner {
+  margin-left: auto;
+  color: #2f8f83;
+}
+
 /* MÉTRICAS */
 .metricas {
   display: grid;

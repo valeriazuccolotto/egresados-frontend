@@ -572,6 +572,7 @@
                         <div class="detalle-grid detalle-seleccionado" *ngIf="laboralSeleccionado">
                             <div class="detalle-item"><div class="info-icon"><i class="fas fa-user-tie"></i></div><div><label>Puesto</label><p>{{ laboralSeleccionado.puesto }}</p></div></div>
                             <div class="detalle-item"><div class="info-icon"><i class="fas fa-industry"></i></div><div><label>Sector</label><p>{{ laboralSeleccionado.sector }}</p></div></div>
+                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-map-marker-alt"></i></div><div><label>¿Lugar donde está trabajando?</label><p>{{ laboralSeleccionado.estadoTrabajo || 'No registrado' }}</p></div></div>
                             <div class="detalle-item"><div class="info-icon"><i class="fas fa-file-contract"></i></div><div><label>Contrato</label><p>{{ laboralSeleccionado.tipoContrato }}</p></div></div>
                             <div class="detalle-item"><div class="info-icon"><i class="fas fa-laptop-house"></i></div><div><label>Modalidad</label><p>{{ laboralSeleccionado.modalidadTrabajo }}</p></div></div>
                             <div class="detalle-item"><div class="info-icon"><i class="fas fa-money-bill-wave"></i></div><div><label>Salario</label><p>{{ laboralSeleccionado.salario }}</p></div></div>

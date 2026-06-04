@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { catchError } from 'rxjs/operators';
+import { ESTADOS_REPUBLICA_MEXICANA } from '../../utils/estados-mexico.util';
 
 @Component({
   selector: 'app-laboral',
@@ -43,6 +44,10 @@ export class LaboralComponent implements OnInit {
   // ================= FORM =================
   listaPrestaciones: any[] = [];
   form: any = {};
+  readonly estadosRepublica = [...ESTADOS_REPUBLICA_MEXICANA];
+  estadoDropdownAbierto: 'create' | 'edit' | null = null;
+  estadoTrabajoTouchedCreate = false;
+  estadoTrabajoTouchedEdit = false;
 
   // ================= INIT =================
   ngOnInit() {
@@ -87,6 +92,7 @@ this.matriculaUsuario = usuario.matricula;
     empresa: '',
     puesto: '',
     sector: '',
+    estadoTrabajo: '',
     medio: '',
     tiempo: '',
     contrato: '',
@@ -102,11 +108,44 @@ this.matriculaUsuario = usuario.matricula;
     this.mostrarFormulario = true;
     this.resetForm();
     this.laboralSeleccionado = null;
+    this.cerrarEstadoDropdown();
   }
 
   cancelarFormulario() {
     this.mostrarFormulario = false;
     this.resetForm();
+    this.cerrarEstadoDropdown();
+  }
+
+  toggleEstadoDropdown(modo: 'create' | 'edit', event?: Event) {
+    event?.stopPropagation();
+    this.estadoDropdownAbierto = this.estadoDropdownAbierto === modo ? null : modo;
+    if (modo === 'create') {
+      this.estadoTrabajoTouchedCreate = true;
+    } else {
+      this.estadoTrabajoTouchedEdit = true;
+    }
+  }
+
+  seleccionarEstadoTrabajo(estado: string, modo: 'create' | 'edit', event?: Event) {
+    event?.stopPropagation();
+    if (modo === 'create') {
+      this.form.estadoTrabajo = estado;
+      this.estadoTrabajoTouchedCreate = true;
+    } else if (this.laboralSeleccionado) {
+      this.laboralSeleccionado.estadoTrabajo = estado;
+      this.estadoTrabajoTouchedEdit = true;
+    }
+    this.cerrarEstadoDropdown();
+  }
+
+  cerrarEstadoDropdown() {
+    this.estadoDropdownAbierto = null;
+  }
+
+  @HostListener('document:click')
+  onDocumentClick() {
+    this.cerrarEstadoDropdown();
   }
 
   construirDatos() {
@@ -115,6 +154,7 @@ this.matriculaUsuario = usuario.matricula;
       empresa: this.form.empresa,
       puesto: this.form.puesto,
       sector: this.form.sector,
+      estadoTrabajo: this.form.estadoTrabajo,
       comoConsiguio: this.form.medio,
       tiempoConseguir: this.form.tiempo,
       tipoContrato: this.form.contrato,
@@ -127,6 +167,7 @@ this.matriculaUsuario = usuario.matricula;
   }
 
   guardar() {
+    this.estadoTrabajoTouchedCreate = true;
     const datos = this.construirDatos();
     this.http.post("/egresado/laboral", datos).pipe(
       catchError(() => this.http.post("/egresados/laboral", datos))
@@ -142,18 +183,24 @@ this.matriculaUsuario = usuario.matricula;
 
   // ================= DETALLE =================
   verDetalle(laboral: any) {
-    this.laboralSeleccionado = { ...laboral };
+    this.laboralSeleccionado = {
+      ...laboral,
+      estadoTrabajo: laboral.estadoTrabajo ?? laboral.estado_trabajo ?? ''
+    };
     if (!this.laboralSeleccionado.prestaciones) {
       this.laboralSeleccionado.prestaciones = [];
     }
     this.mostrarFormulario = false;
+    this.cerrarEstadoDropdown();
   }
 
   cancelarEdicion() {
     this.laboralSeleccionado = null;
+    this.cerrarEstadoDropdown();
   }
 
   actualizarLaboral() {
+    this.estadoTrabajoTouchedEdit = true;
     const laboral = this.laboralSeleccionado;
     const id = laboral.idLaboral;
     this.http.put(`/egresado/laboral/${id}`, laboral).pipe(
@@ -318,7 +365,10 @@ this.matriculaUsuario = usuario.matricula;
   }
 
   abrirConsulta(laboral: any) {
-  this.laboralConsulta = laboral;
+  this.laboralConsulta = {
+    ...laboral,
+    estadoTrabajo: laboral.estadoTrabajo ?? laboral.estado_trabajo ?? ''
+  };
   this.mostrarConsulta = true;
 }
 

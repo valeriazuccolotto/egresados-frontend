@@ -40,6 +40,7 @@ import { ModalidadLaboralComponent } from './pages/reportes/laboral/modalidad/mo
 import { RangoSalarioComponent } from './pages/reportes/laboral/rango-salario/rango-salario.component';
 import { RelacionCarreraComponent } from './pages/reportes/laboral/relacion-carrera/relacion-carrera.component';
 import { PrestacionesComponent } from './pages/reportes/laboral/prestaciones/prestaciones.component';
+import { MapaUbicacionLaboralComponent } from './pages/reportes/laboral/mapa-ubicacion/mapa-ubicacion.component';
 
 // Posgrado hijos
 import { NivelComponent } from './pages/reportes/posgrado/nivel/nivel.component';
@@ -96,6 +97,7 @@ export const routes: Routes = [
       { path: 'reportes/laboral/rango-salario', component: RangoSalarioComponent },
       { path: 'reportes/laboral/relacion-carrera', component: RelacionCarreraComponent },
       { path: 'reportes/laboral/prestaciones', component: PrestacionesComponent },
+      { path: 'reportes/laboral/mapa-ubicacion', component: MapaUbicacionLaboralComponent },
       // Posgrado hijos
       { path: 'reportes/posgrado/nivel', component: NivelComponent },
       { path: 'reportes/posgrado/modalidad', component: ModalidadPosgradoComponent },
