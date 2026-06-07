@@ -3,6 +3,17 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { LaboralService } from '../../../services/laboral.service';
+import { coloresPrestaciones, datosGraficaPrestaciones } from '../../../utils/prestaciones-reporte.util';
+import {
+  ETIQUETAS_COMO_CONSIGUIO,
+  ETIQUETAS_MODALIDAD_LABORAL,
+  ETIQUETAS_RELACION_CARRERA_LABORAL,
+  ETIQUETAS_SALARIO,
+  ETIQUETAS_SECTOR_LABORAL,
+  ETIQUETAS_TIEMPO_EMPLEO,
+  ETIQUETAS_TIPO_CONTRATO
+} from '../../../utils/graficas-reporte.util';
+import { repararTextoEnObjeto } from '../../../utils/texto-encoding.util';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -21,6 +32,7 @@ export class LaboralComponent implements OnInit, OnDestroy {
 
   todosLaborales: any[] = [];
   todosEgresados: any[] = [];
+  catalogoPrestaciones: any[] = [];
 
   // Métricas
   totalConEmpleo = 0;
@@ -33,12 +45,27 @@ export class LaboralComponent implements OnInit, OnDestroy {
   constructor(private laboralService: LaboralService) {}
 
   ngOnInit() {
+    this.laboralService.getPrestaciones().subscribe({
+      next: (prestaciones) => {
+        this.catalogoPrestaciones = (prestaciones || []).map(item => repararTextoEnObjeto(item));
+        if (this.todosLaborales.length) {
+          this.aplicarFiltro();
+        }
+      },
+      error: () => {
+        this.catalogoPrestaciones = [];
+        if (this.todosLaborales.length) {
+          this.aplicarFiltro();
+        }
+      }
+    });
+
     this.laboralService.getEgresados().subscribe({
       next: (egresados) => {
-        this.todosEgresados = egresados || [];
+        this.todosEgresados = (egresados || []).map((item: any) => repararTextoEnObjeto(item));
         this.laboralService.getLaborales().subscribe({
           next: (laborales) => {
-            this.todosLaborales = laborales || [];
+            this.todosLaborales = (laborales || []).map((item: any) => repararTextoEnObjeto(item));
             this.aplicarFiltro();
           },
           error: () => {
@@ -112,48 +139,48 @@ export class LaboralComponent implements OnInit, OnDestroy {
 
     // 1. Sector - pie
     this.crearGraficaPie('chartSector', laborales, 'sector',
-      ['Tecnologico','Industria','Agricola','Educacion','Servicios','Otro'],
+      [...ETIQUETAS_SECTOR_LABORAL],
       [V1, V2, V3, AZ, G1, G2]
     );
 
     // 2. Cómo consiguió - doughnut
     this.crearGraficaDoughnut('chartComoConsiguio', laborales, 'comoConsiguio',
-      ['Bolsa de trabajo','Internet','Recomendación','Entrevista'],
+      [...ETIQUETAS_COMO_CONSIGUIO],
       [V1, V2, V3, AZ]
     );
 
     // 3. Tiempo para conseguir - bar
     this.crearGraficaBar('chartTiempo', laborales, 'tiempoConseguir',
-      ['Menos de 3 meses','3-6 meses','6-12 meses','Más de un año'],
+      [...ETIQUETAS_TIEMPO_EMPLEO],
       [V1, V2, V3, G1]
     );
 
     // 4. Tipo contrato - pie
     this.crearGraficaPie('chartContrato', laborales, 'tipoContrato',
-      ['Tiempo completo','Freelance'],
+      [...ETIQUETAS_TIPO_CONTRATO],
       [V1, G1]
     );
 
     // 5. Modalidad - doughnut
     this.crearGraficaDoughnut('chartModalidad', laborales, 'modalidadTrabajo',
-      ['Presencial','Remoto','Híbrido'],
+      [...ETIQUETAS_MODALIDAD_LABORAL],
       [V1, V2, V3]
     );
 
     // 6. Salario - bar
     this.crearGraficaBar('chartSalario', laborales, 'salario',
-      ['$5,000 - $12,000','$12,000 - $20,000','$20,000 - $30,000','Más de $30,000','Prefiero no responder'],
+      [...ETIQUETAS_SALARIO],
       [G2, V3, V2, V1, G1]
     );
 
     // 7. Relación carrera - doughnut
     this.crearGraficaDoughnut('chartRelacion', laborales, 'relacionCarrera',
-      ['Totalmente relacionada','Parcialmente relacionada','Poco relacionada','Totalmente diferente'],
+      [...ETIQUETAS_RELACION_CARRERA_LABORAL],
       [V1, V2, V3, G1]
     );
 
     // 8. Prestaciones - bar horizontal
-    this.crearGraficaPrestaciones('chartPrestaciones', laborales, [V1, V2, V3, AZ, G1, G2, V1, V2]);
+    this.crearGraficaPrestaciones('chartPrestaciones', laborales);
   }
 
   crearGraficaPie(id: string, laborales: any[], campo: string, labels: string[], colors: string[]) {
@@ -192,23 +219,31 @@ export class LaboralComponent implements OnInit, OnDestroy {
     this.charts.push(chart);
   }
 
-  crearGraficaPrestaciones(id: string, laborales: any[], colors: string[]) {
+  crearGraficaPrestaciones(id: string, laborales: any[]) {
     const canvas = document.getElementById(id) as HTMLCanvasElement;
     if (!canvas) return;
-    const nombresPrestaciones = ['IMSS','ISSSTE','Seguro de vida','Fondo de ahorro',
-      'Vales de despensa','Aguinaldo','Vacaciones pagadas','Otra'];
-    const data = nombresPrestaciones.map(nombre =>
-      laborales.filter(l =>
-        l.prestaciones && l.prestaciones.some((p: any) => this.normalizar(p.nombre) === this.normalizar(nombre))
-      ).length
-    );
+
+    const { labels, values } = datosGraficaPrestaciones(this.catalogoPrestaciones, laborales);
     const chart = new Chart(canvas, {
       type: 'bar',
-      data: { labels: nombresPrestaciones, datasets: [{ label: 'Egresados', data, backgroundColor: colors }] },
+      data: {
+        labels,
+        datasets: [{
+          label: 'Egresados',
+          data: values,
+          backgroundColor: coloresPrestaciones(labels.length)
+        }]
+      },
       options: {
         indexAxis: 'y',
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } }
+        plugins: { legend: { display: false } },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: { stepSize: 1 }
+          }
+        }
       }
     });
     this.charts.push(chart);

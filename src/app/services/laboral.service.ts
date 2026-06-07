@@ -23,8 +23,8 @@ export class LaboralService {
   }
 
   getPrestaciones(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/egresados/prestaciones`).pipe(
-      catchError(() => this.http.get<any[]>(`${this.baseUrl}/egresado/prestaciones`))
+    return this.http.get<any[]>(`${this.baseUrl}/egresado/prestaciones`).pipe(
+      catchError(() => this.http.get<any[]>(`${this.baseUrl}/egresados/prestaciones`))
     );
   }
 

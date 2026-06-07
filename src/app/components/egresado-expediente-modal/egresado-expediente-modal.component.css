@@ -1,0 +1,256 @@
+﻿/* =========================
+    MODAL (CONTACTO + FUTUROS)
+========================= */
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    z-index: 3100;
+}
+
+.modal-card {
+    width: 100%;
+    max-width: 900px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.15);
+    overflow: hidden;
+}
+
+/* HEADER MODAL */
+.modal-header {
+    display: flex;
+    gap: 16px;
+    padding: 22px;
+    border-bottom: 1px solid #eee;
+}
+
+.modal-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: #E5F3F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2f8f83;
+}
+
+/* BODY MODAL */
+.modal-body {
+    padding: 22px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.detalle-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.detalle-item {
+    display: flex;
+    gap: 12px;
+    border-bottom: 1px solid #eef2f1;
+    padding: 10px 0;
+}
+
+.info-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #E5F3F0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2f8f83;
+}
+
+.detalle-item label {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.detalle-item p {
+    margin: 2px 0 0;
+    font-weight: 600;
+}
+
+.modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid #d7e7e2;
+    background: #fff;
+    color: #2f8f83;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 1;
+}
+
+.modal-card {
+    position: relative;
+}
+
+.seccion-acordeon {
+    border: 1px solid #e2ece9;
+    border-radius: 14px;
+    background: #f8fbfa;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.acordeon-header {
+    width: 100%;
+    border: none;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    cursor: pointer;
+}
+
+.acordeon-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+}
+
+.acordeon-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #E5F3F0;
+    color: #2f8f83;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.acordeon-title h4 {
+    margin: 0;
+    color: #204f4b;
+    font-size: 15px;
+}
+
+.acordeon-title span {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.acordeon-arrow {
+    color: #2f8f83;
+    transition: transform .2s ease;
+}
+
+.acordeon-arrow.open {
+    transform: rotate(180deg);
+}
+
+.acordeon-body {
+    border-top: 1px solid #e2ece9;
+    padding: 14px 16px 16px;
+    background: #fff;
+}
+
+.lista-registros {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.registro-linea {
+    border: 1px solid #dce8e4;
+    background: #f8fbfa;
+    color: #244b47;
+    border-radius: 10px;
+    padding: 10px 12px;
+    text-align: left;
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.registro-linea:hover {
+    border-color: #b7d6ce;
+    background: #eef7f5;
+}
+
+.registro-linea.activo {
+    border-color: #2f8f83;
+    background: #e5f3f0;
+    color: #1d6259;
+    font-weight: 600;
+}
+
+.detalle-seleccionado {
+    margin-top: 14px;
+    border-top: 1px dashed #d7e7e2;
+    padding-top: 10px;
+}
+
+.detalle-completo {
+    grid-column: 1 / -1;
+}
+
+.texto-lista-separada {
+    margin: 0;
+    line-height: 1.5;
+    word-break: break-word;
+}
+
+.mensaje-vacio-seccion {
+    margin: 6px 0;
+    color: #6b7280;
+}
+
+.estado-vacio {
+    padding: 24px;
+    text-align: center;
+    color: #6b7280;
+}
+
+/* FOOTER */
+.cert-footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px;
+    border-top: 1px solid #eee;
+}
+
+.cert-btn-secondary {
+    background: #2f8f83;
+    color: #fff;
+    padding: 13px 22px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+
+.cert-btn-secondary:hover {
+    background: #27776d;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+
+    .detalle-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .perfil-header {
+        flex-direction: column;
+    }
+
+}

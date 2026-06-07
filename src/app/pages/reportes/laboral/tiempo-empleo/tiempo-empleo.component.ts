@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
+import { contarPorCampo, ETIQUETAS_TIEMPO_EMPLEO, coloresGrafica } from '../../../../utils/graficas-reporte.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -33,13 +34,13 @@ export class TiempoEmpleoComponent implements OnInit, OnDestroy {
 
   construir() {
     const datos = this.svc.filtrarPorCampus(this.todos, this.egresados, this.campusSeleccionado);
-    const labels = ['Menos de 3 meses','3-6 meses','6-12 meses','Mas de un año'];
-    const values = labels.map(l => datos.filter(d => d.tiempoConseguir === l).length);
+    const labels = [...ETIQUETAS_TIEMPO_EMPLEO];
+    const values = contarPorCampo(datos, 'tiempoConseguir', ETIQUETAS_TIEMPO_EMPLEO);
     const canvas = document.getElementById('chart') as HTMLCanvasElement;
     if (!canvas) return;
     this.chart = new Chart(canvas, {
       type: 'bar',
-      data: { labels, datasets: [{ label: 'Egresados', data: values, backgroundColor: ['#2f8f83','#52b0a4','#85cdc6','#9eaab3'] }] },
+      data: { labels, datasets: [{ label: 'Egresados', data: values, backgroundColor: coloresGrafica(labels.length) }] },
       options: {
         maintainAspectRatio: false,
         plugins: {

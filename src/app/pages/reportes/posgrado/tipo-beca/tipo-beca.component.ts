@@ -4,6 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
+import { PosgradoService } from '../../../../services/posgrado.service';
+import { coloresPrestaciones } from '../../../../utils/prestaciones-reporte.util';
+import { datosGraficaTipoBeca } from '../../../../utils/tipo-beca-reporte.util';
+import { repararTextoEnObjeto } from '../../../../utils/texto-encoding.util';
+
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -14,32 +19,61 @@ Chart.register(...registerables, ChartDataLabels);
   styleUrl: './tipo-beca.component.css'
 })
 export class TipoBecaComponent implements OnInit, OnDestroy {
-  campus = ['Todos','Loma Bonita','Tuxtepec'];
+  campus = ['Todos', 'Loma Bonita', 'Tuxtepec'];
   campusSeleccionado = 'Todos';
   egresados: any[] = [];
   todos: any[] = [];
+  catalogoTiposBeca: any[] = [];
   private chart?: Chart;
 
-  constructor(private svc: GraficasDataService) {}
+  constructor(
+    private svc: GraficasDataService,
+    private posgradoService: PosgradoService
+  ) {}
 
   ngOnInit() {
+    this.posgradoService.getTiposBeca().subscribe({
+      next: (tipos) => {
+        this.catalogoTiposBeca = (tipos || []).map(item => repararTextoEnObjeto(item));
+        this.construir();
+      },
+      error: () => {
+        this.catalogoTiposBeca = [];
+        this.construir();
+      }
+    });
+
     this.svc.getEgresados().subscribe(e => {
-      this.egresados = e;
-      this.svc.getPosgrados().subscribe(p => { this.todos = p; this.construir(); });
+      this.egresados = (e || []).map(item => repararTextoEnObjeto(item));
+      this.svc.getPosgrados().subscribe(p => {
+        this.todos = (p || []).map(item => repararTextoEnObjeto(item));
+        this.construir();
+      });
     });
   }
 
-  cambiar() { this.destruir(); setTimeout(() => this.construir(), 100); }
+  cambiar() {
+    this.destruir();
+    setTimeout(() => this.construir(), 100);
+  }
 
   construir() {
-    const datos = this.svc.filtrarPorCampus(this.todos, this.egresados, this.campusSeleccionado).filter(d => d.tieneBeca);
-    const tipos = [...new Set(datos.map(d => d.tipoBeca?.nombre).filter(Boolean))];
-    const values = tipos.map(t => datos.filter(d => d.tipoBeca?.nombre === t).length);
+    this.destruir();
+    const datos = this.svc.filtrarPorCampus(this.todos, this.egresados, this.campusSeleccionado);
+    const { labels, values } = datosGraficaTipoBeca(this.catalogoTiposBeca, datos);
     const canvas = document.getElementById('chart') as HTMLCanvasElement;
     if (!canvas) return;
+
     this.chart = new Chart(canvas, {
       type: 'bar',
-      data: { labels: tipos, datasets: [{ label: 'Egresados', data: values, backgroundColor: ['#2f8f83','#52b0a4','#85cdc6','#1a6e78'] }] },
+      data: {
+        labels,
+        datasets: [{
+          label: 'Egresados',
+          data: values,
+          backgroundColor: coloresPrestaciones(labels.length)
+        }]
+      },
       options: {
         maintainAspectRatio: false,
         plugins: {

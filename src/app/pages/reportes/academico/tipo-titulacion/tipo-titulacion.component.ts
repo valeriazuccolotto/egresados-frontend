@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
+import { contarPorCampo, ETIQUETAS_TIPO_TITULACION, coloresGrafica } from '../../../../utils/graficas-reporte.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -33,14 +34,14 @@ export class TipoTitulacionComponent implements OnInit, OnDestroy {
 
   construir() {
     const datos = this.svc.filtrarPorCampus(this.todos, this.egresados, this.campusSeleccionado);
-    const labels = ['Tesis', 'CENEVAL', 'Promedio', 'Experiencia laboral'];
-    const values = labels.map(l => datos.filter(a => a.tipoTitulacion === l).length);
+    const labels = [...ETIQUETAS_TIPO_TITULACION];
+    const values = contarPorCampo(datos, 'tipoTitulacion', ETIQUETAS_TIPO_TITULACION);
     const total = values.reduce((a,b) => a+b, 0);
     const canvas = document.getElementById('chart') as HTMLCanvasElement;
     if (!canvas) return;
     this.chart = new Chart(canvas, {
       type: 'doughnut',
-      data: { labels, datasets: [{ data: values, backgroundColor: ['#2f8f83','#52b0a4','#85cdc6','#1a6e78'] }] },
+      data: { labels, datasets: [{ data: values, backgroundColor: coloresGrafica(labels.length) }] },
       options: {
         maintainAspectRatio: false,
         plugins: {

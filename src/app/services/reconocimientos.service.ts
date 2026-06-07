@@ -13,8 +13,8 @@ export class ReconocimientosService {
   constructor(private http: HttpClient) {}
 
   getReconocimientos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/egresados/reconocimientos`).pipe(
-      catchError(() => this.http.get<any[]>(`${this.baseUrl}/egresado/reconocimientos`))
+    return this.http.get<any[]>(`${this.baseUrl}/egresado/reconocimientos`).pipe(
+      catchError(() => this.http.get<any[]>(`${this.baseUrl}/egresados/reconocimientos`))
     );
   }
 

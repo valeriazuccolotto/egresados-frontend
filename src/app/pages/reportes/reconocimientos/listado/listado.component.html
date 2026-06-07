@@ -28,7 +28,7 @@
           <td>{{ r.nombreReconocimiento }}</td>
           <td>
             <span class="badge" [ngClass]="{
-              'badge-academico': r.tipoReconocimiento==='Academico',
+              'badge-academico': r.tipoReconocimiento==='Académico' || r.tipoReconocimiento==='Academico',
               'badge-cultural': r.tipoReconocimiento==='Cultural',
               'badge-deportivo': r.tipoReconocimiento==='Deportivo'
             }">{{ r.tipoReconocimiento }}</span>

@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReconocimientosService } from '../../../services/reconocimientos.service';
+import { ETIQUETAS_TIPO_RECONOCIMIENTO } from '../../../utils/graficas-reporte.util';
+import { repararTextoEnObjeto } from '../../../utils/texto-encoding.util';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -35,10 +37,10 @@ export class ReconocimientosComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.reconocimientosService.getEgresados().subscribe({
       next: (egresados) => {
-        this.todosEgresados = egresados || [];
+        this.todosEgresados = (egresados || []).map(item => repararTextoEnObjeto(item));
         this.reconocimientosService.getReconocimientos().subscribe({
           next: (reconocimientos) => {
-            this.todosReconocimientos = reconocimientos || [];
+            this.todosReconocimientos = (reconocimientos || []).map(item => repararTextoEnObjeto(item));
             this.aplicarFiltro();
           },
           error: () => {
@@ -109,7 +111,7 @@ export class ReconocimientosComponent implements OnInit, OnDestroy {
     const AZ = '#1a6e78';
 
     // 1. Tipo de reconocimiento - pie grande
-    const tipos = ['Académico', 'Cultural', 'Deportivo'];
+    const tipos = [...ETIQUETAS_TIPO_RECONOCIMIENTO];
     const datosTipo = tipos.map(t =>
       reconocimientos.filter(r => this.normalizar(r.tipoReconocimiento) === this.normalizar(t)).length
     );

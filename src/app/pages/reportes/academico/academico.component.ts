@@ -2,6 +2,11 @@ import { Component, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AcademicoService } from '../../../services/academico.service';
+import {
+  ETIQUETAS_TIPO_TITULACION,
+  ETIQUETAS_TIPO_TITULACION_CORTAS
+} from '../../../utils/graficas-reporte.util';
+import { repararTextoEnObjeto } from '../../../utils/texto-encoding.util';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
@@ -34,10 +39,10 @@ export class AcademicoComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.academicoService.getEgresados().subscribe({
       next: (egresados) => {
-        this.todosEgresados = egresados || [];
+        this.todosEgresados = (egresados || []).map(item => repararTextoEnObjeto(item));
         this.academicoService.getAcademicos().subscribe({
           next: (academicos) => {
-            this.todosAcademicos = academicos || [];
+            this.todosAcademicos = (academicos || []).map(item => repararTextoEnObjeto(item));
             this.aplicarFiltro();
           },
           error: () => {
@@ -138,8 +143,8 @@ export class AcademicoComponent implements OnInit, AfterViewInit, OnDestroy {
     );
 
     // 2. Tipo titulación - doughnut
-    const tipos = ['Tesis', 'CENEVAL', 'Promedio', 'Experiencia laboral'];
-    const tiposLabels = ['Tesis', 'CENEVAL', 'Promedio', 'Exp. Laboral'];
+    const tipos = [...ETIQUETAS_TIPO_TITULACION];
+    const tiposLabels = [...ETIQUETAS_TIPO_TITULACION_CORTAS];
     const datosTipo = tipos.map(t =>
       academicos.filter(a => this.normalizar(a.tipoTitulacion) === this.normalizar(t)).length
     );

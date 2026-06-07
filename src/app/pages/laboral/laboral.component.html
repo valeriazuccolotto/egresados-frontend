@@ -42,40 +42,102 @@
             <label><i class="fas fa-industry"></i>Sector <span class="required">*</span></label>
             <select [(ngModel)]="form.sector" name="sector" required #sector="ngModel">
             <option value="">Seleccione</option>
-            <option>Tecnologico</option>
+            <option>Tecnológico</option>
             <option>Industria</option>
-            <option>Agricola</option>
-            <option>Educacion</option>
+            <option>Agrícola</option>
+            <option>Educación</option>
             <option>Servicios</option>
             <option>Otro</option>
             </select>
             <div class="error" *ngIf="sector.invalid && sector.touched">Campo obligatorio</div>
         </div>
 
-        <div class="field-group field-group--estado">
-            <label><i class="fas fa-map-marker-alt"></i>¿Lugar donde está trabajando? <span class="required">*</span></label>
-            <input type="hidden" [(ngModel)]="form.estadoTrabajo" name="estadoTrabajo" required #estadoTrabajo="ngModel">
-            <div class="estado-select-wrap" (click)="$event.stopPropagation()">
-                <button
-                    type="button"
-                    class="estado-select-trigger"
-                    [class.placeholder]="!form.estadoTrabajo"
-                    [class.ng-invalid]="estadoTrabajo.invalid && estadoTrabajoTouchedCreate"
-                    [class.ng-valid]="estadoTrabajo.valid && estadoTrabajoTouchedCreate"
-                    (click)="toggleEstadoDropdown('create', $event)">
-                    <span>{{ form.estadoTrabajo || 'Seleccione' }}</span>
-                    <span class="estado-select-chevron" [class.abierto]="estadoDropdownAbierto === 'create'">▾</span>
-                </button>
-                <ul class="estado-select-list" *ngIf="estadoDropdownAbierto === 'create'">
-                    <li
-                        *ngFor="let estado of estadosRepublica"
-                        [class.activo]="form.estadoTrabajo === estado"
-                        (click)="seleccionarEstadoTrabajo(estado, 'create', $event)">
-                        {{ estado }}
-                    </li>
-                </ul>
+        <div class="ubicacion-laboral-wrap">
+            <div class="field-group field-group--estado">
+                <label><i class="fas fa-map-marker-alt"></i>¿Lugar donde está trabajando? <span class="required">*</span></label>
+                <input type="hidden" [(ngModel)]="form.estadoTrabajo" name="estadoTrabajo" required #estadoTrabajo="ngModel">
+                <div class="estado-select-wrap" (click)="$event.stopPropagation()">
+                    <button
+                        type="button"
+                        class="estado-select-trigger"
+                        [class.placeholder]="!form.estadoTrabajo"
+                        [class.ng-invalid]="estadoTrabajo.invalid && estadoTrabajoTouchedCreate"
+                        [class.ng-valid]="estadoTrabajo.valid && estadoTrabajoTouchedCreate"
+                        (click)="toggleEstadoDropdown('create', $event)">
+                        <span>{{ form.estadoTrabajo || 'Seleccione' }}</span>
+                        <span class="estado-select-chevron" [class.abierto]="estadoDropdownAbierto === 'create'">▾</span>
+                    </button>
+                    <ul class="estado-select-list" *ngIf="estadoDropdownAbierto === 'create'">
+                        <li
+                            *ngFor="let estado of estadosRepublica"
+                            [class.activo]="form.estadoTrabajo === estado"
+                            (click)="seleccionarEstadoTrabajo(estado, 'create', $event)">
+                            {{ estado }}
+                        </li>
+                    </ul>
+                </div>
+                <div class="error" *ngIf="estadoTrabajo.invalid && estadoTrabajoTouchedCreate">Campo obligatorio</div>
             </div>
-            <div class="error" *ngIf="estadoTrabajo.invalid && estadoTrabajoTouchedCreate">Campo obligatorio</div>
+
+            <div class="ubicacion-detalle" *ngIf="form.estadoTrabajo === estadoOaxaca">
+                <div class="field-group field-group--municipio">
+                    <label><i class="fas fa-map"></i>Municipio de Oaxaca <span class="required">*</span></label>
+                    <input type="hidden" [(ngModel)]="form.municipioTrabajo" name="municipioTrabajo" required #municipioTrabajo="ngModel">
+                    <div class="estado-select-wrap" (click)="$event.stopPropagation()">
+                        <button
+                            type="button"
+                            class="estado-select-trigger"
+                            [class.placeholder]="!form.municipioTrabajo"
+                            [class.ng-invalid]="municipioTrabajo.invalid && municipioTouchedCreate"
+                            [class.ng-valid]="municipioTrabajo.valid && municipioTouchedCreate"
+                            (click)="toggleMunicipioDropdown('create', $event)">
+                            <span>{{ form.municipioTrabajo || 'Seleccione municipio' }}</span>
+                            <span class="estado-select-chevron" [class.abierto]="municipioDropdownAbierto === 'create'">▾</span>
+                        </button>
+                        <div class="estado-select-panel" *ngIf="municipioDropdownAbierto === 'create'">
+                            <input
+                                type="text"
+                                class="municipio-busqueda"
+                                [(ngModel)]="municipioBusquedaCreate"
+                                name="municipioBusquedaCreate"
+                                placeholder="Buscar municipio..."
+                                (click)="$event.stopPropagation()">
+                            <ul class="estado-select-list estado-select-list--municipios">
+                                <li class="municipio-sin-resultados" *ngIf="cargandoMunicipios">
+                                    Cargando municipios...
+                                </li>
+                                <li
+                                    *ngFor="let municipio of municipiosFiltradosCreate"
+                                    [class.activo]="form.municipioTrabajo === municipio"
+                                    (click)="seleccionarMunicipio(municipio, 'create', $event)">
+                                    {{ municipio }}
+                                </li>
+                                <li class="municipio-sin-resultados" *ngIf="!cargandoMunicipios && municipiosOaxaca.length === 0">
+                                    No se cargó el catálogo. Recarga la página.
+                                </li>
+                                <li class="municipio-sin-resultados" *ngIf="!cargandoMunicipios && municipiosOaxaca.length > 0 && municipiosFiltradosCreate.length === 0">
+                                    Sin resultados
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="error" *ngIf="municipioTrabajo.invalid && municipioTouchedCreate">Campo obligatorio</div>
+                </div>
+            </div>
+
+            <div class="ubicacion-detalle" *ngIf="form.estadoTrabajo === estadoExtranjero">
+                <div class="field-group">
+                    <label><i class="fas fa-globe-americas"></i>¿Dónde en el extranjero trabaja? <span class="required">*</span></label>
+                    <input
+                        [(ngModel)]="form.lugarExtranjero"
+                        name="lugarExtranjero"
+                        required
+                        #lugarExtranjero="ngModel"
+                        placeholder="Ej. Estados Unidos, California"
+                        (blur)="lugarExtranjeroTouchedCreate = true">
+                    <div class="error" *ngIf="lugarExtranjero.invalid && lugarExtranjeroTouchedCreate">Campo obligatorio</div>
+                </div>
+            </div>
         </div>
         </div>
 
@@ -128,7 +190,7 @@
             <option value="">Seleccione</option>
             <option>Presencial</option>
             <option>Remoto</option>
-            <option>Hibrido</option>
+            <option>Híbrido</option>
             </select>
             <div class="error" *ngIf="modalidad.invalid && modalidad.touched">Campo obligatorio</div>
         </div>
@@ -228,8 +290,8 @@
                 {{ laboral.empresa }}
                 </strong>
                 <p class="puesto">{{ laboral.puesto }}</p>
-                <p class="puesto" *ngIf="laboral.estadoTrabajo || laboral.estado_trabajo">
-                  {{ laboral.estadoTrabajo || laboral.estado_trabajo }}
+                <p class="puesto" *ngIf="textoUbicacionLaboral(laboral)">
+                  {{ textoUbicacionLaboral(laboral) }}
                 </p>
             </div>
             <span class="badge">{{ laboral.modalidadTrabajo }}</span>
@@ -269,40 +331,102 @@
             <label><i class="fas fa-industry"></i>Sector <span class="required">*</span></label>
             <select [(ngModel)]="laboralSeleccionado.sector" name="sector" required #sectorEdit="ngModel">
             <option value="">Seleccione</option>
-            <option>Tecnologico</option>
+            <option>Tecnológico</option>
             <option>Industria</option>
-            <option>Agricola</option>
-            <option>Educacion</option>
+            <option>Agrícola</option>
+            <option>Educación</option>
             <option>Servicios</option>
             <option>Otro</option>
             </select>
             <div class="error" *ngIf="sectorEdit.invalid && sectorEdit.touched">Campo obligatorio</div>
         </div>
 
-        <div class="field-group field-group--estado">
-            <label><i class="fas fa-map-marker-alt"></i>¿Lugar donde está trabajando? <span class="required">*</span></label>
-            <input type="hidden" [(ngModel)]="laboralSeleccionado.estadoTrabajo" name="estadoTrabajoEdit" required #estadoTrabajoEdit="ngModel">
-            <div class="estado-select-wrap" (click)="$event.stopPropagation()">
-                <button
-                    type="button"
-                    class="estado-select-trigger"
-                    [class.placeholder]="!laboralSeleccionado.estadoTrabajo"
-                    [class.ng-invalid]="estadoTrabajoEdit.invalid && estadoTrabajoTouchedEdit"
-                    [class.ng-valid]="estadoTrabajoEdit.valid && estadoTrabajoTouchedEdit"
-                    (click)="toggleEstadoDropdown('edit', $event)">
-                    <span>{{ laboralSeleccionado.estadoTrabajo || 'Seleccione' }}</span>
-                    <span class="estado-select-chevron" [class.abierto]="estadoDropdownAbierto === 'edit'">▾</span>
-                </button>
-                <ul class="estado-select-list" *ngIf="estadoDropdownAbierto === 'edit'">
-                    <li
-                        *ngFor="let estado of estadosRepublica"
-                        [class.activo]="laboralSeleccionado.estadoTrabajo === estado"
-                        (click)="seleccionarEstadoTrabajo(estado, 'edit', $event)">
-                        {{ estado }}
-                    </li>
-                </ul>
+        <div class="ubicacion-laboral-wrap">
+            <div class="field-group field-group--estado">
+                <label><i class="fas fa-map-marker-alt"></i>¿Lugar donde está trabajando? <span class="required">*</span></label>
+                <input type="hidden" [(ngModel)]="laboralSeleccionado.estadoTrabajo" name="estadoTrabajoEdit" required #estadoTrabajoEdit="ngModel">
+                <div class="estado-select-wrap" (click)="$event.stopPropagation()">
+                    <button
+                        type="button"
+                        class="estado-select-trigger"
+                        [class.placeholder]="!laboralSeleccionado.estadoTrabajo"
+                        [class.ng-invalid]="estadoTrabajoEdit.invalid && estadoTrabajoTouchedEdit"
+                        [class.ng-valid]="estadoTrabajoEdit.valid && estadoTrabajoTouchedEdit"
+                        (click)="toggleEstadoDropdown('edit', $event)">
+                        <span>{{ laboralSeleccionado.estadoTrabajo || 'Seleccione' }}</span>
+                        <span class="estado-select-chevron" [class.abierto]="estadoDropdownAbierto === 'edit'">▾</span>
+                    </button>
+                    <ul class="estado-select-list" *ngIf="estadoDropdownAbierto === 'edit'">
+                        <li
+                            *ngFor="let estado of estadosRepublica"
+                            [class.activo]="laboralSeleccionado.estadoTrabajo === estado"
+                            (click)="seleccionarEstadoTrabajo(estado, 'edit', $event)">
+                            {{ estado }}
+                        </li>
+                    </ul>
+                </div>
+                <div class="error" *ngIf="estadoTrabajoEdit.invalid && estadoTrabajoTouchedEdit">Campo obligatorio</div>
             </div>
-            <div class="error" *ngIf="estadoTrabajoEdit.invalid && estadoTrabajoTouchedEdit">Campo obligatorio</div>
+
+            <div class="ubicacion-detalle" *ngIf="laboralSeleccionado.estadoTrabajo === estadoOaxaca">
+                <div class="field-group field-group--municipio">
+                    <label><i class="fas fa-map"></i>Municipio de Oaxaca <span class="required">*</span></label>
+                    <input type="hidden" [(ngModel)]="laboralSeleccionado.municipioTrabajo" name="municipioTrabajoEdit" required #municipioTrabajoEdit="ngModel">
+                    <div class="estado-select-wrap" (click)="$event.stopPropagation()">
+                        <button
+                            type="button"
+                            class="estado-select-trigger"
+                            [class.placeholder]="!laboralSeleccionado.municipioTrabajo"
+                            [class.ng-invalid]="municipioTrabajoEdit.invalid && municipioTouchedEdit"
+                            [class.ng-valid]="municipioTrabajoEdit.valid && municipioTouchedEdit"
+                            (click)="toggleMunicipioDropdown('edit', $event)">
+                            <span>{{ laboralSeleccionado.municipioTrabajo || 'Seleccione municipio' }}</span>
+                            <span class="estado-select-chevron" [class.abierto]="municipioDropdownAbierto === 'edit'">▾</span>
+                        </button>
+                        <div class="estado-select-panel" *ngIf="municipioDropdownAbierto === 'edit'">
+                            <input
+                                type="text"
+                                class="municipio-busqueda"
+                                [(ngModel)]="municipioBusquedaEdit"
+                                name="municipioBusquedaEdit"
+                                placeholder="Buscar municipio..."
+                                (click)="$event.stopPropagation()">
+                            <ul class="estado-select-list estado-select-list--municipios">
+                                <li class="municipio-sin-resultados" *ngIf="cargandoMunicipios">
+                                    Cargando municipios...
+                                </li>
+                                <li
+                                    *ngFor="let municipio of municipiosFiltradosEdit"
+                                    [class.activo]="laboralSeleccionado.municipioTrabajo === municipio"
+                                    (click)="seleccionarMunicipio(municipio, 'edit', $event)">
+                                    {{ municipio }}
+                                </li>
+                                <li class="municipio-sin-resultados" *ngIf="!cargandoMunicipios && municipiosOaxaca.length === 0">
+                                    No se cargó el catálogo. Recarga la página.
+                                </li>
+                                <li class="municipio-sin-resultados" *ngIf="!cargandoMunicipios && municipiosOaxaca.length > 0 && municipiosFiltradosEdit.length === 0">
+                                    Sin resultados
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="error" *ngIf="municipioTrabajoEdit.invalid && municipioTouchedEdit">Campo obligatorio</div>
+                </div>
+            </div>
+
+            <div class="ubicacion-detalle" *ngIf="laboralSeleccionado.estadoTrabajo === estadoExtranjero">
+                <div class="field-group">
+                    <label><i class="fas fa-globe-americas"></i>¿Dónde en el extranjero trabaja? <span class="required">*</span></label>
+                    <input
+                        [(ngModel)]="laboralSeleccionado.lugarExtranjero"
+                        name="lugarExtranjeroEdit"
+                        required
+                        #lugarExtranjeroEdit="ngModel"
+                        placeholder="Ej. Estados Unidos, California"
+                        (blur)="lugarExtranjeroTouchedEdit = true">
+                    <div class="error" *ngIf="lugarExtranjeroEdit.invalid && lugarExtranjeroTouchedEdit">Campo obligatorio</div>
+                </div>
+            </div>
         </div>
         </div>
 
@@ -315,7 +439,7 @@
             <option value="">Seleccione</option>
             <option>Bolsa de trabajo</option>
             <option>Internet</option>
-            <option>Recomendacion</option>
+            <option>Recomendación</option>
             <option>Entrevista</option>
             </select>
             <div class="error" *ngIf="medioEdit.invalid && medioEdit.touched">Campo obligatorio</div>
@@ -328,7 +452,7 @@
             <option>Menos de 3 meses</option>
             <option>3-6 meses</option>
             <option>6-12 meses</option>
-            <option>Mas de un año</option>
+            <option>Más de un año</option>
             </select>
             <div class="error" *ngIf="tiempoEdit.invalid && tiempoEdit.touched">Campo obligatorio</div>
         </div>
@@ -353,7 +477,7 @@
             <option value="">Seleccione</option>
             <option>Presencial</option>
             <option>Remoto</option>
-            <option>Hibrido</option>
+            <option>Híbrido</option>
             </select>
             <div class="error" *ngIf="modalidadEdit.invalid && modalidadEdit.touched">Campo obligatorio</div>
         </div>
@@ -505,7 +629,7 @@
                     <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
                     <div>
                         <label>¿Lugar donde está trabajando?</label>
-                        <p>{{ laboralConsulta.estadoTrabajo || 'No registrado' }}</p>
+                        <p>{{ textoUbicacionLaboral(laboralConsulta) || 'No registrado' }}</p>
                     </div>
                 </div>
 

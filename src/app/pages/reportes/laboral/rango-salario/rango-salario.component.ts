@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
+import { contarPorCampo, ETIQUETAS_SALARIO, coloresGrafica } from '../../../../utils/graficas-reporte.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -33,13 +34,13 @@ export class RangoSalarioComponent implements OnInit, OnDestroy {
 
   construir() {
     const datos = this.svc.filtrarPorCampus(this.todos, this.egresados, this.campusSeleccionado);
-    const labels = ['$5,000 - $12,000','$12,000 - $20,000','$20,000 - $30,000','Más de $30,000','Prefiero no responder'];
-    const values = labels.map(l => datos.filter(d => d.salario === l).length);
+    const labels = [...ETIQUETAS_SALARIO];
+    const values = contarPorCampo(datos, 'salario', ETIQUETAS_SALARIO);
     const canvas = document.getElementById('chart') as HTMLCanvasElement;
     if (!canvas) return;
     this.chart = new Chart(canvas, {
       type: 'bar',
-      data: { labels, datasets: [{ label: 'Egresados', data: values, backgroundColor: ['#c8d0d5','#85cdc6','#52b0a4','#2f8f83','#9eaab3'] }] },
+      data: { labels, datasets: [{ label: 'Egresados', data: values, backgroundColor: coloresGrafica(labels.length) }] },
       options: {
         maintainAspectRatio: false,
         plugins: {

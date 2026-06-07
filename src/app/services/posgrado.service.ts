@@ -21,4 +21,8 @@ export class PosgradoService {
   getEgresados(): Observable<any[]> {
     return this.http.get<any[]>(`${this.baseUrl}/egresados`);
   }
+
+  getTiposBeca(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/tipo-beca`);
+  }
 }

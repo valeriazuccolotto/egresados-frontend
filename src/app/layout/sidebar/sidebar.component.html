@@ -8,7 +8,7 @@
 
     <a routerLink="/admin/datos-recuperados" routerLinkActive="activo">
       <span class="material-icons">assignment</span>
-      Datos recuperados
+      Lista de Egresados
     </a>
 
     <a routerLink="/admin/solicitar-info" routerLinkActive="activo">
@@ -27,7 +27,7 @@
 
       <!-- LABORAL -->
       <div class="submenu-item" [class.activo]="subMenuAbierto==='laboral'"
-           (click)="toggleSubMenu('laboral'); $event.stopPropagation()">
+          (click)="toggleSubMenu('laboral'); $event.stopPropagation()">
         <a routerLink="/admin/reportes/laboral" (click)="$event.stopPropagation()">
           <span class="material-icons">work</span>Laboral
         </a>
@@ -65,7 +65,7 @@
 
       <!-- ACADÉMICO -->
       <div class="submenu-item" [class.activo]="subMenuAbierto==='academico'"
-           (click)="toggleSubMenu('academico'); $event.stopPropagation()">
+          (click)="toggleSubMenu('academico'); $event.stopPropagation()">
         <a routerLink="/admin/reportes/academico" (click)="$event.stopPropagation()">
           <span class="material-icons">school</span>Académico
         </a>
@@ -88,7 +88,7 @@
 
       <!-- POSGRADO -->
       <div class="submenu-item" [class.activo]="subMenuAbierto==='posgrado'"
-           (click)="toggleSubMenu('posgrado'); $event.stopPropagation()">
+          (click)="toggleSubMenu('posgrado'); $event.stopPropagation()">
         <a routerLink="/admin/reportes/posgrado" (click)="$event.stopPropagation()">
           <span class="material-icons">menu_book</span>Posgrado
         </a>
@@ -117,7 +117,7 @@
 
       <!-- RECONOCIMIENTOS -->
       <div class="submenu-item" [class.activo]="subMenuAbierto==='reconocimientos'"
-           (click)="toggleSubMenu('reconocimientos'); $event.stopPropagation()">
+          (click)="toggleSubMenu('reconocimientos'); $event.stopPropagation()">
         <a routerLink="/admin/reportes/reconocimientos" (click)="$event.stopPropagation()">
           <span class="material-icons">emoji_events</span>Reconocimientos
         </a>
@@ -139,7 +139,7 @@
 
     <a routerLink="/admin/usuarios" routerLinkActive="activo">
       <span class="material-icons">people</span>
-      Egresados
+      Concentrado de Egresados
     </a>
 
   </nav>

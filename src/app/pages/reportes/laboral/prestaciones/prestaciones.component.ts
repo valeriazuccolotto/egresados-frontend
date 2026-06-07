@@ -4,6 +4,10 @@ import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
+import { LaboralService } from '../../../../services/laboral.service';
+import { coloresPrestaciones, datosGraficaPrestaciones } from '../../../../utils/prestaciones-reporte.util';
+import { repararTextoEnObjeto } from '../../../../utils/texto-encoding.util';
+
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -14,32 +18,61 @@ Chart.register(...registerables, ChartDataLabels);
   styleUrl: './prestaciones.component.css'
 })
 export class PrestacionesComponent implements OnInit, OnDestroy {
-  campus = ['Todos','Loma Bonita','Tuxtepec'];
+  campus = ['Todos', 'Loma Bonita', 'Tuxtepec'];
   campusSeleccionado = 'Todos';
   egresados: any[] = [];
   todos: any[] = [];
+  catalogoPrestaciones: any[] = [];
   private chart?: Chart;
 
-  constructor(private svc: GraficasDataService) {}
+  constructor(
+    private svc: GraficasDataService,
+    private laboralService: LaboralService
+  ) {}
 
   ngOnInit() {
+    this.laboralService.getPrestaciones().subscribe({
+      next: (prestaciones) => {
+        this.catalogoPrestaciones = (prestaciones || []).map(item => repararTextoEnObjeto(item));
+        this.construir();
+      },
+      error: () => {
+        this.catalogoPrestaciones = [];
+        this.construir();
+      }
+    });
+
     this.svc.getEgresados().subscribe(e => {
-      this.egresados = e;
-      this.svc.getLaborales().subscribe(l => { this.todos = l; this.construir(); });
+      this.egresados = (e || []).map(item => repararTextoEnObjeto(item));
+      this.svc.getLaborales().subscribe(l => {
+        this.todos = (l || []).map(item => repararTextoEnObjeto(item));
+        this.construir();
+      });
     });
   }
 
-  cambiar() { this.destruir(); setTimeout(() => this.construir(), 100); }
+  cambiar() {
+    this.destruir();
+    setTimeout(() => this.construir(), 100);
+  }
 
   construir() {
+    this.destruir();
     const datos = this.svc.filtrarPorCampus(this.todos, this.egresados, this.campusSeleccionado);
-    const labels = ['IMSS','ISSSTE','Seguro de vida','Fondo de ahorro','Vales de despensa','Aguinaldo','Vacaciones pagadas','Otra'];
-    const values = labels.map(nombre => datos.filter(l => l.prestaciones?.some((p: any) => p.nombre === nombre)).length);
+    const { labels, values } = datosGraficaPrestaciones(this.catalogoPrestaciones, datos);
     const canvas = document.getElementById('chart') as HTMLCanvasElement;
     if (!canvas) return;
+
     this.chart = new Chart(canvas, {
       type: 'bar',
-      data: { labels, datasets: [{ label: 'Egresados', data: values, backgroundColor: ['#2f8f83','#52b0a4','#85cdc6','#1a6e78','#9eaab3','#c8d0d5','#2f8f83','#52b0a4'] }] },
+      data: {
+        labels,
+        datasets: [{
+          label: 'Egresados',
+          data: values,
+          backgroundColor: coloresPrestaciones(labels.length)
+        }]
+      },
       options: {
         indexAxis: 'y',
         maintainAspectRatio: false,

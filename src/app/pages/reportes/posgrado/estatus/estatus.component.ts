@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
+import { contarPorCampo, ETIQUETAS_ESTATUS_POSGRADO, coloresGrafica } from '../../../../utils/graficas-reporte.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -33,13 +34,13 @@ export class EstatusComponent implements OnInit, OnDestroy {
 
   construir() {
     const datos = this.svc.filtrarPorCampus(this.todos, this.egresados, this.campusSeleccionado);
-    const labels = ['En curso','Finalizado','Pausado'];
-    const values = labels.map(l => datos.filter(d => d.estatus === l).length);
+    const labels = [...ETIQUETAS_ESTATUS_POSGRADO];
+    const values = contarPorCampo(datos, 'estatus', ETIQUETAS_ESTATUS_POSGRADO);
     const canvas = document.getElementById('chart') as HTMLCanvasElement;
     if (!canvas) return;
     this.chart = new Chart(canvas, {
       type: 'bar',
-      data: { labels, datasets: [{ label: 'Egresados', data: values, backgroundColor: ['#2f8f83','#52b0a4','#9eaab3'] }] },
+      data: { labels, datasets: [{ label: 'Egresados', data: values, backgroundColor: coloresGrafica(labels.length) }] },
       options: {
         maintainAspectRatio: false,
         plugins: {

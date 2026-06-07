@@ -58,13 +58,31 @@
     margin-bottom:20px;
 }
 
-.field-group--estado {
+.ubicacion-laboral-wrap {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.ubicacion-detalle {
+    padding-left: 12px;
+    border-left: 3px solid #2f8f83;
+}
+
+.field-group--estado,
+.field-group--municipio {
     position: relative;
     z-index: 2;
 }
 
-.field-group--estado:has(.estado-select-list) {
+.field-group--estado:has(.estado-select-list),
+.field-group--municipio:has(.estado-select-panel) {
     z-index: 30;
+}
+
+.field-group--municipio:has(.estado-select-panel) {
+    z-index: 40;
 }
 
 .estado-select-wrap {
@@ -149,6 +167,49 @@
     background: #e0f2f0;
     color: #2f8f83;
     font-weight: 600;
+}
+
+.estado-select-panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    z-index: 120;
+    background: #fff;
+    border: 1px solid #dbe3e8;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+
+.municipio-busqueda {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: none;
+    border-bottom: 1px solid #e5e7eb;
+    border-radius: 0;
+    font-size: 14px;
+}
+
+.municipio-busqueda:focus {
+    outline: none;
+    background: #f9fafb;
+}
+
+.estado-select-list--municipios {
+    position: static;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    max-height: 220px;
+}
+
+.municipio-sin-resultados {
+    padding: 12px 14px;
+    color: #6b7280;
+    font-size: 13px;
+    cursor: default;
 }
 
 .bloque-formulario h3{

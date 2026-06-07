@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
+import { contarPorCampo, ETIQUETAS_SECTOR_LABORAL, coloresGrafica } from '../../../../utils/graficas-reporte.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -33,14 +34,14 @@ export class SectorComponent implements OnInit, OnDestroy {
 
   construir() {
     const datos = this.svc.filtrarPorCampus(this.todos, this.egresados, this.campusSeleccionado);
-    const labels = ['Tecnologico','Industria','Agricola','Educacion','Servicios','Otro'];
-    const values = labels.map(l => datos.filter(d => d.sector === l).length);
+    const labels = [...ETIQUETAS_SECTOR_LABORAL];
+    const values = contarPorCampo(datos, 'sector', ETIQUETAS_SECTOR_LABORAL);
     const total = values.reduce((a,b) => a+b, 0);
     const canvas = document.getElementById('chart') as HTMLCanvasElement;
     if (!canvas) return;
     this.chart = new Chart(canvas, {
       type: 'pie',
-      data: { labels, datasets: [{ data: values, backgroundColor: ['#2f8f83','#52b0a4','#85cdc6','#1a6e78','#9eaab3','#c8d0d5'] }] },
+      data: { labels, datasets: [{ data: values, backgroundColor: coloresGrafica(labels.length) }] },
       options: {
         maintainAspectRatio: false,
         plugins: {
