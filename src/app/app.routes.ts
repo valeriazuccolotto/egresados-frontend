@@ -15,6 +15,9 @@ import { ReconocimientosComponent } from './pages/reconocimientos/reconocimiento
 import { DatosPersonalesComponent } from './pages/datos-personales/datos-personales.component';
 import { SolicitarInfoComponent } from './pages/solicitar-info/solicitar-info.component';
 import { NuevosAvisosComponent } from './pages/nuevos-avisos/nuevos-avisos.component';
+import { BolsaTrabajoComponent } from './pages/bolsa-trabajo/bolsa-trabajo.component';
+import { NuevaVacanteComponent } from './pages/nueva-vacante/nueva-vacante.component';
+import { BolsaTrabajoEgresadoComponent } from './pages/bolsa-trabajo-egresado/bolsa-trabajo-egresado.component';
 
 // Reportes nivel 1
 import { AcademicoComponent as ReporteAcademicoComponent } from './pages/reportes/academico/academico.component';
@@ -69,6 +72,7 @@ export const routes: Routes = [
   { path: 'certificaciones', component: CertificacionesComponent },
   { path: 'reconocimientos', component: ReconocimientosComponent },
   { path: 'nuevos-avisos', component: NuevosAvisosComponent },
+  { path: 'egresado/bolsaTrabajo', component: BolsaTrabajoEgresadoComponent },
   {
     path: 'admin',
     component: AdminLayoutComponent,
@@ -78,6 +82,8 @@ export const routes: Routes = [
       { path: 'usuarios', component: UsuariosAdmComponent },
       { path: 'datos-recuperados', component: DatosRecuperadosComponent },
       { path: 'solicitar-info', component: SolicitarInfoComponent },
+      { path: 'bolsaTrabajo', component: BolsaTrabajoComponent },
+      { path: 'bolsaTrabajo/nueva', component: NuevaVacanteComponent },
       // Reportes nivel 1
       { path: 'reportes/academico', component: ReporteAcademicoComponent },
       { path: 'reportes/laboral', component: ReporteLaboralComponent },

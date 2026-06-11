@@ -1,0 +1,148 @@
+<div class="bolsa-page">
+
+  <div class="section-header">
+    <div class="section-title">
+      <h2>Bolsa de trabajo</h2>
+      <p>Vacantes disponibles para egresados por carrera y modalidad</p>
+    </div>
+
+    <a class="btn-nueva" routerLink="/admin/bolsaTrabajo/nueva">
+      <span class="material-icons" aria-hidden="true">add</span>
+      Nueva vacante
+    </a>
+  </div>
+
+  <section class="metrics">
+    <div class="card">
+      <h3>{{ totalVacantes }}</h3>
+      <p>Vacantes registradas</p>
+    </div>
+    <div class="card">
+      <h3>{{ totalPresenciales }}</h3>
+      <p>Presenciales</p>
+    </div>
+    <div class="card">
+      <h3>{{ totalHibridas }}</h3>
+      <p>Hibridas</p>
+    </div>
+    <div class="card">
+      <h3>{{ totalRemotas }}</h3>
+      <p>Remotas</p>
+    </div>
+  </section>
+
+  <div class="controles-bar">
+    <div class="search-bar">
+      <input
+        type="text"
+        [(ngModel)]="busqueda"
+        placeholder="Buscar por empresa, puesto, descripcion o carrera..."
+      >
+    </div>
+  </div>
+
+  <div class="filtros">
+    <span class="filtro-label">Filtrar por modalidad:</span>
+    <button class="filtro-btn" [class.active]="modalidadFiltro==='todas'"
+            (click)="setModalidad('todas')">Todas</button>
+    <button class="filtro-btn" [class.active]="modalidadFiltro==='Presencial'"
+            (click)="setModalidad('Presencial')">
+      <span class="dot dot-presencial"></span> Presencial
+    </button>
+    <button class="filtro-btn" [class.active]="modalidadFiltro==='Hibrida'"
+            (click)="setModalidad('Hibrida')">
+      <span class="dot dot-hibrida"></span> Hibrida
+    </button>
+    <button class="filtro-btn" [class.active]="modalidadFiltro==='Remota'"
+            (click)="setModalidad('Remota')">
+      <span class="dot dot-remota"></span> Remota
+    </button>
+  </div>
+
+  <div class="error-msg" *ngIf="mensajeError">
+    {{ mensajeError }}
+  </div>
+
+  <div class="sin-datos" *ngIf="cargando">
+    Cargando vacantes...
+  </div>
+
+  <div class="sin-datos" *ngIf="!cargando && vacantesFiltradas.length === 0">
+    No hay vacantes que coincidan con la busqueda.
+  </div>
+
+  <div class="table-card" *ngIf="!cargando && vacantesFiltradas.length > 0">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Empresa</th>
+            <th>Puesto</th>
+            <th>Modalidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let vacante of vacantesFiltradas">
+            <tr class="vacante-row" [class.activa]="esVacanteSeleccionada(vacante)" (click)="toggleDetalle(vacante)">
+              <td>
+                <span class="cell-main">{{ nombreEmpresa(vacante) }}</span>
+              </td>
+              <td>
+                <span class="cell-main">{{ vacante.puesto }}</span>
+                <span class="detalle-hint">
+                  {{ esVacanteSeleccionada(vacante) ? 'Ocultar detalle' : 'Ver detalle' }}
+                </span>
+              </td>
+              <td>
+                <span class="status-badge"
+                      [class.status-presencial]="esModalidad(vacante, 'Presencial')"
+                      [class.status-hibrida]="esModalidad(vacante, 'Hibrida')"
+                      [class.status-remota]="esModalidad(vacante, 'Remota')">
+                  {{ modalidadLabel(vacante) }}
+                </span>
+              </td>
+            </tr>
+            <tr class="detalle-row" *ngIf="esVacanteSeleccionada(vacante)">
+              <td colspan="3">
+                <div class="detalle-vacante">
+                  <div class="detalle-item">
+                    <label>Descripcion</label>
+                    <p>{{ vacante.descripcion }}</p>
+                  </div>
+                  <div class="detalle-grid">
+                    <div class="detalle-item">
+                      <label>Modalidad</label>
+                      <span class="status-badge"
+                            [class.status-presencial]="vacante.modalidad==='Presencial'"
+                            [class.status-hibrida]="vacante.modalidad==='Hibrida'"
+                            [class.status-remota]="vacante.modalidad==='Remota'">
+                        {{ vacante.modalidad }}
+                      </span>
+                    </div>
+                    <div class="detalle-item">
+                      <label>Salario</label>
+                      <p>{{ salario(vacante) | currency:'MXN':'symbol':'1.2-2' }}</p>
+                    </div>
+                    <div class="detalle-item">
+                      <label>Correo</label>
+                      <p>{{ correoContacto(vacante) || 'No registrado' }}</p>
+                    </div>
+                    <div class="detalle-item">
+                      <label>Telefono</label>
+                      <p>{{ telefonoContacto(vacante) || 'No registrado' }}</p>
+                    </div>
+                    <div class="detalle-item detalle-item--full">
+                      <label>Carreras</label>
+                      <p>{{ nombresCarreras(vacante) || 'No registradas' }}</p>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

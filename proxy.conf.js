@@ -9,10 +9,16 @@ const PANTALLAS_ADMIN = [
   '/admin/usuarios',
   '/admin/datos-recuperados',
   '/admin/solicitar-info',
+  '/admin/bolsaTrabajo',
+  '/admin/bolsaTrabajo/nueva',
   '/admin/reportes/academico',
   '/admin/reportes/laboral',
   '/admin/reportes/posgrado',
   '/admin/reportes/reconocimientos'
+];
+
+const PANTALLAS_EGRESADO = [
+  '/egresado/bolsaTrabajo'
 ];
 
 function pathSinQuery(url) {
@@ -38,6 +44,10 @@ function esPantallaAdmin(url) {
   return path.startsWith('/admin/reportes/');
 }
 
+function esPantallaEgresado(url) {
+  return PANTALLAS_EGRESADO.includes(pathSinQuery(url));
+}
+
 const PROXY_CONFIG = {
   '/uploads': {
     target: 'http://localhost:8181',
@@ -52,7 +62,13 @@ const PROXY_CONFIG = {
   '/egresado': {
     target: 'http://localhost:8181',
     secure: false,
-    changeOrigin: true
+    changeOrigin: true,
+    bypass(req) {
+      if (esRecargaNavegador(req) && esPantallaEgresado(req.url)) {
+        return '/index.html';
+      }
+      return null;
+    }
   },
   '/usuarios': {
     target: 'http://localhost:8181',

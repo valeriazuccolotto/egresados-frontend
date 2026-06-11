@@ -1,0 +1,130 @@
+<div class="bolsa-egresado-page">
+
+  <div class="section-header">
+    <div class="section-title">
+      <h2>Bolsa de trabajo</h2>
+      <p>Vacantes disponibles para tu carrera: {{ carrera || 'No registrada' }}</p>
+    </div>
+  </div>
+
+  <div class="controles-bar">
+    <div class="search-bar">
+      <input
+        type="text"
+        [(ngModel)]="busqueda"
+        placeholder="Buscar por puesto, empresa o descripcion..."
+      >
+    </div>
+  </div>
+
+  <div class="filtros">
+    <span class="filtro-label">Modalidad:</span>
+    <button class="filtro-btn" [class.active]="modalidadFiltro==='todas'"
+            (click)="setModalidad('todas')">Todas</button>
+    <button class="filtro-btn" [class.active]="modalidadFiltro==='Presencial'"
+            (click)="setModalidad('Presencial')">
+      <span class="dot dot-presencial"></span> Presencial
+    </button>
+    <button class="filtro-btn" [class.active]="modalidadFiltro==='Hibrida'"
+            (click)="setModalidad('Hibrida')">
+      <span class="dot dot-hibrida"></span> Híbrida
+    </button>
+    <button class="filtro-btn" [class.active]="modalidadFiltro==='Remota'"
+            (click)="setModalidad('Remota')">
+      <span class="dot dot-remota"></span> Remota
+    </button>
+  </div>
+
+  <div class="error-msg" *ngIf="mensajeError">
+    {{ mensajeError }}
+  </div>
+
+  <div class="sin-datos" *ngIf="cargando">
+    Cargando vacantes...
+  </div>
+
+  <div class="sin-datos" *ngIf="!cargando && vacantesFiltradas.length === 0">
+    No hay vacantes disponibles para tu carrera por ahora.
+  </div>
+
+  <div class="table-card" *ngIf="!cargando && vacantesFiltradas.length > 0">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Empresa</th>
+            <th>Puesto</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let vacante of vacantesFiltradas">
+            <td>{{ nombreEmpresa(vacante) }}</td>
+            <td>{{ vacante.puesto }}</td>
+            <td>
+              <button class="btn-detalle" type="button" (click)="abrirDetalle(vacante)">
+                Ver detalle
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="vacanteSeleccionada" (click)="cerrarDetalle()">
+    <div class="modal-vacante" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div>
+          <h3>{{ vacanteSeleccionada.puesto }}</h3>
+          <p>{{ nombreEmpresa(vacanteSeleccionada) }}</p>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <div class="detalle-item detalle-item--full">
+          <label>Empresa</label>
+          <p>{{ nombreEmpresa(vacanteSeleccionada) }}</p>
+        </div>
+        <div class="detalle-item">
+          <label>Puesto</label>
+          <p>{{ vacanteSeleccionada.puesto }}</p>
+        </div>
+        <div class="detalle-item">
+          <label>Modalidad</label>
+          <span class="status-badge"
+                [class.status-presencial]="esModalidad(vacanteSeleccionada, 'Presencial')"
+                [class.status-hibrida]="esModalidad(vacanteSeleccionada, 'Hibrida')"
+                [class.status-remota]="esModalidad(vacanteSeleccionada, 'Remota')">
+            {{ modalidadLabel(vacanteSeleccionada) }}
+          </span>
+        </div>
+        <div class="detalle-item">
+          <label>Salario</label>
+          <p>{{ salario(vacanteSeleccionada) | currency:'MXN':'symbol':'1.2-2' }}</p>
+        </div>
+        <div class="detalle-item detalle-item--full">
+          <label>Descripción</label>
+          <p>{{ vacanteSeleccionada.descripcion }}</p>
+        </div>
+        <div class="detalle-item detalle-item--full">
+          <label>Carreras relacionadas</label>
+          <p>{{ nombresCarreras(vacanteSeleccionada) || 'No registradas' }}</p>
+        </div>
+        <div class="detalle-item">
+          <label>Correo de contacto</label>
+          <p>{{ correoContacto(vacanteSeleccionada) || 'No registrado' }}</p>
+        </div>
+        <div class="detalle-item">
+          <label>Teléfono de contacto</label>
+          <p>{{ telefonoContacto(vacanteSeleccionada) || 'No registrado' }}</p>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-cerrar" type="button" (click)="cerrarDetalle()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -7,6 +7,8 @@ import { Perfil } from '../../models/perfil';
 import { Usuario } from '../../models/usuario';
 import { AcademicoService } from '../../services/academico.service';
 import { Carrera } from '../../models/carrera';
+import { BolsaTrabajo } from '../../models/bolsa-trabajo';
+import { BolsaTrabajoService } from '../../services/bolsa-trabajo.service';
 
 @Component({
   selector: 'app-perfil',
@@ -21,10 +23,13 @@ export class PerfilComponent implements OnInit {
   urlFoto: string = 'assets/favicon-UNPA.ico';
   carrera: string = '';
   carreras: Carrera[] = [];
+  claveCarrera = '';
+  vacantesCarrera: BolsaTrabajo[] = [];
 
   constructor(
     public perfilService: PerfilService,
-    private academicoService: AcademicoService
+    private academicoService: AcademicoService,
+    private bolsaTrabajoService: BolsaTrabajoService
   ) {}
 
   ngOnInit(): void {
@@ -80,11 +85,13 @@ export class PerfilComponent implements OnInit {
             c => c.claveCarrera === claveAcademico
           );
 
+          this.claveCarrera = String(carreraEncontrada?.claveCarrera || claveAcademico || '');
           this.carrera =
             carreraEncontrada?.nombreCarrera ||
             academico?.nombreCarrera ||
             academico?.carrera?.nombreCarrera ||
             '';
+          this.cargarVacantesCarrera();
         },
         error: (err) => {
           console.error('Error al cargar carreras:', err);
@@ -95,6 +102,32 @@ export class PerfilComponent implements OnInit {
     error: (err) => {
       console.error('Error al cargar académico:', err);
       this.carrera = '';
+    }
+  });
+}
+
+get hayVacantesCarrera(): boolean {
+  return this.vacantesCarrera.length > 0;
+}
+
+private cargarVacantesCarrera(): void {
+  if (!this.claveCarrera && !this.carrera) {
+    this.vacantesCarrera = [];
+    return;
+  }
+
+  this.bolsaTrabajoService.getVacantes().subscribe({
+    next: (vacantes) => {
+      this.vacantesCarrera = (vacantes || []).filter(vacante =>
+        (vacante.carreras || []).some(carrera =>
+          carrera.claveCarrera === this.claveCarrera ||
+          carrera.nombreCarrera === this.carrera
+        )
+      );
+    },
+    error: (err) => {
+      console.error('Error al cargar vacantes:', err);
+      this.vacantesCarrera = [];
     }
   });
 }

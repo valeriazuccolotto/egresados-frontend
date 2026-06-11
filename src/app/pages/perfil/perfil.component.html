@@ -8,27 +8,48 @@
     </div>
   </div>
 
-  <!-- TARJETA PRINCIPAL -->
-  <div class="perfil-card">
+  <div class="perfil-top-grid">
+    <!-- TARJETA PRINCIPAL -->
+    <div class="perfil-card">
 
-    <img [src]="urlFoto" class="perfil-img" alt="Foto de perfil" (error)="urlFoto = perfilService.fotoPorDefecto()" />
+      <img [src]="urlFoto" class="perfil-img" alt="Foto de perfil" (error)="urlFoto = perfilService.fotoPorDefecto()" />
 
-    <div class="perfil-info">
-      <h2>
-        {{ perfil?.nombre }} {{ perfil?.apellidoPaterno }} {{ perfil?.apellidoMaterno }}
-      </h2>
+      <div class="perfil-info">
+        <h2>
+          {{ perfil?.nombre }} {{ perfil?.apellidoPaterno }} {{ perfil?.apellidoMaterno }}
+        </h2>
 
-      <span class="badge">
-        <span class="material-icons badge-icon">school</span>
-        Egresado
-      </span>
+        <span class="badge">
+          <span class="material-icons badge-icon">school</span>
+          Egresado
+        </span>
 
-      <button class="btn-editar-perfil" routerLink="/datos-personales">
-        <span class="material-icons">edit</span>
-        Editar perfil
-      </button>
+        <button class="btn-editar-perfil" routerLink="/datos-personales">
+          <span class="material-icons">edit</span>
+          Editar perfil
+        </button>
+      </div>
+
     </div>
 
+    <div class="bolsa-widget" [class.con-alerta]="hayVacantesCarrera">
+      <div class="bolsa-widget-header">
+        <div class="bolsa-icon">
+          <span class="material-icons">work</span>
+        </div>
+        <span class="alert-dot" *ngIf="hayVacantesCarrera"></span>
+      </div>
+
+      <h3>Bolsa de trabajo</h3>
+      <p>Vacantes disponibles para tu carrera: {{ carrera || 'No registrada' }}</p>
+
+      <span class="vacante-badge nueva" *ngIf="hayVacantesCarrera">¡Nueva vacante!</span>
+      <span class="vacante-badge sin-vacantes" *ngIf="!hayVacantesCarrera">Sin nuevas vacantes</span>
+
+      <button class="btn-ver-vacantes" routerLink="/egresado/bolsaTrabajo">
+        Ver vacantes
+      </button>
+    </div>
   </div>
 
   <!-- DETALLES -->
