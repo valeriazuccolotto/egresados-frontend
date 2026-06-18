@@ -302,6 +302,16 @@ tbody tr:hover {
   color: #b8860b;
 }
 
+.status-aplicado {
+  background: #e8f4f8;
+  color: #2563a8;
+}
+
+.status-contratado {
+  background: #e6f7ec;
+  color: #1f8a4c;
+}
+
 .sin-datos {
   text-align: center;
   color: #999;
@@ -317,6 +327,82 @@ tbody tr:hover {
   background: #fef3f2;
   color: #b42318;
   border: 1px solid #fecdca;
+}
+
+/* E-22: Sección de postulantes */
+.postulantes-section {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #e8eeee;
+}
+
+.postulantes-titulo {
+  font-size: 15px;
+  color: #2f8f83;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+.postulantes-metrics {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.mini-card {
+  background: #f7fdfc;
+  border: 1px solid #e0f2f0;
+  border-radius: 8px;
+  padding: 10px 18px;
+  text-align: center;
+  min-width: 90px;
+}
+
+.mini-card strong {
+  display: block;
+  font-size: 20px;
+  color: #2f8f83;
+}
+
+.mini-card span {
+  display: block;
+  font-size: 12px;
+  color: #777;
+}
+
+.postulantes-table-wrap {
+  overflow-x: auto;
+}
+
+.postulantes-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 560px;
+}
+
+.postulantes-table thead tr {
+  background: #f4f6f7;
+}
+
+.postulantes-table th {
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 12px;
+  color: #555;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.postulantes-table td {
+  padding: 10px 14px;
+  font-size: 13px;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.postulantes-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 @media (max-width: 768px) {
@@ -340,5 +426,9 @@ tbody tr:hover {
 
   .detalle-grid {
     grid-template-columns: 1fr;
+  }
+
+  .postulantes-metrics {
+    flex-wrap: wrap;
   }
 }

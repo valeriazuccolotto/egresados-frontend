@@ -4,6 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { BolsaTrabajo } from '../../models/bolsa-trabajo';
 import { BolsaTrabajoService } from '../../services/bolsa-trabajo.service';
+import { PostulacionBolsaTrabajoService } from '../../services/postulacion-bolsa-trabajo.service';
+import { EstadisticasPostulacion, PostulacionVista } from '../../models/postulacion-bolsa-trabajo';
 
 @Component({
   selector: 'app-bolsa-trabajo',
@@ -21,7 +23,15 @@ export class BolsaTrabajoComponent implements OnInit {
   mensajeError = '';
   vacanteSeleccionada: BolsaTrabajo | null = null;
 
-  constructor(private bolsaTrabajoService: BolsaTrabajoService) {}
+  // E-22: postulantes y estadísticas por vacante
+  postulantes: PostulacionVista[] = [];
+  estadisticas: EstadisticasPostulacion | null = null;
+  cargandoPostulantes = false;
+
+  constructor(
+    private bolsaTrabajoService: BolsaTrabajoService,
+    private postulacionService: PostulacionBolsaTrabajoService
+  ) {}
 
   ngOnInit(): void {
     this.cargarVacantes();
@@ -85,7 +95,15 @@ export class BolsaTrabajoComponent implements OnInit {
   }
 
   toggleDetalle(vacante: BolsaTrabajo): void {
-    this.vacanteSeleccionada = this.vacanteSeleccionada === vacante ? null : vacante;
+    if (this.vacanteSeleccionada === vacante) {
+      this.vacanteSeleccionada = null;
+      this.postulantes = [];
+      this.estadisticas = null;
+      return;
+    }
+
+    this.vacanteSeleccionada = vacante;
+    this.cargarPostulantes(vacante);
   }
 
   esVacanteSeleccionada(vacante: BolsaTrabajo): boolean {
@@ -123,6 +141,42 @@ export class BolsaTrabajoComponent implements OnInit {
       .map(carrera => carrera.nombreCarrera || carrera.claveCarrera)
       .filter(Boolean)
       .join(', ');
+  }
+
+  // ═══════════════════════════════
+  // E-22: Postulantes / estadísticas
+  // ═══════════════════════════════
+
+  cargarPostulantes(vacante: BolsaTrabajo): void {
+    this.cargandoPostulantes = true;
+    this.postulantes = [];
+    this.estadisticas = null;
+
+    this.postulacionService.listarPorVacante(vacante.idBolsaTrabajo).subscribe({
+      next: (data) => {
+        this.postulantes = data || [];
+        this.cargandoPostulantes = false;
+      },
+      error: () => {
+        this.postulantes = [];
+        this.cargandoPostulantes = false;
+      }
+    });
+
+    this.postulacionService.obtenerEstadisticas(vacante.idBolsaTrabajo).subscribe({
+      next: (data) => {
+        this.estadisticas = data;
+      },
+      error: () => {
+        this.estadisticas = null;
+      }
+    });
+  }
+
+  nombreCompletoPostulante(postulante: PostulacionVista): string {
+    return [postulante.nombre, postulante.apellidoPaterno, postulante.apellidoMaterno]
+      .filter(Boolean)
+      .join(' ');
   }
 
   private normalizarModalidad(modalidad: string): string {

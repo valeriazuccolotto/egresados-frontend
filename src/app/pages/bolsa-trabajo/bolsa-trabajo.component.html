@@ -136,6 +136,64 @@
                       <p>{{ nombresCarreras(vacante) || 'No registradas' }}</p>
                     </div>
                   </div>
+
+                  <!-- E-22: Postulantes y estadisticas -->
+                  <div class="postulantes-section">
+                    <h4 class="postulantes-titulo">Postulantes y contrataciones</h4>
+
+                    <div class="postulantes-metrics" *ngIf="estadisticas">
+                      <div class="mini-card">
+                        <strong>{{ estadisticas.totalPostulaciones }}</strong>
+                        <span>Total</span>
+                      </div>
+                      <div class="mini-card">
+                        <strong>{{ estadisticas.totalAplicados }}</strong>
+                        <span>Aplicados</span>
+                      </div>
+                      <div class="mini-card">
+                        <strong>{{ estadisticas.totalContratados }}</strong>
+                        <span>Contratados</span>
+                      </div>
+                    </div>
+
+                    <div class="sin-datos" *ngIf="cargandoPostulantes">
+                      Cargando postulantes...
+                    </div>
+
+                    <div class="sin-datos" *ngIf="!cargandoPostulantes && postulantes.length === 0">
+                      Aún no hay egresados que hayan aplicado a esta vacante.
+                    </div>
+
+                    <div class="postulantes-table-wrap" *ngIf="!cargandoPostulantes && postulantes.length > 0">
+                      <table class="postulantes-table">
+                        <thead>
+                          <tr>
+                            <th>Egresado</th>
+                            <th>Matrícula</th>
+                            <th>Estado</th>
+                            <th>Fecha de aplicación</th>
+                            <th>Fecha de contratación</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let postulante of postulantes">
+                            <td>{{ nombreCompletoPostulante(postulante) }}</td>
+                            <td>{{ postulante.matricula }}</td>
+                            <td>
+                              <span class="status-badge"
+                                    [class.status-aplicado]="postulante.estado==='Aplicado'"
+                                    [class.status-contratado]="postulante.estado==='Contratado'">
+                                {{ postulante.estado }}
+                              </span>
+                            </td>
+                            <td>{{ postulante.fechaAplicacion | date:'dd/MM/yyyy HH:mm' }}</td>
+                            <td>{{ postulante.fechaContratacion ? (postulante.fechaContratacion | date:'dd/MM/yyyy HH:mm') : '—' }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
                 </div>
               </td>
             </tr>

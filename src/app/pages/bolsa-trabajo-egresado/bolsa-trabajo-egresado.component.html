@@ -39,6 +39,10 @@
     {{ mensajeError }}
   </div>
 
+  <div class="exito-msg" *ngIf="mensajeExito">
+    {{ mensajeExito }}
+  </div>
+
   <div class="sin-datos" *ngIf="cargando">
     Cargando vacantes...
   </div>
@@ -54,6 +58,7 @@
           <tr>
             <th>Empresa</th>
             <th>Puesto</th>
+            <th>Estado</th>
             <th>Acción</th>
           </tr>
         </thead>
@@ -62,8 +67,28 @@
             <td>{{ nombreEmpresa(vacante) }}</td>
             <td>{{ vacante.puesto }}</td>
             <td>
+              <span class="status-badge"
+                    [class.status-aplicado]="estadoPostulacion(vacante)==='Aplicado'"
+                    [class.status-contratado]="estadoPostulacion(vacante)==='Contratado'"
+                    [class.status-sin-aplicar]="estadoPostulacion(vacante)==='Sin aplicar'">
+                {{ estadoPostulacion(vacante) }}
+              </span>
+            </td>
+            <td class="acciones-cell">
               <button class="btn-detalle" type="button" (click)="abrirDetalle(vacante)">
                 Ver detalle
+              </button>
+              <button class="btn-aplicar" type="button"
+                      *ngIf="puedeAplicar(vacante)"
+                      [disabled]="procesando[vacante.idBolsaTrabajo]"
+                      (click)="aplicarVacante(vacante)">
+                Aplicar
+              </button>
+              <button class="btn-contratado" type="button"
+                      *ngIf="puedeMarcarContratado(vacante)"
+                      [disabled]="procesando[vacante.idBolsaTrabajo]"
+                      (click)="marcarComoContratado(vacante)">
+                Marcar contratado
               </button>
             </td>
           </tr>
@@ -79,6 +104,9 @@
           <h3>{{ vacanteSeleccionada.puesto }}</h3>
           <p>{{ nombreEmpresa(vacanteSeleccionada) }}</p>
         </div>
+        <button class="btn-icon-cerrar" type="button" (click)="cerrarDetalle()">
+          <span class="material-icons" aria-hidden="true">close</span>
+        </button>
       </div>
 
       <div class="modal-body">
@@ -119,9 +147,30 @@
           <label>Teléfono de contacto</label>
           <p>{{ telefonoContacto(vacanteSeleccionada) || 'No registrado' }}</p>
         </div>
+        <div class="detalle-item detalle-item--full">
+          <label>Estado de tu postulación</label>
+          <span class="status-badge"
+                [class.status-aplicado]="estadoPostulacion(vacanteSeleccionada)==='Aplicado'"
+                [class.status-contratado]="estadoPostulacion(vacanteSeleccionada)==='Contratado'"
+                [class.status-sin-aplicar]="estadoPostulacion(vacanteSeleccionada)==='Sin aplicar'">
+            {{ estadoPostulacion(vacanteSeleccionada) }}
+          </span>
+        </div>
       </div>
 
       <div class="modal-footer">
+        <button class="btn-aplicar" type="button"
+                *ngIf="puedeAplicar(vacanteSeleccionada)"
+                [disabled]="procesando[vacanteSeleccionada.idBolsaTrabajo]"
+                (click)="aplicarVacante(vacanteSeleccionada)">
+          Aplicar
+        </button>
+        <button class="btn-contratado" type="button"
+                *ngIf="puedeMarcarContratado(vacanteSeleccionada)"
+                [disabled]="procesando[vacanteSeleccionada.idBolsaTrabajo]"
+                (click)="marcarComoContratado(vacanteSeleccionada)">
+          Marcar contratado
+        </button>
         <button class="btn-cerrar" type="button" (click)="cerrarDetalle()">Cerrar</button>
       </div>
     </div>

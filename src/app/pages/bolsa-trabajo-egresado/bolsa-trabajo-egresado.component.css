@@ -160,11 +160,18 @@ tbody tr:hover {
   background: #f7fdfc;
 }
 
+.acciones-cell {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .btn-detalle,
-.btn-cerrar {
+.btn-cerrar,
+.btn-aplicar,
+.btn-contratado {
   border: none;
   border-radius: 8px;
-  background: #00796b;
   color: white;
   padding: 9px 14px;
   font-size: 13px;
@@ -173,10 +180,42 @@ tbody tr:hover {
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
+.btn-detalle,
+.btn-cerrar {
+  background: #00796b;
+}
+
 .btn-detalle:hover,
 .btn-cerrar:hover {
   background: #00695c;
   transform: translateY(-1px);
+}
+
+.btn-aplicar {
+  background: #2f8f83;
+}
+
+.btn-aplicar:hover {
+  background: #257068;
+  transform: translateY(-1px);
+}
+
+.btn-contratado {
+  background: #b8860b;
+}
+
+.btn-contratado:hover {
+  background: #9c7209;
+  transform: translateY(-1px);
+}
+
+.btn-aplicar:disabled,
+.btn-contratado:disabled,
+.btn-detalle:disabled,
+.btn-cerrar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .modal-backdrop {
@@ -291,9 +330,25 @@ tbody tr:hover {
   color: #b8860b;
 }
 
+.status-sin-aplicar {
+  background: #f1f3f5;
+  color: #6c757d;
+}
+
+.status-aplicado {
+  background: #e8f4f8;
+  color: #2563a8;
+}
+
+.status-contratado {
+  background: #e6f7ec;
+  color: #1f8a4c;
+}
+
 .modal-footer {
   display: flex;
   justify-content: flex-end;
+  gap: 10px;
   padding: 18px 24px 22px;
   border-top: 1px solid #e6eaee;
 }
@@ -315,6 +370,16 @@ tbody tr:hover {
   border: 1px solid #fecdca;
 }
 
+.exito-msg {
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #e6f7ec;
+  color: #1f8a4c;
+  border: 1px solid #b7e4c7;
+}
+
 @media (max-width: 768px) {
   .bolsa-egresado-page {
     padding: 20px 16px 32px;
@@ -327,5 +392,9 @@ tbody tr:hover {
 
   .modal-body {
     grid-template-columns: 1fr;
+  }
+
+  .acciones-cell {
+    flex-direction: column;
   }
 }
