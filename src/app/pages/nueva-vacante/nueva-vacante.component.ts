@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Carrera } from '../../models/carrera';
 import { BolsaTrabajoRequest } from '../../models/bolsa-trabajo';
 import { BolsaTrabajoService } from '../../services/bolsa-trabajo.service';
@@ -22,6 +22,9 @@ export class NuevaVacanteComponent implements OnInit {
   mensajeError = '';
   guardando = false;
   cargandoCarreras = false;
+  cargandoVacante = false;
+  modoEdicion = false;
+  idVacante: number | null = null;
 
   vacante: BolsaTrabajoRequest = {
     matricula: '',
@@ -38,12 +41,19 @@ export class NuevaVacanteComponent implements OnInit {
   constructor(
     private bolsaTrabajoService: BolsaTrabajoService,
     private carreraService: CarreraService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
     this.vacante.matricula = this.obtenerMatriculaAdmin();
+    const id = this.route.snapshot.paramMap.get('id');
+    this.modoEdicion = !!id;
+    this.idVacante = id ? Number(id) : null;
     this.cargarCarreras();
+    if (this.modoEdicion && this.idVacante) {
+      this.cargarVacante(this.idVacante);
+    }
   }
 
   cargarCarreras(): void {
@@ -62,6 +72,31 @@ export class NuevaVacanteComponent implements OnInit {
     });
   }
 
+  cargarVacante(id: number): void {
+    this.cargandoVacante = true;
+    this.bolsaTrabajoService.getVacante(id).subscribe({
+      next: (data) => {
+        this.vacante = {
+          matricula: data.matricula || this.obtenerMatriculaAdmin(),
+          nombreEmpresa: data.nombreEmpresa || '',
+          puesto: data.puesto || '',
+          descripcion: data.descripcion || '',
+          salarioOfertado: data.salarioOfertado,
+          modalidad: this.normalizarModalidadGuardado(data.modalidad),
+          correoContacto: data.correoContacto || '',
+          telefonoContacto: data.telefonoContacto || '',
+          carreras: (data.carreras || []).map(c => ({ claveCarrera: c.claveCarrera }))
+        };
+        this.carrerasSeleccionadas = (data.carreras || []).map(c => c.claveCarrera);
+        this.cargandoVacante = false;
+      },
+      error: () => {
+        this.cargandoVacante = false;
+        this.mensajeError = 'No se pudo cargar la vacante.';
+      }
+    });
+  }
+
   toggleCarrera(claveCarrera: string): void {
     const idx = this.carrerasSeleccionadas.indexOf(claveCarrera);
 
@@ -71,7 +106,7 @@ export class NuevaVacanteComponent implements OnInit {
       this.carrerasSeleccionadas.splice(idx, 1);
     }
 
-    this.vacante.carreras = this.carrerasSeleccionadas.map(claveCarrera => ({ claveCarrera }));
+    this.vacante.carreras = this.carrerasSeleccionadas.map(clave => ({ claveCarrera: clave }));
   }
 
   isCarreraSeleccionada(claveCarrera: string): boolean {
@@ -96,17 +131,26 @@ export class NuevaVacanteComponent implements OnInit {
     }
 
     this.guardando = true;
+    this.vacante.modalidad = this.normalizarModalidadGuardado(this.vacante.modalidad);
     this.vacante.carreras = this.carrerasSeleccionadas.map(claveCarrera => ({ claveCarrera }));
 
-    this.bolsaTrabajoService.crearVacante(this.vacante).subscribe({
+    const peticion = this.modoEdicion && this.idVacante
+      ? this.bolsaTrabajoService.actualizarVacante(this.idVacante, this.vacante)
+      : this.bolsaTrabajoService.crearVacante(this.vacante);
+
+    peticion.subscribe({
       next: () => {
         this.guardando = false;
-        this.mensajeExito = 'Vacante guardada correctamente.';
+        this.mensajeExito = this.modoEdicion
+          ? 'Vacante actualizada correctamente.'
+          : 'Vacante guardada correctamente.';
         setTimeout(() => this.router.navigate(['/admin/bolsaTrabajo']), 900);
       },
       error: () => {
         this.guardando = false;
-        this.mensajeError = 'Error al guardar la vacante.';
+        this.mensajeError = this.modoEdicion
+          ? 'Error al actualizar la vacante.'
+          : 'Error al guardar la vacante.';
       }
     });
   }
@@ -127,13 +171,18 @@ export class NuevaVacanteComponent implements OnInit {
       return false;
     }
 
+    if (!this.vacante.descripcion.trim()) {
+      this.mensajeError = 'La descripcion es obligatoria.';
+      return false;
+    }
+
     if (this.vacante.salarioOfertado === null || this.vacante.salarioOfertado < 0) {
       this.mensajeError = 'El salario es obligatorio.';
       return false;
     }
 
-    if (!this.vacante.modalidad) {
-      this.mensajeError = 'La modalidad es obligatoria.';
+    if (!['Presencial', 'Hibrida', 'Remota'].includes(this.vacante.modalidad)) {
+      this.mensajeError = 'Selecciona una modalidad válida (Presencial, Híbrida o Remota).';
       return false;
     }
 
@@ -171,6 +220,18 @@ export class NuevaVacanteComponent implements OnInit {
 
   private validarTelefono(telefono: string): boolean {
     return /^\d{10}$/.test(telefono.trim());
+  }
+
+  private normalizarModalidadGuardado(modalidad: string): string {
+    const valor = (modalidad || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim()
+      .toLowerCase();
+    if (valor.startsWith('hibrid')) return 'Hibrida';
+    if (valor.startsWith('remot')) return 'Remota';
+    if (valor.startsWith('presenc')) return 'Presencial';
+    return modalidad || '';
   }
 
   private obtenerMatriculaAdmin(): string {

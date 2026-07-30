@@ -7,6 +7,21 @@
     </div>
   </div>
 
+  <div class="secciones-tabs">
+    <button type="button"
+            [class.active]="seccionActiva==='disponibles'"
+            (click)="cambiarSeccion('disponibles')">
+      Vacantes disponibles
+      <span>{{ vacantes.length }}</span>
+    </button>
+    <button type="button"
+            [class.active]="seccionActiva==='postulaciones'"
+            (click)="cambiarSeccion('postulaciones')">
+      Mis postulaciones
+      <span>{{ misPostulaciones.length }}</span>
+    </button>
+  </div>
+
   <div class="controles-bar">
     <div class="search-bar">
       <input
@@ -47,11 +62,13 @@
     Cargando vacantes...
   </div>
 
-  <div class="sin-datos" *ngIf="!cargando && vacantesFiltradas.length === 0">
+  <div class="sin-datos"
+       *ngIf="!cargando && seccionActiva==='disponibles' && vacantesFiltradas.length === 0">
     No hay vacantes disponibles para tu carrera por ahora.
   </div>
 
-  <div class="table-card" *ngIf="!cargando && vacantesFiltradas.length > 0">
+  <div class="table-card"
+       *ngIf="!cargando && seccionActiva==='disponibles' && vacantesFiltradas.length > 0">
     <div class="table-wrap">
       <table>
         <thead>
@@ -88,6 +105,53 @@
                       *ngIf="puedeMarcarContratado(vacante)"
                       [disabled]="procesando[vacante.idBolsaTrabajo]"
                       (click)="marcarComoContratado(vacante)">
+                Marcar contratado
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sin-datos"
+       *ngIf="!cargando && seccionActiva==='postulaciones' && postulacionesFiltradas.length === 0">
+    Aún no has aplicado a ninguna vacante.
+  </div>
+
+  <div class="table-card"
+       *ngIf="!cargando && seccionActiva==='postulaciones' && postulacionesFiltradas.length > 0">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Empresa</th>
+            <th>Puesto</th>
+            <th>Estado</th>
+            <th>Fecha de aplicación</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of postulacionesFiltradas">
+            <td>{{ nombreEmpresa(item.vacante) }}</td>
+            <td>{{ item.vacante.puesto }}</td>
+            <td>
+              <span class="status-badge"
+                    [class.status-aplicado]="item.postulacion.estado==='Aplicado'"
+                    [class.status-contratado]="item.postulacion.estado==='Contratado'">
+                {{ item.postulacion.estado }}
+              </span>
+            </td>
+            <td>{{ item.postulacion.fechaAplicacion | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="acciones-cell">
+              <button class="btn-detalle" type="button" (click)="abrirDetalle(item.vacante)">
+                Ver detalle
+              </button>
+              <button class="btn-contratado" type="button"
+                      *ngIf="item.postulacion.estado==='Aplicado'"
+                      [disabled]="procesando[item.vacante.idBolsaTrabajo]"
+                      (click)="marcarComoContratado(item.vacante)">
                 Marcar contratado
               </button>
             </td>

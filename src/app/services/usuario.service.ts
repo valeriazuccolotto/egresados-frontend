@@ -7,6 +7,7 @@ export interface Usuario {
   password: string;
   rol?: string;
   activo?: boolean;
+  debeCambiarPassword?: boolean;
 }
 
 @Injectable({
@@ -38,5 +39,14 @@ export class UsuarioService {
     confirmarPassword: string;
   }): Observable<{ mensaje: string }> {
     return this.http.post<{ mensaje: string }>(`${this.apiUrl}/restablecer-contrasena`, body);
+  }
+
+  definirContrasena(body: {
+    matricula: string;
+    passwordActual: string;
+    nuevaPassword: string;
+    confirmarPassword: string;
+  }): Observable<{ mensaje: string }> {
+    return this.http.post<{ mensaje: string }>(`${this.apiUrl}/definir-contrasena`, body);
   }
 }

@@ -5,6 +5,7 @@ import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
 import { contarPorCampo, ETIQUETAS_RELACION_POSGRADO, coloresGrafica } from '../../../../utils/graficas-reporte.util';
+import { descargarGraficaPorId } from '../../../../utils/descarga-graficas.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -58,6 +59,10 @@ export class RelacionComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  descargar(): void {
+    descargarGraficaPorId('chart', 'relacion-carrera-posgrado.png');
   }
 
   destruir() { this.chart?.destroy(); }

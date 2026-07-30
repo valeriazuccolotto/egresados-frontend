@@ -1,0 +1,84 @@
+<div class="page-section">
+  <div class="section-header">
+    <div class="section-title">
+      <h2>Solicitudes</h2>
+      <p>Solicitudes de registro de egresados pendientes de revisión</p>
+    </div>
+  </div>
+
+  <div class="filtros">
+    <button class="filtro-btn" [class.active]="filtroEstado==='PENDIENTE'" (click)="setFiltro('PENDIENTE')">Pendientes</button>
+    <button class="filtro-btn" [class.active]="filtroEstado==='ACEPTADA'" (click)="setFiltro('ACEPTADA')">Aceptadas</button>
+    <button class="filtro-btn" [class.active]="filtroEstado==='RECHAZADA'" (click)="setFiltro('RECHAZADA')">Rechazadas</button>
+    <button class="filtro-btn" [class.active]="filtroEstado==='TODAS'" (click)="setFiltro('TODAS')">Todas</button>
+  </div>
+
+  <div class="save-msg" *ngIf="mensaje">{{ mensaje }}</div>
+  <div class="error-banner" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+  <div class="sin-datos" *ngIf="cargando">Cargando solicitudes...</div>
+  <div class="sin-datos" *ngIf="!cargando && solicitudes.length === 0">No hay solicitudes en este filtro.</div>
+
+  <div class="table-card" *ngIf="!cargando && solicitudes.length > 0">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Matrícula</th>
+            <th>CURP</th>
+            <th>Correo</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of solicitudes">
+            <td>{{ nombreCompleto(s) }}</td>
+            <td>{{ s.matricula }}</td>
+            <td class="curp">{{ s.curp }}</td>
+            <td>{{ s.correo }}</td>
+            <td>
+              <span class="badge"
+                    [class.badge-pendiente]="s.estado==='PENDIENTE'"
+                    [class.badge-aceptada]="s.estado==='ACEPTADA'"
+                    [class.badge-rechazada]="s.estado==='RECHAZADA'">
+                {{ s.estado }}
+              </span>
+            </td>
+            <td>{{ s.fechaSolicitud | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td class="acciones">
+              <ng-container *ngIf="s.estado==='PENDIENTE'">
+                <button class="btn-aceptar" type="button" [disabled]="procesando" (click)="aceptar(s)">Aceptar</button>
+                <button class="btn-rechazar" type="button" [disabled]="procesando" (click)="abrirRechazo(s)">Rechazar</button>
+              </ng-container>
+              <span *ngIf="s.estado==='RECHAZADA' && s.motivoRechazo" class="motivo" [title]="s.motivoRechazo">
+                {{ s.motivoRechazo }}
+              </span>
+              <span *ngIf="s.estado!=='PENDIENTE' && s.estado!=='RECHAZADA'">—</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="mostrarRechazo" (click)="cerrarRechazo()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>Rechazar solicitud</h3>
+      <p *ngIf="solicitudSeleccionada">
+        {{ nombreCompleto(solicitudSeleccionada) }} · {{ solicitudSeleccionada.matricula }}
+      </p>
+      <label for="motivo">Motivo del rechazo</label>
+      <textarea id="motivo" rows="4" [(ngModel)]="motivoRechazo"
+                placeholder="Explica por qué se rechaza la solicitud"></textarea>
+      <div class="modal-acciones">
+        <button type="button" class="btn-secundario" (click)="cerrarRechazo()">Cancelar</button>
+        <button type="button" class="btn-rechazar" [disabled]="procesando" (click)="confirmarRechazo()">
+          Confirmar rechazo
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

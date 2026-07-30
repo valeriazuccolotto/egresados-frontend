@@ -1,8 +1,8 @@
 <div class="page-section">
   <div class="section-header">
     <div class="section-title">
-      <h2>Nueva vacante</h2>
-      <p>Registra una oportunidad laboral para egresados</p>
+      <h2>{{ modoEdicion ? 'Editar vacante' : 'Nueva vacante' }}</h2>
+      <p>{{ modoEdicion ? 'Actualiza los datos de la vacante' : 'Registra una oportunidad laboral para egresados' }}</p>
     </div>
 
     <a class="btn-volver" routerLink="/admin/bolsaTrabajo">
@@ -60,7 +60,7 @@
             required>
             <option value="">Selecciona una modalidad</option>
             <option value="Presencial">Presencial</option>
-            <option value="Hibrida">Hibrida</option>
+            <option value="Hibrida">Híbrida</option>
             <option value="Remota">Remota</option>
           </select>
         </div>
@@ -135,8 +135,8 @@
 
       <div class="acciones-form">
         <a class="btn-cancelar" routerLink="/admin/bolsaTrabajo">Cancelar</a>
-        <button type="submit" class="btn-guardar" [disabled]="guardando">
-          {{ guardando ? 'Guardando...' : 'Guardar vacante' }}
+        <button type="submit" class="btn-guardar" [disabled]="guardando || cargandoVacante">
+          {{ guardando ? 'Guardando...' : (modoEdicion ? 'Actualizar vacante' : 'Guardar vacante') }}
         </button>
       </div>
     </form>

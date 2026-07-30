@@ -14,10 +14,13 @@ import { CertificacionesComponent } from './pages/certificaciones/certificacione
 import { ReconocimientosComponent } from './pages/reconocimientos/reconocimientos.component';
 import { DatosPersonalesComponent } from './pages/datos-personales/datos-personales.component';
 import { SolicitarInfoComponent } from './pages/solicitar-info/solicitar-info.component';
+import { SolicitudesRegistroComponent } from './pages/solicitudes-registro/solicitudes-registro.component';
 import { NuevosAvisosComponent } from './pages/nuevos-avisos/nuevos-avisos.component';
 import { BolsaTrabajoComponent } from './pages/bolsa-trabajo/bolsa-trabajo.component';
 import { NuevaVacanteComponent } from './pages/nueva-vacante/nueva-vacante.component';
 import { BolsaTrabajoEgresadoComponent } from './pages/bolsa-trabajo-egresado/bolsa-trabajo-egresado.component';
+import { RegistroComponent } from './pages/registro/registro.component';
+import { DefinirContrasenaComponent } from './pages/definir-contrasena/definir-contrasena.component';
 
 // Reportes nivel 1
 import { AcademicoComponent as ReporteAcademicoComponent } from './pages/reportes/academico/academico.component';
@@ -61,6 +64,8 @@ import { ListadoComponent } from './pages/reportes/reconocimientos/listado/lista
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
+  { path: 'registro', component: RegistroComponent },
+  { path: 'definir-contrasena', component: DefinirContrasenaComponent },
   { path: 'recuperar-contrasena', component: RecuperarContrasenaComponent },
   { path: 'restablecer-contrasena', component: RestablecerContrasenaComponent },
   { path: 'perfil', component: PerfilComponent },
@@ -83,8 +88,10 @@ export const routes: Routes = [
       { path: 'usuarios', component: UsuariosAdmComponent },
       { path: 'datos-recuperados', component: DatosRecuperadosComponent },
       { path: 'solicitar-info', component: SolicitarInfoComponent },
+      { path: 'solicitudes', component: SolicitudesRegistroComponent },
       { path: 'bolsaTrabajo', component: BolsaTrabajoComponent },
       { path: 'bolsaTrabajo/nueva', component: NuevaVacanteComponent },
+      { path: 'bolsaTrabajo/editar/:id', component: NuevaVacanteComponent },
       // Reportes nivel 1
       { path: 'reportes/academico', component: ReporteAcademicoComponent },
       { path: 'reportes/laboral', component: ReporteLaboralComponent },

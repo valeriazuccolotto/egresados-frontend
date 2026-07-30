@@ -39,7 +39,10 @@
             <input
                 type="text"
                 [(ngModel)]="matricula"
-                placeholder="Buscar por matrícula..."
+                placeholder="Buscar por matrícula o nombre..."
+                autocomplete="off"
+                (input)="onBusquedaInput()"
+                (keydown.enter)="buscarPorMatricula()"
             >
 
             <button

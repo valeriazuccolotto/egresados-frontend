@@ -6,12 +6,23 @@
       <h2>Reportes de datos Académicos obtenidos</h2>
       <p>Análisis estadístico de información académica de egresados</p>
     </div>
-    <div class="campus-box">
-      <span class="material-icons">location_on</span>
-      <label>Campus</label>
-      <select [(ngModel)]="campusSeleccionado" (change)="cambiarCampus()">
-        <option *ngFor="let c of campus">{{ c }}</option>
-      </select>
+    <div class="acciones-descarga">
+      <button
+        type="button"
+        class="btn-descargar-todas"
+        [disabled]="descargandoTodas"
+        (click)="descargarTodas()"
+      >
+        <span class="material-icons">folder_zip</span>
+        {{ descargandoTodas ? 'Preparando…' : 'Descargar todas' }}
+      </button>
+      <div class="campus-box">
+        <span class="material-icons">location_on</span>
+        <label>Campus</label>
+        <select [(ngModel)]="campusSeleccionado" (change)="cambiarCampus()">
+          <option *ngFor="let c of campus">{{ c }}</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -44,10 +55,16 @@
 
     <!-- Titulado - PIE -->
     <div class="grafica-card grande">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">school</span>
-        ¿Está titulado?
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">school</span>
+          ¿Está titulado?
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartTitulado', 'titulados.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Porcentaje de egresados titulados vs no titulados</p>
       <div class="grafica-wrap">
         <canvas id="chartTitulado"></canvas>
@@ -56,10 +73,16 @@
 
     <!-- Tipo titulación - DOUGHNUT -->
     <div class="grafica-card grande">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">workspace_premium</span>
-        Tipo de titulación
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">workspace_premium</span>
+          Tipo de titulación
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartTipoTitulacion', 'tipo-titulacion.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Modalidad con la que obtuvieron su título</p>
       <div class="grafica-wrap">
         <canvas id="chartTipoTitulacion"></canvas>
@@ -68,10 +91,16 @@
 
     <!-- Año de egreso - BAR -->
     <div class="grafica-card mediana">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">calendar_month</span>
-        Año de egreso
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">calendar_month</span>
+          Año de egreso
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartAnioEgreso', 'anio-egreso.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Distribución de egresados por año de egreso</p>
       <div class="grafica-wrap">
         <canvas id="chartAnioEgreso"></canvas>
@@ -80,10 +109,16 @@
 
     <!-- Carrera - BAR HORIZONTAL -->
     <div class="grafica-card ancha">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">menu_book</span>
-        Egresados por carrera
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">menu_book</span>
+          Egresados por carrera
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartCarrera', 'egresados-por-carrera.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Cantidad de egresados registrados por carrera</p>
       <div class="grafica-wrap alta">
         <canvas id="chartCarrera"></canvas>

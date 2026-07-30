@@ -7,6 +7,60 @@
   font-family: 'Segoe UI', sans-serif;
 }
 
+/* Descarga de gráficas / mapas en reportes */
+.grafica-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.grafica-card-header .grafica-titulo {
+  margin-bottom: 0;
+}
+
+.acciones-descarga {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-descargar-grafica,
+.btn-descargar-todas {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #cfe5df;
+  background: #eef7f5;
+  color: #2f8f83;
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease;
+  white-space: nowrap;
+}
+
+.btn-descargar-grafica:hover,
+.btn-descargar-todas:hover {
+  background: #e0f2ee;
+  border-color: #2f8f83;
+}
+
+.btn-descargar-grafica:disabled,
+.btn-descargar-todas:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.btn-descargar-grafica .material-icons,
+.btn-descargar-todas .material-icons {
+  font-size: 18px;
+}
+
 body {
   background: #f3f5f7;
   color: #333;

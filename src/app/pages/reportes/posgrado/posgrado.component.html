@@ -6,12 +6,23 @@
       <h2>Reportes de datos de Posgrado obtenidos</h2>
       <p>Análisis estadístico de estudios de posgrado de egresados</p>
     </div>
-    <div class="campus-box">
-      <span class="material-icons">location_on</span>
-      <label>Campus</label>
-      <select [(ngModel)]="campusSeleccionado" (change)="cambiarCampus()">
-        <option *ngFor="let c of campus">{{ c }}</option>
-      </select>
+    <div class="acciones-descarga">
+      <button
+        type="button"
+        class="btn-descargar-todas"
+        [disabled]="descargandoTodas"
+        (click)="descargarTodas()"
+      >
+        <span class="material-icons">folder_zip</span>
+        {{ descargandoTodas ? 'Preparando…' : 'Descargar todas' }}
+      </button>
+      <div class="campus-box">
+        <span class="material-icons">location_on</span>
+        <label>Campus</label>
+        <select [(ngModel)]="campusSeleccionado" (change)="cambiarCampus()">
+          <option *ngFor="let c of campus">{{ c }}</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -43,10 +54,16 @@
   <div class="graficas-grid dos-col">
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">school</span>
-        Nivel de estudio
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">school</span>
+          Nivel de estudio
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartNivel', 'nivel-posgrado.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Distribución entre maestría y doctorado</p>
       <div class="grafica-wrap">
         <canvas id="chartNivel"></canvas>
@@ -54,10 +71,16 @@
     </div>
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">laptop</span>
-        Modalidad de estudio
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">laptop</span>
+          Modalidad de estudio
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartModalidad', 'modalidad-posgrado.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Presencial, virtual o híbrida</p>
       <div class="grafica-wrap">
         <canvas id="chartModalidad"></canvas>
@@ -70,10 +93,16 @@
   <div class="graficas-grid tres-col">
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">flag</span>
-        Estatus actual
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">flag</span>
+          Estatus actual
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartEstatus', 'estatus-posgrado.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">En curso, finalizado o pausado</p>
       <div class="grafica-wrap">
         <canvas id="chartEstatus"></canvas>
@@ -81,10 +110,16 @@
     </div>
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">card_giftcard</span>
-        ¿Tiene beca?
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">card_giftcard</span>
+          ¿Tiene beca?
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartBeca', 'beca-posgrado.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Egresados con y sin beca de posgrado</p>
       <div class="grafica-wrap">
         <canvas id="chartBeca"></canvas>
@@ -92,10 +127,16 @@
     </div>
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">connect_without_contact</span>
-        Relación con la carrera
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">connect_without_contact</span>
+          Relación con la carrera
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartRelacionado', 'relacion-carrera-posgrado.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Qué tan relacionado está el posgrado con su carrera</p>
       <div class="grafica-wrap">
         <canvas id="chartRelacionado"></canvas>
@@ -108,10 +149,16 @@
   <div class="graficas-grid uno-col">
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">workspace_premium</span>
-        Tipo de beca
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">workspace_premium</span>
+          Tipo de beca
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartTipoBeca', 'tipo-beca.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Distribución de egresados según el tipo de beca que reciben</p>
       <div class="grafica-wrap media">
         <canvas id="chartTipoBeca"></canvas>

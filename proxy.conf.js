@@ -9,8 +9,10 @@ const PANTALLAS_ADMIN = [
   '/admin/usuarios',
   '/admin/datos-recuperados',
   '/admin/solicitar-info',
+  '/admin/solicitudes',
   '/admin/bolsaTrabajo',
   '/admin/bolsaTrabajo/nueva',
+  '/admin/bolsaTrabajo/editar',
   '/admin/reportes/academico',
   '/admin/reportes/laboral',
   '/admin/reportes/posgrado',
@@ -39,6 +41,9 @@ function esRecargaNavegador(req) {
 function esPantallaAdmin(url) {
   const path = pathSinQuery(url);
   if (PANTALLAS_ADMIN.includes(path)) {
+    return true;
+  }
+  if (path.startsWith('/admin/bolsaTrabajo/editar/')) {
     return true;
   }
   return path.startsWith('/admin/reportes/');

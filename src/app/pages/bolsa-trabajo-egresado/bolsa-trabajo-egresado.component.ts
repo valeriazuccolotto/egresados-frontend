@@ -8,6 +8,13 @@ import { PerfilService } from '../../services/perfil.service';
 import { PostulacionBolsaTrabajoService } from '../../services/postulacion-bolsa-trabajo.service';
 import { BolsaTrabajo } from '../../models/bolsa-trabajo';
 import { Carrera } from '../../models/carrera';
+import { PostulacionBolsaTrabajo } from '../../models/postulacion-bolsa-trabajo';
+import { forkJoin } from 'rxjs';
+
+interface PostulacionConVacante {
+  postulacion: PostulacionBolsaTrabajo;
+  vacante: BolsaTrabajo;
+}
 
 @Component({
   selector: 'app-bolsa-trabajo-egresado',
@@ -28,6 +35,8 @@ export class BolsaTrabajoEgresadoComponent implements OnInit {
   mensajeError = '';
   mensajeExito = '';
   vacanteSeleccionada: BolsaTrabajo | null = null;
+  seccionActiva: 'disponibles' | 'postulaciones' = 'disponibles';
+  misPostulaciones: PostulacionConVacante[] = [];
 
   // Estado de postulación por vacante: { [idBolsaTrabajo]: 'Sin aplicar' | 'Aplicado' | 'Contratado' }
   estadosPostulacion: { [idBolsaTrabajo: number]: string } = {};
@@ -86,34 +95,47 @@ export class BolsaTrabajoEgresadoComponent implements OnInit {
   }
 
   cargarVacantes(): void {
-    this.bolsaTrabajoService.getVacantesActivas().subscribe({
-      next: (vacantes) => {
-        this.vacantes = (vacantes || []).filter(vacante => this.esVacanteParaCarrera(vacante));
+    forkJoin({
+      vacantes: this.bolsaTrabajoService.getVacantes(),
+      postulaciones: this.postulacionService.obtenerPorMatricula(this.matricula)
+    }).subscribe({
+      next: ({ vacantes, postulaciones }) => {
+        const todas = vacantes || [];
+        const solicitudes = postulaciones || [];
+        const idsPostulados = new Set(solicitudes.map(item => item.idBolsaTrabajo));
+
+        solicitudes.forEach(item => {
+          this.estadosPostulacion[item.idBolsaTrabajo] = item.estado;
+        });
+
+        this.vacantes = todas.filter(vacante =>
+          vacante.activo !== false &&
+          this.esVacanteParaCarrera(vacante) &&
+          !idsPostulados.has(vacante.idBolsaTrabajo)
+        );
+
+        this.misPostulaciones = solicitudes
+          .map(postulacion => {
+            const vacante = todas.find(item => item.idBolsaTrabajo === postulacion.idBolsaTrabajo);
+            return vacante ? { postulacion, vacante } : null;
+          })
+          .filter((item): item is PostulacionConVacante => item !== null);
+
         this.cargando = false;
-        this.cargarEstadosPostulacion();
       },
       error: () => {
         this.vacantes = [];
+        this.misPostulaciones = [];
         this.cargando = false;
         this.mensajeError = 'Error al cargar las vacantes.';
       }
     });
   }
 
-  cargarEstadosPostulacion(): void {
-    if (!this.matricula) {
-      return;
-    }
-    this.vacantes.forEach(vacante => {
-      this.postulacionService.obtenerPostulacion(vacante.idBolsaTrabajo, this.matricula).subscribe({
-        next: (res) => {
-          this.estadosPostulacion[vacante.idBolsaTrabajo] = res?.estado || 'Sin aplicar';
-        },
-        error: () => {
-          this.estadosPostulacion[vacante.idBolsaTrabajo] = 'Sin aplicar';
-        }
-      });
-    });
+  cambiarSeccion(seccion: 'disponibles' | 'postulaciones'): void {
+    this.seccionActiva = seccion;
+    this.busqueda = '';
+    this.modalidadFiltro = 'todas';
   }
 
   get vacantesFiltradas(): BolsaTrabajo[] {
@@ -129,6 +151,20 @@ export class BolsaTrabajoEgresadoComponent implements OnInit {
         this.modalidadFiltro === 'todas' ||
         this.esModalidad(vacante, this.modalidadFiltro);
 
+      return coincideTexto && coincideModalidad;
+    });
+  }
+
+  get postulacionesFiltradas(): PostulacionConVacante[] {
+    const texto = this.busqueda.toLowerCase().trim();
+    return this.misPostulaciones.filter(item => {
+      const vacante = item.vacante;
+      const coincideTexto = !texto ||
+        vacante.nombreEmpresa.toLowerCase().includes(texto) ||
+        vacante.puesto.toLowerCase().includes(texto);
+      const coincideModalidad =
+        this.modalidadFiltro === 'todas' ||
+        this.esModalidad(vacante, this.modalidadFiltro);
       return coincideTexto && coincideModalidad;
     });
   }
@@ -164,9 +200,11 @@ export class BolsaTrabajoEgresadoComponent implements OnInit {
   }
 
   modalidadLabel(vacante: BolsaTrabajo): string {
-    return this.normalizarModalidad(vacante.modalidad) === 'hibrida'
-      ? 'Híbrida'
-      : vacante.modalidad;
+    const modalidad = this.normalizarModalidad(vacante.modalidad);
+    if (modalidad === 'hibrida') return 'Híbrida';
+    if (modalidad === 'remota') return 'Remota';
+    if (modalidad === 'presencial') return 'Presencial';
+    return vacante.modalidad;
   }
 
   esModalidad(vacante: BolsaTrabajo, modalidad: string): boolean {
@@ -209,10 +247,16 @@ export class BolsaTrabajoEgresadoComponent implements OnInit {
     this.mensajeExito = '';
 
     this.postulacionService.aplicar(vacante.idBolsaTrabajo, this.matricula).subscribe({
-      next: () => {
+      next: (postulacion) => {
         this.estadosPostulacion[vacante.idBolsaTrabajo] = 'Aplicado';
         this.mensajeExito = 'Has aplicado a esta vacante correctamente.';
         this.procesando[vacante.idBolsaTrabajo] = false;
+        this.vacantes = this.vacantes.filter(
+          item => item.idBolsaTrabajo !== vacante.idBolsaTrabajo
+        );
+        this.misPostulaciones.unshift({ postulacion, vacante });
+        this.vacanteSeleccionada = null;
+        this.seccionActiva = 'postulaciones';
       },
       error: () => {
         this.mensajeError = 'No se pudo registrar tu aplicación. Intenta de nuevo.';
@@ -239,8 +283,12 @@ export class BolsaTrabajoEgresadoComponent implements OnInit {
     this.mensajeExito = '';
 
     this.postulacionService.marcarContratado(vacante.idBolsaTrabajo, this.matricula).subscribe({
-      next: () => {
+      next: (postulacion) => {
         this.estadosPostulacion[vacante.idBolsaTrabajo] = 'Contratado';
+        const item = this.misPostulaciones.find(
+          actual => actual.vacante.idBolsaTrabajo === vacante.idBolsaTrabajo
+        );
+        if (item) item.postulacion = postulacion;
         this.mensajeExito = '¡Felicidades! Se actualizó tu información laboral con los datos de esta vacante.';
         this.procesando[vacante.idBolsaTrabajo] = false;
       },
@@ -259,9 +307,15 @@ export class BolsaTrabajoEgresadoComponent implements OnInit {
   }
 
   private normalizarModalidad(modalidad: string): string {
-    return modalidad
+    const valor = (modalidad || '')
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
+      .trim()
       .toLowerCase();
+
+    if (valor.startsWith('hibrid')) return 'hibrida';
+    if (valor.startsWith('remot')) return 'remota';
+    if (valor.startsWith('presenc')) return 'presencial';
+    return valor;
   }
 }

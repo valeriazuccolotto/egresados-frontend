@@ -1,0 +1,68 @@
+<div class="main-container">
+
+  <div class="header-content">
+    <img
+      src="assets/images/unpa-logo.png"
+      alt="Universidad del Papaloapan - UNPA"
+      class="logo-unpa"
+    >
+  </div>
+
+  <div class="auth-wrapper auth-wrapper--wide">
+
+    <h1 class="page-title">Registrarse</h1>
+    <p class="page-subtitle" *ngIf="!enviado">
+      Completa tus datos. Un administrador revisará tu solicitud.
+    </p>
+
+    <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+    <div class="success-msg" *ngIf="exitoMsg">{{ exitoMsg }}</div>
+
+    <ng-container *ngIf="!enviado">
+      <div class="input-container">
+        <input class="unpa-input" type="text" placeholder="Nombre *"
+               [(ngModel)]="nombre" maxlength="100" autocomplete="given-name">
+      </div>
+
+      <div class="input-container">
+        <input class="unpa-input" type="text" placeholder="Apellido paterno"
+               [(ngModel)]="apellidoPaterno" maxlength="100" autocomplete="family-name">
+      </div>
+
+      <div class="input-container">
+        <input class="unpa-input" type="text" placeholder="Apellido materno"
+               [(ngModel)]="apellidoMaterno" maxlength="100">
+      </div>
+
+      <div class="input-container">
+        <input class="unpa-input" type="text" placeholder="Matrícula *"
+               [(ngModel)]="matricula" maxlength="10" autocomplete="username">
+      </div>
+
+      <div class="input-container">
+        <input class="unpa-input" type="text" placeholder="CURP *"
+               [(ngModel)]="curp" maxlength="18"
+               (input)="curp = curp.toUpperCase()">
+      </div>
+
+      <div class="input-container">
+        <input class="unpa-input" type="email" placeholder="Correo electrónico *"
+               [(ngModel)]="correo" maxlength="150" autocomplete="email"
+               (keydown.enter)="enviar()">
+      </div>
+
+      <p class="hint-apellidos">* Al menos un apellido es obligatorio.</p>
+
+      <button type="button" class="btn-login" (click)="enviar()" [disabled]="cargando">
+        {{ cargando ? 'ENVIANDO...' : 'ENVIAR SOLICITUD' }}
+      </button>
+    </ng-container>
+
+    <a routerLink="/login" class="link-volver">Volver al inicio de sesión</a>
+  </div>
+
+  <p class="footer-text">
+    Desarrollado por alumnos y profesores de Ingeniería en Computación
+  </p>
+
+</div>

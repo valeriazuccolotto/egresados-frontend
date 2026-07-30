@@ -6,12 +6,23 @@
       <h2>Reportes de datos Laborales obtenidos</h2>
       <p>Análisis estadístico de información laboral de egresados</p>
     </div>
-    <div class="campus-box">
-      <span class="material-icons">location_on</span>
-      <label>Campus</label>
-      <select [(ngModel)]="campusSeleccionado" (change)="cambiarCampus()">
-        <option *ngFor="let c of campus">{{ c }}</option>
-      </select>
+    <div class="acciones-descarga">
+      <button
+        type="button"
+        class="btn-descargar-todas"
+        [disabled]="descargandoTodas"
+        (click)="descargarTodas()"
+      >
+        <span class="material-icons">folder_zip</span>
+        {{ descargandoTodas ? 'Preparando…' : 'Descargar todas' }}
+      </button>
+      <div class="campus-box">
+        <span class="material-icons">location_on</span>
+        <label>Campus</label>
+        <select [(ngModel)]="campusSeleccionado" (change)="cambiarCampus()">
+          <option *ngFor="let c of campus">{{ c }}</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -52,10 +63,16 @@
   <div class="graficas-grid dos-col">
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">category</span>
-        Sector laboral
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">category</span>
+          Sector laboral
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartSector', 'sector-laboral.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Distribución de egresados por sector de trabajo</p>
       <div class="grafica-wrap">
         <canvas id="chartSector"></canvas>
@@ -63,10 +80,16 @@
     </div>
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">search</span>
-        ¿Cómo consiguió el empleo?
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">search</span>
+          ¿Cómo consiguió el empleo?
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartComoConsiguio', 'como-consiguio-empleo.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Medio por el que obtuvieron su trabajo actual</p>
       <div class="grafica-wrap">
         <canvas id="chartComoConsiguio"></canvas>
@@ -79,10 +102,16 @@
   <div class="graficas-grid dos-col">
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">schedule</span>
-        Tiempo para conseguir empleo
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">schedule</span>
+          Tiempo para conseguir empleo
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartTiempo', 'tiempo-empleo.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Cuánto tiempo tardaron en obtener su primer empleo</p>
       <div class="grafica-wrap">
         <canvas id="chartTiempo"></canvas>
@@ -90,10 +119,16 @@
     </div>
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">description</span>
-        Tipo de contrato
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">description</span>
+          Tipo de contrato
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartContrato', 'tipo-contrato.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Modalidad contractual de los egresados empleados</p>
       <div class="grafica-wrap">
         <canvas id="chartContrato"></canvas>
@@ -106,10 +141,16 @@
   <div class="graficas-grid dos-col">
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">home_work</span>
-        Modalidad de trabajo
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">home_work</span>
+          Modalidad de trabajo
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartModalidad', 'modalidad-laboral.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Presencial, remoto o híbrido</p>
       <div class="grafica-wrap">
         <canvas id="chartModalidad"></canvas>
@@ -117,10 +158,16 @@
     </div>
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">attach_money</span>
-        Rango salarial
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">attach_money</span>
+          Rango salarial
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartSalario', 'rango-salario.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Distribución de egresados por rango de salario mensual</p>
       <div class="grafica-wrap">
         <canvas id="chartSalario"></canvas>
@@ -133,10 +180,16 @@
   <div class="graficas-grid dos-col">
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">connect_without_contact</span>
-        Relación con la carrera
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">connect_without_contact</span>
+          Relación con la carrera
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartRelacion', 'relacion-carrera-laboral.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Qué tan relacionado está el trabajo con su carrera</p>
       <div class="grafica-wrap">
         <canvas id="chartRelacion"></canvas>
@@ -144,10 +197,16 @@
     </div>
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">card_giftcard</span>
-        Prestaciones más comunes
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">card_giftcard</span>
+          Prestaciones más comunes
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartPrestaciones', 'prestaciones.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Cuántos egresados cuentan con cada prestación</p>
       <div class="grafica-wrap">
         <canvas id="chartPrestaciones"></canvas>

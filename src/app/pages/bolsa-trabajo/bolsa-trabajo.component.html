@@ -6,10 +6,15 @@
       <p>Vacantes disponibles para egresados por carrera y modalidad</p>
     </div>
 
-    <a class="btn-nueva" routerLink="/admin/bolsaTrabajo/nueva">
-      <span class="material-icons" aria-hidden="true">add</span>
-      Nueva vacante
-    </a>
+    <div class="header-actions">
+      <button type="button" class="btn-exportar" (click)="exportarVacantes()">
+        Exportar vacantes
+      </button>
+      <a class="btn-nueva" routerLink="/admin/bolsaTrabajo/nueva">
+        <span class="material-icons" aria-hidden="true">add</span>
+        Nueva vacante
+      </a>
+    </div>
   </div>
 
   <section class="metrics">
@@ -18,12 +23,20 @@
       <p>Vacantes registradas</p>
     </div>
     <div class="card">
+      <h3>{{ totalActivas }}</h3>
+      <p>Activas</p>
+    </div>
+    <div class="card">
+      <h3>{{ totalInactivas }}</h3>
+      <p>Inactivas</p>
+    </div>
+    <div class="card">
       <h3>{{ totalPresenciales }}</h3>
       <p>Presenciales</p>
     </div>
     <div class="card">
       <h3>{{ totalHibridas }}</h3>
-      <p>Hibridas</p>
+      <p>Híbridas</p>
     </div>
     <div class="card">
       <h3>{{ totalRemotas }}</h3>
@@ -39,10 +52,28 @@
         placeholder="Buscar por empresa, puesto, descripcion o carrera..."
       >
     </div>
+    <select class="filtro-select" [(ngModel)]="carreraFiltro">
+      <option value="">Todas las carreras</option>
+      <option *ngFor="let carrera of carreras" [value]="carrera.claveCarrera">
+        {{ carrera.nombreCarrera }}
+      </option>
+    </select>
+    <select class="filtro-select" [(ngModel)]="postulantesFiltro">
+      <option value="todas">Postulantes: todas</option>
+      <option value="con">Con postulantes</option>
+      <option value="sin">Sin postulantes</option>
+    </select>
   </div>
 
   <div class="filtros">
-    <span class="filtro-label">Filtrar por modalidad:</span>
+    <span class="filtro-label">Estado:</span>
+    <button class="filtro-btn" [class.active]="estadoFiltro==='todas'" (click)="setEstado('todas')">Todas</button>
+    <button class="filtro-btn" [class.active]="estadoFiltro==='activas'" (click)="setEstado('activas')">Activas</button>
+    <button class="filtro-btn" [class.active]="estadoFiltro==='inactivas'" (click)="setEstado('inactivas')">Inactivas</button>
+  </div>
+
+  <div class="filtros">
+    <span class="filtro-label">Modalidad:</span>
     <button class="filtro-btn" [class.active]="modalidadFiltro==='todas'"
             (click)="setModalidad('todas')">Todas</button>
     <button class="filtro-btn" [class.active]="modalidadFiltro==='Presencial'"
@@ -51,7 +82,7 @@
     </button>
     <button class="filtro-btn" [class.active]="modalidadFiltro==='Hibrida'"
             (click)="setModalidad('Hibrida')">
-      <span class="dot dot-hibrida"></span> Hibrida
+      <span class="dot dot-hibrida"></span> Híbrida
     </button>
     <button class="filtro-btn" [class.active]="modalidadFiltro==='Remota'"
             (click)="setModalidad('Remota')">
@@ -59,9 +90,8 @@
     </button>
   </div>
 
-  <div class="error-msg" *ngIf="mensajeError">
-    {{ mensajeError }}
-  </div>
+  <div class="exito-msg" *ngIf="mensajeExito">{{ mensajeExito }}</div>
+  <div class="error-msg" *ngIf="mensajeError">{{ mensajeError }}</div>
 
   <div class="sin-datos" *ngIf="cargando">
     Cargando vacantes...
@@ -83,9 +113,13 @@
         </thead>
         <tbody>
           <ng-container *ngFor="let vacante of vacantesFiltradas">
-            <tr class="vacante-row" [class.activa]="esVacanteSeleccionada(vacante)" (click)="toggleDetalle(vacante)">
+            <tr class="vacante-row"
+                [class.activa]="esVacanteSeleccionada(vacante)"
+                [class.inactiva]="vacante.activo === false"
+                (click)="toggleDetalle(vacante)">
               <td>
                 <span class="cell-main">{{ nombreEmpresa(vacante) }}</span>
+                <span class="estado-chip" *ngIf="vacante.activo === false">Inactiva</span>
               </td>
               <td>
                 <span class="cell-main">{{ vacante.puesto }}</span>
@@ -105,6 +139,29 @@
             <tr class="detalle-row" *ngIf="esVacanteSeleccionada(vacante)">
               <td colspan="3">
                 <div class="detalle-vacante">
+                  <div class="detalle-acciones">
+                    <button type="button" class="btn-accion" (click)="editarVacante(vacante, $event)">
+                      Editar
+                    </button>
+                    <button type="button" class="btn-accion peligro"
+                            *ngIf="vacante.activo !== false"
+                            [disabled]="procesandoId===vacante.idBolsaTrabajo"
+                            (click)="desactivarVacante(vacante, $event)">
+                      Desactivar
+                    </button>
+                    <button type="button" class="btn-accion"
+                            *ngIf="vacante.activo === false"
+                            [disabled]="procesandoId===vacante.idBolsaTrabajo"
+                            (click)="reactivarVacante(vacante, $event)">
+                      Reactivar
+                    </button>
+                    <button type="button" class="btn-accion"
+                            [disabled]="!postulantes.length"
+                            (click)="exportarPostulantes(vacante); $event.stopPropagation()">
+                      Exportar postulantes
+                    </button>
+                  </div>
+
                   <div class="detalle-item">
                     <label>Descripcion</label>
                     <p>{{ vacante.descripcion }}</p>
@@ -113,10 +170,10 @@
                     <div class="detalle-item">
                       <label>Modalidad</label>
                       <span class="status-badge"
-                            [class.status-presencial]="vacante.modalidad==='Presencial'"
-                            [class.status-hibrida]="vacante.modalidad==='Hibrida'"
-                            [class.status-remota]="vacante.modalidad==='Remota'">
-                        {{ vacante.modalidad }}
+                            [class.status-presencial]="esModalidad(vacante, 'Presencial')"
+                            [class.status-hibrida]="esModalidad(vacante, 'Hibrida')"
+                            [class.status-remota]="esModalidad(vacante, 'Remota')">
+                        {{ modalidadLabel(vacante) }}
                       </span>
                     </div>
                     <div class="detalle-item">
@@ -137,7 +194,6 @@
                     </div>
                   </div>
 
-                  <!-- E-22: Postulantes y estadisticas -->
                   <div class="postulantes-section">
                     <h4 class="postulantes-titulo">Postulantes y contrataciones</h4>
 
@@ -173,6 +229,7 @@
                             <th>Estado</th>
                             <th>Fecha de aplicación</th>
                             <th>Fecha de contratación</th>
+                            <th>Acción</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -188,6 +245,15 @@
                             </td>
                             <td>{{ postulante.fechaAplicacion | date:'dd/MM/yyyy HH:mm' }}</td>
                             <td>{{ postulante.fechaContratacion ? (postulante.fechaContratacion | date:'dd/MM/yyyy HH:mm') : '—' }}</td>
+                            <td>
+                              <button type="button" class="btn-contratar"
+                                      *ngIf="postulante.estado==='Aplicado'"
+                                      [disabled]="procesandoMatricula===postulante.matricula"
+                                      (click)="marcarContratado(postulante, vacante); $event.stopPropagation()">
+                                Marcar contratado
+                              </button>
+                              <span *ngIf="postulante.estado==='Contratado'">—</span>
+                            </td>
                           </tr>
                         </tbody>
                       </table>

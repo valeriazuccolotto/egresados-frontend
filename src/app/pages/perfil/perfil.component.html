@@ -32,24 +32,64 @@
 
     </div>
 
-    <div class="bolsa-widget" [class.con-alerta]="hayVacantesCarrera">
+    <aside class="bolsa-widget" [class.con-alerta]="hayVacantesCarrera">
       <div class="bolsa-widget-header">
-        <div class="bolsa-icon">
-          <span class="material-icons">work</span>
+        <div>
+          <span class="bolsa-eyebrow">Bolsa de trabajo</span>
+          <h3>Vacantes para ti</h3>
         </div>
-        <span class="alert-dot" *ngIf="hayVacantesCarrera"></span>
+        <span class="contador-vacantes" *ngIf="hayVacantesCarrera">
+          {{ indiceVacante + 1 }}/{{ vacantesCarrera.length }}
+        </span>
       </div>
 
-      <h3>Bolsa de trabajo</h3>
-      <p>Vacantes disponibles para tu carrera: {{ carrera || 'No registrada' }}</p>
+      <ng-container *ngIf="vacanteActual as vacante; else sinVacantes">
+        <div class="vacante-slide">
+          <h4>{{ vacante.puesto }}</h4>
+          <p class="empresa">{{ vacante.nombreEmpresa }}</p>
 
-      <span class="vacante-badge nueva" *ngIf="hayVacantesCarrera">¡Nueva vacante!</span>
-      <span class="vacante-badge sin-vacantes" *ngIf="!hayVacantesCarrera">Sin nuevas vacantes</span>
+          <div class="vacante-resumen vacante-resumen-simple">
+            <div>
+              <span class="material-icons">payments</span>
+              <small>Salario</small>
+              <strong>{{ vacante.salarioOfertado | currency:'MXN':'symbol':'1.0-0' }}</strong>
+            </div>
+          </div>
 
-      <button class="btn-ver-vacantes" routerLink="/egresado/bolsaTrabajo">
-        Ver vacantes
-      </button>
-    </div>
+          <div class="vacante-acciones">
+            <button type="button" class="btn-detalle" (click)="abrirDetalle(vacante)">
+              Ver detalle
+            </button>
+          </div>
+        </div>
+
+        <div class="carrusel-controles" *ngIf="vacantesCarrera.length > 1">
+          <button type="button" aria-label="Vacante anterior" (click)="anteriorVacante()">
+            <span class="material-icons">chevron_left</span>
+          </button>
+          <div class="carrusel-puntos">
+            <button type="button"
+                    *ngFor="let item of vacantesCarrera; let i = index"
+                    [class.activo]="i === indiceVacante"
+                    [attr.aria-label]="'Ir a vacante ' + (i + 1)"
+                    (click)="irAVacante(i)">
+            </button>
+          </div>
+          <button type="button" aria-label="Siguiente vacante" (click)="siguienteVacante()">
+            <span class="material-icons">chevron_right</span>
+          </button>
+        </div>
+      </ng-container>
+
+      <ng-template #sinVacantes>
+        <div class="sin-vacantes-carrusel">
+          <span class="material-icons">work_off</span>
+          <p>No hay vacantes activas para {{ carrera || 'tu carrera' }}.</p>
+        </div>
+      </ng-template>
+
+      <a class="ver-todas" routerLink="/egresado/bolsaTrabajo">Ver todas las vacantes</a>
+    </aside>
   </div>
 
   <!-- DETALLES -->
@@ -107,6 +147,68 @@
       </div>
     </div>
 
+  </div>
+
+  <div class="mensaje-bolsa exito" *ngIf="mensajeBolsa">{{ mensajeBolsa }}</div>
+  <div class="mensaje-bolsa error" *ngIf="errorBolsa">{{ errorBolsa }}</div>
+
+  <div class="modal-backdrop" *ngIf="vacanteSeleccionada as vacante" (click)="cerrarDetalle()">
+    <section class="modal-vacante" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <div>
+          <span class="modalidad-chip">{{ vacante.modalidad }}</span>
+          <h3>{{ vacante.puesto }}</h3>
+          <p>{{ vacante.nombreEmpresa }}</p>
+        </div>
+        <button type="button" class="btn-cerrar-icono" aria-label="Cerrar" (click)="cerrarDetalle()">
+          <span class="material-icons">close</span>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <div class="detalle-completo">
+          <label>Descripción</label>
+          <p>{{ vacante.descripcion }}</p>
+        </div>
+        <div>
+          <label>Salario</label>
+          <p>{{ vacante.salarioOfertado | currency:'MXN':'symbol':'1.2-2' }}</p>
+        </div>
+        <div>
+          <label>Modalidad</label>
+          <p>{{ vacante.modalidad }}</p>
+        </div>
+        <div>
+          <label>Correo</label>
+          <p>{{ vacante.correoContacto || 'No registrado' }}</p>
+        </div>
+        <div>
+          <label>Teléfono</label>
+          <p>{{ vacante.telefonoContacto || 'No registrado' }}</p>
+        </div>
+        <div class="detalle-completo">
+          <label>Carreras relacionadas</label>
+          <p>{{ nombresCarreras(vacante) || 'No registradas' }}</p>
+        </div>
+      </div>
+
+      <footer class="modal-footer">
+        <span class="estado-postulacion">{{ estadoPostulacion(vacante) }}</span>
+        <button type="button" class="btn-aplicar"
+                *ngIf="puedeAplicar(vacante)"
+                [disabled]="procesando[vacante.idBolsaTrabajo]"
+                (click)="aplicarVacante(vacante)">
+          Aplicar a vacante
+        </button>
+        <button type="button" class="btn-contratado"
+                *ngIf="puedeMarcarContratado(vacante)"
+                [disabled]="procesando[vacante.idBolsaTrabajo]"
+                (click)="marcarComoContratado(vacante)">
+          Marcar contratado
+        </button>
+        <button type="button" class="btn-secundario" (click)="cerrarDetalle()">Cerrar</button>
+      </footer>
+    </section>
   </div>
 
 </div>

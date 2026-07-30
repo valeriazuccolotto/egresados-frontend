@@ -44,6 +44,16 @@ import {
 
 import { laboralesActualesPorMatricula } from '../../../../utils/laboral-actual.util';
 
+import {
+  ArchivoDescarga,
+  chartADataUrl,
+  descargarArchivosZip,
+  descargarDataUrl,
+  esperar,
+  obtenerChartPorCanvasId,
+  svgADataUrl
+} from '../../../../utils/descarga-graficas.util';
+
 import { repararTexto } from '../../../../utils/texto-encoding.util';
 
 
@@ -193,6 +203,10 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
   cargandoOaxaca = false;
 
   sinDatosOaxaca = false;
+
+  descargandoVista = false;
+
+  descargandoTodas = false;
 
 
 
@@ -1131,6 +1145,117 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
   }
 
 
+
+  async descargarVistaActual(): Promise<void> {
+    if (this.descargandoVista || this.descargandoTodas) {
+      return;
+    }
+    this.descargandoVista = true;
+    try {
+      const archivo = await this.capturarVistaActiva();
+      if (archivo) {
+        descargarDataUrl(archivo.dataUrl, archivo.nombreArchivo);
+      }
+    } finally {
+      this.descargandoVista = false;
+    }
+  }
+
+  async descargarTodasVistas(): Promise<void> {
+    if (this.descargandoTodas || this.descargandoVista) {
+      return;
+    }
+    this.descargandoTodas = true;
+    const vistaOriginal = this.vistaActiva;
+    const archivos: ArchivoDescarga[] = [];
+
+    try {
+      for (const vista of this.vistas) {
+        this.cambiarVistaForzada(vista.id);
+        await esperar(vista.id === 'oaxaca' ? 700 : 350);
+        if (vista.id === 'oaxaca') {
+          await this.esperarOaxacaListo(4000);
+        }
+        const archivo = await this.capturarVistaActiva();
+        if (archivo) {
+          archivos.push(archivo);
+        }
+      }
+      await descargarArchivosZip(archivos, 'mapa-ubicacion-laboral.zip');
+    } finally {
+      this.cambiarVistaForzada(vistaOriginal);
+      this.descargandoTodas = false;
+    }
+  }
+
+  private cambiarVistaForzada(vista: VistaMapaLaboral): void {
+    this.cerrarModales();
+    this.vistaActiva = vista;
+
+    if (vista === 'oaxaca' && !this.oaxacaListo && !this.cargandoOaxaca) {
+      this.cargarMapaOaxaca();
+    }
+
+    if (vista === 'graficas' || vista === 'top-estados') {
+      this.destruirGraficas();
+      setTimeout(() => this.construirGraficasVista(), 80);
+    }
+  }
+
+  private async esperarOaxacaListo(timeoutMs: number): Promise<void> {
+    const inicio = Date.now();
+    while (!this.oaxacaListo && Date.now() - inicio < timeoutMs) {
+      if (!this.cargandoOaxaca && this.sinDatosOaxaca) {
+        break;
+      }
+      await esperar(120);
+    }
+  }
+
+  private async capturarVistaActiva(): Promise<ArchivoDescarga | null> {
+    switch (this.vistaActiva) {
+      case 'graficas': {
+        const chart = obtenerChartPorCanvasId('chartEstadosTrabajo');
+        if (!chart) {
+          return null;
+        }
+        return {
+          nombreArchivo: 'mapa-egresados-por-estado.png',
+          dataUrl: chartADataUrl(chart)
+        };
+      }
+      case 'top-estados': {
+        const chart = obtenerChartPorCanvasId('chartTopEstados');
+        if (!chart) {
+          return null;
+        }
+        return {
+          nombreArchivo: 'mapa-top-estados.png',
+          dataUrl: chartADataUrl(chart)
+        };
+      }
+      case 'oaxaca': {
+        const svg = document.querySelector('.pagina-mapa .mapa-contenedor .mapa-svg') as SVGSVGElement | null;
+        if (!svg) {
+          return null;
+        }
+        return {
+          nombreArchivo: 'mapa-oaxaca-municipios.png',
+          dataUrl: await svgADataUrl(svg)
+        };
+      }
+      default: {
+        const svg = document.querySelector('.pagina-mapa .mapa-contenedor .mapa-svg') as SVGSVGElement | null;
+        if (!svg) {
+          return null;
+        }
+        return {
+          nombreArchivo: 'mapa-ubicacion-mexico.png',
+          dataUrl: await svgADataUrl(svg)
+        };
+      }
+    }
+  }
 
   get tituloVista(): string {
 

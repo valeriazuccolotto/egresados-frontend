@@ -6,12 +6,23 @@
       <h2>Reportes de Reconocimientos obtenidos</h2>
       <p>Análisis estadístico de reconocimientos de egresados</p>
     </div>
-    <div class="campus-box">
-      <span class="material-icons">location_on</span>
-      <label>Campus</label>
-      <select [(ngModel)]="campusSeleccionado" (change)="cambiarCampus()">
-        <option *ngFor="let c of campus">{{ c }}</option>
-      </select>
+    <div class="acciones-descarga">
+      <button
+        type="button"
+        class="btn-descargar-todas"
+        [disabled]="descargandoTodas"
+        (click)="descargarTodas()"
+      >
+        <span class="material-icons">folder_zip</span>
+        {{ descargandoTodas ? 'Preparando…' : 'Descargar todas' }}
+      </button>
+      <div class="campus-box">
+        <span class="material-icons">location_on</span>
+        <label>Campus</label>
+        <select [(ngModel)]="campusSeleccionado" (change)="cambiarCampus()">
+          <option *ngFor="let c of campus">{{ c }}</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -43,10 +54,16 @@
   <div class="graficas-grid dos-col">
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">emoji_events</span>
-        Tipo de reconocimiento
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">emoji_events</span>
+          Tipo de reconocimiento
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartTipo', 'tipo-reconocimiento.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Distribución por tipo: académico, cultural o deportivo</p>
       <div class="grafica-wrap grande">
         <canvas id="chartTipo"></canvas>
@@ -54,10 +71,16 @@
     </div>
 
     <div class="grafica-card">
-      <h3 class="grafica-titulo">
-        <span class="material-icons">account_balance</span>
-        Reconocimientos por institución
-      </h3>
+      <div class="grafica-card-header">
+        <h3 class="grafica-titulo">
+          <span class="material-icons">account_balance</span>
+          Reconocimientos por institución
+        </h3>
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartInstitucion', 'reconocimientos-por-institucion.png')">
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Instituciones que han otorgado reconocimientos a egresados</p>
       <div class="grafica-wrap grande">
         <canvas id="chartInstitucion"></canvas>

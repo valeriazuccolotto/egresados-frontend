@@ -3,4 +3,5 @@ export interface Usuario {
   password: string;
   rol?: string;
   activo?: boolean;
+  debeCambiarPassword?: boolean;
 }

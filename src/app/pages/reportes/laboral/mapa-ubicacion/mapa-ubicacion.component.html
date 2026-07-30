@@ -16,6 +16,42 @@
 
     <div class="topbar-controles">
 
+      <div class="acciones-descarga">
+
+        <button
+
+          type="button"
+
+          class="btn-descargar-grafica"
+
+          [disabled]="descargandoVista || descargandoTodas"
+
+          (click)="descargarVistaActual()">
+
+          <span class="material-icons">download</span>
+
+          {{ descargandoVista ? 'Preparando…' : 'Descargar vista' }}
+
+        </button>
+
+        <button
+
+          type="button"
+
+          class="btn-descargar-todas"
+
+          [disabled]="descargandoVista || descargandoTodas"
+
+          (click)="descargarTodasVistas()">
+
+          <span class="material-icons">folder_zip</span>
+
+          {{ descargandoTodas ? 'Preparando…' : 'Descargar todas' }}
+
+        </button>
+
+      </div>
+
       <div class="campus-box">
 
         <span class="material-icons">location_on</span>

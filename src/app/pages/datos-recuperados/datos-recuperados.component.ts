@@ -26,6 +26,8 @@ export class DatosRecuperadosComponent implements OnInit {
   matricula: string = '';
   resultado: any = null;
   cargando: boolean = false;
+  private egresadosCatalogo: any[] = [];
+  private egresadosBaseFiltrados: any[] = [];
 
   // =========================
   // FILTROS
@@ -76,11 +78,13 @@ export class DatosRecuperadosComponent implements OnInit {
   ngOnInit(): void {
     this.actualizarCarreras();
     this.filtrar();
+    this.cargarCatalogoBusqueda();
 
     const matriculaParam = this.route.snapshot.queryParamMap.get('matricula');
     if (matriculaParam?.trim()) {
       this.matricula = matriculaParam.trim();
       this.abrirDetalleEgresado(this.matricula);
+      this.matricula = '';
     }
   }
 
@@ -127,18 +131,37 @@ export class DatosRecuperadosComponent implements OnInit {
   // =========================
   // BUSCAR MATRÍCULA
   // =========================
+  onBusquedaInput(): void {
+    this.resultado = null;
+    this.aplicarBusquedaEnLista();
+  }
+
   buscarPorMatricula(): void {
-    if (!this.matricula.trim()) {
+    const texto = this.matricula.trim();
+
+    if (!texto) {
       this.resultado = null;
+      this.matricula = '';
       this.filtrar();
       return;
     }
 
+    const terminoNormalizado = this.normalizarTexto(texto);
+    const egresadoPorMatricula = this.egresadosCatalogo.find(
+      egresado => this.normalizarTexto(egresado?.matricula) === terminoNormalizado
+    );
+
+    this.matricula = '';
+
+    if (!egresadoPorMatricula) {
+      this.resultado = null;
+      this.cargando = false;
+      return;
+    }
+
     this.egresadosFiltrados = [];
-
     this.cargando = true;
-
-    this.egresadoService.getPerfilCompleto(this.matricula)
+    this.egresadoService.getPerfilCompleto(egresadoPorMatricula.matricula)
       .subscribe({
         next: (data) => {
           this.resultado = repararTextoEnObjeto(data);
@@ -149,6 +172,51 @@ export class DatosRecuperadosComponent implements OnInit {
           this.cargando = false;
         }
       });
+  }
+
+  private cargarCatalogoBusqueda(): void {
+    this.egresadoService.getVistaUsuarios().subscribe({
+      next: (data) => {
+        this.egresadosCatalogo = (data || [])
+          .filter((egresado: any) => !!egresado?.matricula)
+          .map((egresado: any) => repararTextoEnObjeto(egresado));
+      },
+      error: () => {
+        this.egresadosCatalogo = [];
+      }
+    });
+  }
+
+  nombreCompleto(egresado: any): string {
+    return [
+      egresado?.nombre,
+      egresado?.apellidoPaterno,
+      egresado?.apellidoMaterno
+    ].filter(Boolean).join(' ');
+  }
+
+  private aplicarBusquedaEnLista(): void {
+    const termino = this.normalizarTexto(this.matricula);
+    this.egresadosFiltrados = !termino
+      ? [...this.egresadosBaseFiltrados]
+      : this.egresadosBaseFiltrados.filter(
+          egresado => this.coincideBusqueda(egresado, termino)
+        );
+  }
+
+  private coincideBusqueda(egresado: any, terminoNormalizado: string): boolean {
+    const matricula = this.normalizarTexto(egresado?.matricula);
+    const nombre = this.normalizarTexto(this.nombreCompleto(egresado));
+    return matricula.includes(terminoNormalizado) || nombre.includes(terminoNormalizado);
+  }
+
+  private normalizarTexto(valor: unknown): string {
+    return String(valor ?? '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, ' ');
   }
 
   // =========================
@@ -165,10 +233,13 @@ export class DatosRecuperadosComponent implements OnInit {
       this.generacionSeleccionada
     ).subscribe({
       next: (data) => {
-        this.egresadosFiltrados = (data || []).map(item => repararTextoEnObjeto(item));
+        this.egresadosBaseFiltrados = (data || [])
+          .map(item => repararTextoEnObjeto(item));
+        this.aplicarBusquedaEnLista();
         this.cargando = false;
       },
       error: () => {
+        this.egresadosBaseFiltrados = [];
         this.egresadosFiltrados = [];
         this.cargando = false;
       }

@@ -1,0 +1,208 @@
+:host {
+  display: block;
+  width: 100%;
+  font-family: 'Roboto', sans-serif;
+}
+
+.page-section {
+  width: 100%;
+  min-height: 100%;
+  padding: 32px 40px 44px;
+  background: #f4f6f8;
+  box-sizing: border-box;
+}
+
+.section-header { margin-bottom: 20px; }
+
+.section-title h2 {
+  margin: 0 0 6px;
+  color: #2f9a8f;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.section-title p {
+  margin: 0;
+  color: #7d8a96;
+  font-size: 15px;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.filtro-btn {
+  border: 1px solid #cfd8dc;
+  background: #fff;
+  color: #546e7a;
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.filtro-btn.active {
+  background: #2f8f83;
+  border-color: #2f8f83;
+  color: #fff;
+}
+
+.save-msg {
+  background: #ecfdf3;
+  color: #027a48;
+  border: 1px solid #abefc6;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.error-banner {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.sin-datos {
+  padding: 28px;
+  text-align: center;
+  color: #78909c;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #dbe3e8;
+}
+
+.table-card {
+  background: #fff;
+  border: 1px solid #dbe3e8;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.table-wrap { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #eef2f5;
+  text-align: left;
+  font-size: 14px;
+  vertical-align: top;
+}
+
+th {
+  background: #f8fafb;
+  color: #607d8b;
+  font-weight: 600;
+}
+
+.curp {
+  font-family: ui-monospace, monospace;
+  letter-spacing: 0.3px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-pendiente { background: #fff7ed; color: #c2410c; }
+.badge-aceptada { background: #ecfdf3; color: #027a48; }
+.badge-rechazada { background: #fef2f2; color: #b91c1c; }
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.btn-aceptar,
+.btn-rechazar,
+.btn-secundario {
+  border: none;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-aceptar { background: #2f8f83; color: #fff; }
+.btn-rechazar { background: #dc2626; color: #fff; }
+.btn-secundario { background: #eceff1; color: #455a64; }
+
+.motivo {
+  color: #78909c;
+  font-size: 12px;
+  max-width: 220px;
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal {
+  width: 100%;
+  max-width: 460px;
+  background: #fff;
+  border-radius: 14px;
+  padding: 22px;
+  box-sizing: border-box;
+}
+
+.modal h3 {
+  margin: 0 0 8px;
+  color: #2f9a8f;
+}
+
+.modal p {
+  margin: 0 0 14px;
+  color: #607d8b;
+  font-size: 14px;
+}
+
+.modal label {
+  display: block;
+  margin-bottom: 6px;
+  color: #455a64;
+  font-size: 14px;
+}
+
+.modal textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #cfd8dc;
+  border-radius: 10px;
+  padding: 10px 12px;
+  resize: vertical;
+  font: inherit;
+}
+
+.modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}

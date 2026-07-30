@@ -93,6 +93,8 @@ export class LoginComponent implements OnInit {
         // 🔀 Redirección
         if (res.rol === 'ADMIN') {
           this.router.navigate(['/admin']);
+        } else if (res.debeCambiarPassword) {
+          this.router.navigate(['/definir-contrasena']);
         } else {
           this.router.navigate(['/perfil']);
         }

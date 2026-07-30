@@ -13,6 +13,11 @@ import {
   ETIQUETAS_TIEMPO_EMPLEO,
   ETIQUETAS_TIPO_CONTRATO
 } from '../../../utils/graficas-reporte.util';
+import {
+  descargarGraficaPorId,
+  descargarGraficasZip,
+  GraficaDescarga
+} from '../../../utils/descarga-graficas.util';
 import { repararTextoEnObjeto } from '../../../utils/texto-encoding.util';
 import { Chart, registerables } from 'chart.js';
 
@@ -34,11 +39,23 @@ export class LaboralComponent implements OnInit, OnDestroy {
   todosEgresados: any[] = [];
   catalogoPrestaciones: any[] = [];
 
-  // Métricas
   totalConEmpleo = 0;
   sectorMasFrecuente = '';
   modalidadMasFrecuente = '';
   salarioMasFrecuente = '';
+
+  descargandoTodas = false;
+
+  readonly graficasDescarga: GraficaDescarga[] = [
+    { canvasId: 'chartSector', nombreArchivo: 'sector-laboral.png' },
+    { canvasId: 'chartComoConsiguio', nombreArchivo: 'como-consiguio-empleo.png' },
+    { canvasId: 'chartTiempo', nombreArchivo: 'tiempo-empleo.png' },
+    { canvasId: 'chartContrato', nombreArchivo: 'tipo-contrato.png' },
+    { canvasId: 'chartModalidad', nombreArchivo: 'modalidad-laboral.png' },
+    { canvasId: 'chartSalario', nombreArchivo: 'rango-salario.png' },
+    { canvasId: 'chartRelacion', nombreArchivo: 'relacion-carrera-laboral.png' },
+    { canvasId: 'chartPrestaciones', nombreArchivo: 'prestaciones.png' }
+  ];
 
   private charts: Chart[] = [];
 
@@ -107,7 +124,6 @@ export class LaboralComponent implements OnInit, OnDestroy {
 
   calcularMetricas(laborales: any[]) {
     this.totalConEmpleo = laborales.length;
-
     this.sectorMasFrecuente = this.moda(laborales.map(l => l.sector));
     this.modalidadMasFrecuente = this.moda(laborales.map(l => l.modalidadTrabajo));
     this.salarioMasFrecuente = this.moda(laborales.map(l => l.salario));
@@ -119,6 +135,22 @@ export class LaboralComponent implements OnInit, OnDestroy {
     return Object.keys(conteo).length > 0
       ? Object.keys(conteo).reduce((a, b) => conteo[a] > conteo[b] ? a : b)
       : 'N/A';
+  }
+
+  descargarGrafica(canvasId: string, nombreArchivo: string): void {
+    descargarGraficaPorId(canvasId, nombreArchivo);
+  }
+
+  async descargarTodas(): Promise<void> {
+    if (this.descargandoTodas) {
+      return;
+    }
+    this.descargandoTodas = true;
+    try {
+      await descargarGraficasZip(this.graficasDescarga, 'reportes-laboral.zip');
+    } finally {
+      this.descargandoTodas = false;
+    }
   }
 
   private normalizar(valor: any): string {
@@ -137,49 +169,41 @@ export class LaboralComponent implements OnInit, OnDestroy {
     const G2 = '#c8d0d5';
     const AZ = '#1a6e78';
 
-    // 1. Sector - pie
     this.crearGraficaPie('chartSector', laborales, 'sector',
       [...ETIQUETAS_SECTOR_LABORAL],
       [V1, V2, V3, AZ, G1, G2]
     );
 
-    // 2. Cómo consiguió - doughnut
     this.crearGraficaDoughnut('chartComoConsiguio', laborales, 'comoConsiguio',
       [...ETIQUETAS_COMO_CONSIGUIO],
       [V1, V2, V3, AZ]
     );
 
-    // 3. Tiempo para conseguir - bar
     this.crearGraficaBar('chartTiempo', laborales, 'tiempoConseguir',
       [...ETIQUETAS_TIEMPO_EMPLEO],
       [V1, V2, V3, G1]
     );
 
-    // 4. Tipo contrato - pie
     this.crearGraficaPie('chartContrato', laborales, 'tipoContrato',
       [...ETIQUETAS_TIPO_CONTRATO],
       [V1, G1]
     );
 
-    // 5. Modalidad - doughnut
     this.crearGraficaDoughnut('chartModalidad', laborales, 'modalidadTrabajo',
       [...ETIQUETAS_MODALIDAD_LABORAL],
       [V1, V2, V3]
     );
 
-    // 6. Salario - bar
     this.crearGraficaBar('chartSalario', laborales, 'salario',
       [...ETIQUETAS_SALARIO],
       [G2, V3, V2, V1, G1]
     );
 
-    // 7. Relación carrera - doughnut
     this.crearGraficaDoughnut('chartRelacion', laborales, 'relacionCarrera',
       [...ETIQUETAS_RELACION_CARRERA_LABORAL],
       [V1, V2, V3, G1]
     );
 
-    // 8. Prestaciones - bar horizontal
     this.crearGraficaPrestaciones('chartPrestaciones', laborales);
   }
 

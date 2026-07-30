@@ -76,6 +76,7 @@
 .search-container input {
     flex: 1;
     min-width: 240px;
+    box-sizing: border-box;
     padding: 14px 18px;
     border-radius: 14px;
     border: 1px solid #d8dfdd;

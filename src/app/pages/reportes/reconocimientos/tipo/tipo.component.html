@@ -4,11 +4,17 @@
       <h2><span class="material-icons">emoji_events</span> Tipo de reconocimiento</h2>
       <p>Distribución por tipo: académico, cultural o deportivo</p>
     </div>
-    <div class="campus-box">
-      <span class="material-icons">location_on</span>
-      <select [(ngModel)]="campusSeleccionado" (change)="cambiar()">
-        <option *ngFor="let c of campus">{{ c }}</option>
-      </select>
+    <div class="acciones-descarga">
+      <button type="button" class="btn-descargar-grafica" (click)="descargar()">
+        <span class="material-icons">download</span>
+        Descargar
+      </button>
+      <div class="campus-box">
+        <span class="material-icons">location_on</span>
+        <select [(ngModel)]="campusSeleccionado" (change)="cambiar()">
+          <option *ngFor="let c of campus">{{ c }}</option>
+        </select>
+      </div>
     </div>
   </div>
   <div class="grafica-grande">

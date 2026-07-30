@@ -1,0 +1,10 @@
+.auth-wrapper--wide {
+  max-width: 380px;
+}
+
+.hint-apellidos {
+  margin: -8px 0 16px;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.65);
+  text-align: center;
+}

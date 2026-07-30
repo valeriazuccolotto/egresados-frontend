@@ -3,6 +3,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReconocimientosService } from '../../../services/reconocimientos.service';
 import { ETIQUETAS_TIPO_RECONOCIMIENTO } from '../../../utils/graficas-reporte.util';
+import {
+  descargarGraficaPorId,
+  descargarGraficasZip,
+  GraficaDescarga
+} from '../../../utils/descarga-graficas.util';
 import { repararTextoEnObjeto } from '../../../utils/texto-encoding.util';
 import { Chart, registerables } from 'chart.js';
 
@@ -29,6 +34,13 @@ export class ReconocimientosComponent implements OnInit, OnDestroy {
   tipoMasFrecuente = '';
   institucionMasFrecuente = '';
   egresadosConReconocimiento = 0;
+
+  descargandoTodas = false;
+
+  readonly graficasDescarga: GraficaDescarga[] = [
+    { canvasId: 'chartTipo', nombreArchivo: 'tipo-reconocimiento.png' },
+    { canvasId: 'chartInstitucion', nombreArchivo: 'reconocimientos-por-institucion.png' }
+  ];
 
   private charts: Chart[] = [];
 
@@ -93,6 +105,22 @@ export class ReconocimientosComponent implements OnInit, OnDestroy {
     return Object.keys(conteo).length > 0
       ? Object.keys(conteo).reduce((a, b) => conteo[a] > conteo[b] ? a : b)
       : 'N/A';
+  }
+
+  descargarGrafica(canvasId: string, nombreArchivo: string): void {
+    descargarGraficaPorId(canvasId, nombreArchivo);
+  }
+
+  async descargarTodas(): Promise<void> {
+    if (this.descargandoTodas) {
+      return;
+    }
+    this.descargandoTodas = true;
+    try {
+      await descargarGraficasZip(this.graficasDescarga, 'reportes-reconocimientos.zip');
+    } finally {
+      this.descargandoTodas = false;
+    }
   }
 
   private normalizar(valor: any): string {

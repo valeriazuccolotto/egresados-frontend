@@ -5,6 +5,7 @@ import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
 import { contarPorCampo, ETIQUETAS_SALARIO, coloresGrafica } from '../../../../utils/graficas-reporte.util';
+import { descargarGraficaPorId } from '../../../../utils/descarga-graficas.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -57,6 +58,10 @@ export class RangoSalarioComponent implements OnInit, OnDestroy {
         scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
       }
     });
+  }
+
+  descargar(): void {
+    descargarGraficaPorId('chart', 'rango-salario.png');
   }
 
   destruir() { this.chart?.destroy(); }

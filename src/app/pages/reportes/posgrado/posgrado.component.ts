@@ -10,6 +10,11 @@ import {
   ETIQUETAS_NIVEL_POSGRADO,
   ETIQUETAS_RELACION_POSGRADO
 } from '../../../utils/graficas-reporte.util';
+import {
+  descargarGraficaPorId,
+  descargarGraficasZip,
+  GraficaDescarga
+} from '../../../utils/descarga-graficas.util';
 import { repararTextoEnObjeto } from '../../../utils/texto-encoding.util';
 import { Chart, registerables } from 'chart.js';
 
@@ -36,6 +41,17 @@ export class PosgradoComponent implements OnInit, OnDestroy {
   nivelMasFrecuente = '';
   estatusMasFrecuente = '';
   porcentajeConBeca = 0;
+
+  descargandoTodas = false;
+
+  readonly graficasDescarga: GraficaDescarga[] = [
+    { canvasId: 'chartNivel', nombreArchivo: 'nivel-posgrado.png' },
+    { canvasId: 'chartModalidad', nombreArchivo: 'modalidad-posgrado.png' },
+    { canvasId: 'chartEstatus', nombreArchivo: 'estatus-posgrado.png' },
+    { canvasId: 'chartBeca', nombreArchivo: 'beca-posgrado.png' },
+    { canvasId: 'chartRelacionado', nombreArchivo: 'relacion-carrera-posgrado.png' },
+    { canvasId: 'chartTipoBeca', nombreArchivo: 'tipo-beca.png' }
+  ];
 
   private charts: Chart[] = [];
 
@@ -117,6 +133,22 @@ export class PosgradoComponent implements OnInit, OnDestroy {
     return Object.keys(conteo).length > 0
       ? Object.keys(conteo).reduce((a, b) => conteo[a] > conteo[b] ? a : b)
       : 'N/A';
+  }
+
+  descargarGrafica(canvasId: string, nombreArchivo: string): void {
+    descargarGraficaPorId(canvasId, nombreArchivo);
+  }
+
+  async descargarTodas(): Promise<void> {
+    if (this.descargandoTodas) {
+      return;
+    }
+    this.descargandoTodas = true;
+    try {
+      await descargarGraficasZip(this.graficasDescarga, 'reportes-posgrado.zip');
+    } finally {
+      this.descargandoTodas = false;
+    }
   }
 
   private normalizar(valor: any): string {

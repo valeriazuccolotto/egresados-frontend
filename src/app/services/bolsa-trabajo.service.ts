@@ -20,7 +20,23 @@ export class BolsaTrabajoService {
     return this.http.get<BolsaTrabajo[]>(`${this.apiUrl}/activas`);
   }
 
+  getVacante(id: number): Observable<BolsaTrabajo> {
+    return this.http.get<BolsaTrabajo>(`${this.apiUrl}/${id}`);
+  }
+
   crearVacante(vacante: BolsaTrabajoRequest): Observable<BolsaTrabajo> {
     return this.http.post<BolsaTrabajo>(this.apiUrl, vacante);
+  }
+
+  actualizarVacante(id: number, vacante: BolsaTrabajoRequest): Observable<BolsaTrabajo> {
+    return this.http.put<BolsaTrabajo>(`${this.apiUrl}/${id}`, vacante);
+  }
+
+  desactivarVacante(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  reactivarVacante(id: number): Observable<BolsaTrabajo> {
+    return this.http.post<BolsaTrabajo>(`${this.apiUrl}/${id}/reactivar`, {});
   }
 }

@@ -1,0 +1,63 @@
+<div class="main-container">
+
+  <div class="header-content">
+    <img
+      src="assets/images/unpa-logo.png"
+      alt="Universidad del Papaloapan - UNPA"
+      class="logo-unpa"
+    >
+  </div>
+
+  <div class="auth-wrapper">
+
+    <h1 class="page-title">Definir contraseña</h1>
+    <p class="page-subtitle">
+      Ingresa la contraseña temporal del correo y define tu contraseña definitiva.
+    </p>
+
+    <div class="error-msg" *ngIf="errorMsg">{{ errorMsg }}</div>
+    <div class="success-msg" *ngIf="exitoMsg">{{ exitoMsg }}</div>
+
+    <div class="input-container password-container">
+      <input
+        [type]="mostrarActual ? 'text' : 'password'"
+        class="unpa-input"
+        placeholder="Contraseña temporal"
+        [(ngModel)]="passwordActual"
+      >
+      <button type="button" class="eye-icon" (click)="mostrarActual = !mostrarActual">👁</button>
+    </div>
+
+    <div class="input-container password-container">
+      <input
+        [type]="mostrarNueva ? 'text' : 'password'"
+        class="unpa-input"
+        placeholder="Nueva contraseña"
+        [(ngModel)]="nuevaPassword"
+      >
+      <button type="button" class="eye-icon" (click)="mostrarNueva = !mostrarNueva">👁</button>
+    </div>
+
+    <div class="input-container password-container">
+      <input
+        [type]="mostrarConfirmar ? 'text' : 'password'"
+        class="unpa-input"
+        placeholder="Confirmar contraseña"
+        [(ngModel)]="confirmarPassword"
+        (keydown.enter)="guardar()"
+      >
+      <button type="button" class="eye-icon" (click)="mostrarConfirmar = !mostrarConfirmar">👁</button>
+    </div>
+
+    <button type="button" class="btn-login" (click)="guardar()" [disabled]="cargando">
+      {{ cargando ? 'GUARDANDO...' : 'GUARDAR CONTRASEÑA' }}
+    </button>
+
+    <a routerLink="/login" class="link-volver">Volver al inicio de sesión</a>
+  </div>
+
+  <p class="footer-text">
+    Desarrollado por alumnos y profesores de Ingeniería en Computación
+  </p>
+
+</div>

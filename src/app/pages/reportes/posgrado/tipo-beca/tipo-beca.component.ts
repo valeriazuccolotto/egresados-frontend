@@ -7,6 +7,7 @@ import { GraficasDataService } from '../../../../services/graficas-data.service'
 import { PosgradoService } from '../../../../services/posgrado.service';
 import { coloresPrestaciones } from '../../../../utils/prestaciones-reporte.util';
 import { datosGraficaTipoBeca } from '../../../../utils/tipo-beca-reporte.util';
+import { descargarGraficaPorId } from '../../../../utils/descarga-graficas.util';
 import { repararTextoEnObjeto } from '../../../../utils/texto-encoding.util';
 
 Chart.register(...registerables, ChartDataLabels);
@@ -90,6 +91,10 @@ export class TipoBecaComponent implements OnInit, OnDestroy {
         scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
       }
     });
+  }
+
+  descargar(): void {
+    descargarGraficaPorId('chart', 'tipo-beca.png');
   }
 
   destruir() { this.chart?.destroy(); }

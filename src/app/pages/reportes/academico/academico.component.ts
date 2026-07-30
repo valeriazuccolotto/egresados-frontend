@@ -6,6 +6,11 @@ import {
   ETIQUETAS_TIPO_TITULACION,
   ETIQUETAS_TIPO_TITULACION_CORTAS
 } from '../../../utils/graficas-reporte.util';
+import {
+  descargarGraficaPorId,
+  descargarGraficasZip,
+  GraficaDescarga
+} from '../../../utils/descarga-graficas.util';
 import { repararTextoEnObjeto } from '../../../utils/texto-encoding.util';
 import { Chart, registerables } from 'chart.js';
 
@@ -31,6 +36,15 @@ export class AcademicoComponent implements OnInit, AfterViewInit, OnDestroy {
   porcentajeTitulados = 0;
   titulacionMasFrecuente = '';
   anioEgresoMasFrecuente = 0;
+
+  descargandoTodas = false;
+
+  readonly graficasDescarga: GraficaDescarga[] = [
+    { canvasId: 'chartTitulado', nombreArchivo: 'titulados.png' },
+    { canvasId: 'chartTipoTitulacion', nombreArchivo: 'tipo-titulacion.png' },
+    { canvasId: 'chartAnioEgreso', nombreArchivo: 'anio-egreso.png' },
+    { canvasId: 'chartCarrera', nombreArchivo: 'egresados-por-carrera.png' }
+  ];
 
   private charts: Chart[] = [];
 
@@ -114,6 +128,22 @@ export class AcademicoComponent implements OnInit, AfterViewInit, OnDestroy {
       ? Number(Object.keys(conteoAnio).reduce((a, b) =>
           conteoAnio[Number(a)] > conteoAnio[Number(b)] ? a : b))
       : 0;
+  }
+
+  descargarGrafica(canvasId: string, nombreArchivo: string): void {
+    descargarGraficaPorId(canvasId, nombreArchivo);
+  }
+
+  async descargarTodas(): Promise<void> {
+    if (this.descargandoTodas) {
+      return;
+    }
+    this.descargandoTodas = true;
+    try {
+      await descargarGraficasZip(this.graficasDescarga, 'reportes-academico.zip');
+    } finally {
+      this.descargandoTodas = false;
+    }
   }
 
   private normalizar(valor: any): string {

@@ -67,6 +67,8 @@ actualizarVistaPorRuta(url: string): void {
   const ruta = url.split('?')[0];
   this.esLogin =
     ruta === '/login' ||
+    ruta === '/registro' ||
+    ruta === '/definir-contrasena' ||
     ruta === '/recuperar-contrasena' ||
     ruta === '/restablecer-contrasena';
   this.esAdmin = ruta.startsWith('/admin');
