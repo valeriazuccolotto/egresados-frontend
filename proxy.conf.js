@@ -80,6 +80,16 @@ const PROXY_CONFIG = {
     secure: false,
     changeOrigin: true
   },
+  '/bolsa-trabajo': {
+    target: 'http://localhost:8181',
+    secure: false,
+    changeOrigin: true
+  },
+  '/carreras': {
+    target: 'http://localhost:8181',
+    secure: false,
+    changeOrigin: true
+  },
   '/admin': {
     target: 'http://localhost:8181',
     secure: false,

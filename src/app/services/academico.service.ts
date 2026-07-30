@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 import { Academico } from '../models/academico';
 import { Carrera } from '../models/carrera';
 
@@ -10,41 +9,31 @@ import { Carrera } from '../models/carrera';
 })
 export class AcademicoService {
 
-  private baseUrl = '';
+  private readonly url = '/egresados/academico';
 
   constructor(private http: HttpClient) {}
 
   getAcademicos(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/egresados/academico`).pipe(
-      catchError(() => this.http.get<any[]>(`${this.baseUrl}/egresado/academico`))
-    );
+    return this.http.get<any[]>(this.url);
   }
 
   getEgresados(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/egresados`);
+    return this.http.get<any[]>('/egresados');
   }
 
   obtenerPorMatricula(matricula: string): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/egresados/academico/${matricula}`).pipe(
-      catchError(() => this.http.get<any>(`${this.baseUrl}/egresado/academico/${matricula}`))
-    );
+    return this.http.get<any>(`${this.url}/${matricula}`);
   }
 
   guardar(academico: Academico): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/egresados/academico`, academico).pipe(
-      catchError(() => this.http.post<any>(`${this.baseUrl}/egresado/academico`, academico))
-    );
+    return this.http.post<any>(this.url, academico);
   }
 
   actualizar(matricula: string, academico: Academico): Observable<any> {
-    return this.http.put<any>(`${this.baseUrl}/egresados/academico/${matricula}`, academico).pipe(
-      catchError(() => this.http.put<any>(`${this.baseUrl}/egresado/academico/${matricula}`, academico))
-    );
+    return this.http.put<any>(`${this.url}/${matricula}`, academico);
   }
 
   obtenerCarreras(): Observable<Carrera[]> {
-    return this.http.get<Carrera[]>(`${this.baseUrl}/egresados/academico/carreras`).pipe(
-      catchError(() => this.http.get<Carrera[]>(`${this.baseUrl}/egresado/academico/carreras`))
-    );
+    return this.http.get<Carrera[]>(`${this.url}/carreras`);
   }
 }

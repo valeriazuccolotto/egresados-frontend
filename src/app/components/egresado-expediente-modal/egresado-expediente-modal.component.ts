@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { catchError, forkJoin, of } from 'rxjs';
-import { EgresadoService } from '../../services/egresado/egresado.service';
+import { EgresadoService } from '../../services/egresado.service';
 import { PerfilService } from '../../services/perfil.service';
 import { repararTextoEnObjeto } from '../../utils/texto-encoding.util';
 

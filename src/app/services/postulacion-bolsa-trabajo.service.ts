@@ -12,7 +12,7 @@ import {
 })
 export class PostulacionBolsaTrabajoService {
 
-  private apiUrl = 'http://localhost:8181/bolsa-trabajo';
+  private apiUrl = '/bolsa-trabajo';
 
   constructor(private http: HttpClient) {}
 
@@ -40,7 +40,7 @@ export class PostulacionBolsaTrabajoService {
 
   obtenerPorMatricula(matricula: string): Observable<PostulacionBolsaTrabajo[]> {
     return this.http.get<PostulacionBolsaTrabajo[]>(
-      `${this.apiUrl}/postulaciones/egresado/${matricula}`
+      `${this.apiUrl}/postulaciones/egresados/${matricula}`
     );
   }
 

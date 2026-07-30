@@ -73,6 +73,7 @@ export const routes: Routes = [
   { path: 'reconocimientos', component: ReconocimientosComponent },
   { path: 'nuevos-avisos', component: NuevosAvisosComponent },
   { path: 'egresado/bolsaTrabajo', component: BolsaTrabajoEgresadoComponent },
+  { path: 'egresados/bolsaTrabajo', redirectTo: 'egresado/bolsaTrabajo', pathMatch: 'full' },
   {
     path: 'admin',
     component: AdminLayoutComponent,

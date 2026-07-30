@@ -1,12 +1,10 @@
 import { Component, ElementRef, HostListener, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { PerfilService } from './services/perfil.service';
-import { Router, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { ProgresoPerfilService } from './services/progreso-perfil.service';
 import { AvisosPendientesService } from './services/avisos-pendientes.service';
-import { Subscription, interval } from 'rxjs';
+import { Subscription, filter, interval } from 'rxjs';
 
 
 @Component({
@@ -27,6 +25,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private avisosPendientesSub?: Subscription;
   private avisosPollSub?: Subscription;
+  private progresoSub?: Subscription;
 
   @ViewChild('photoMenuRoot') photoMenuRoot?: ElementRef<HTMLElement>;
   @ViewChild('galleryInput') galleryInput?: ElementRef<HTMLInputElement>;
@@ -44,7 +43,7 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
   private perfilService: PerfilService,
   private router: Router,
-  private http: HttpClient,
+  private progresoPerfilService: ProgresoPerfilService,
   private avisosPendientesService: AvisosPendientesService
 ) {
   this.actualizarVistaPorRuta(this.router.url);
@@ -94,6 +93,7 @@ ngOnDestroy(): void {
   this.stopCameraStream();
   this.avisosPendientesSub?.unsubscribe();
   this.avisosPollSub?.unsubscribe();
+  this.progresoSub?.unsubscribe();
 }
 
 private actualizarAvisosPendientes(): void {
@@ -290,121 +290,22 @@ toggleSidebar(): void {
     return new File([bytes], filename, { type: mimeType });
   }
   
-  calcularProgreso() {
-  if (this.esLogin || this.esAdmin) {
-    return;
+  calcularProgreso(): void {
+    if (this.esLogin || this.esAdmin) {
+      return;
+    }
+
+    const raw = sessionStorage.getItem('usuario');
+    if (!raw) return;
+
+    const usuario = JSON.parse(raw);
+    const matricula = usuario?.matricula;
+    if (!matricula) return;
+
+    this.progresoSub?.unsubscribe();
+    this.progresoSub = this.progresoPerfilService.calcularPorcentaje(matricula).subscribe({
+      next: porcentaje => this.porcentajePerfil = porcentaje,
+      error: () => this.porcentajePerfil = 0
+    });
   }
-
-  const raw = sessionStorage.getItem('usuario');
-
-  if (!raw) return;
-
-  const usuario = JSON.parse(raw);
-  const matricula = usuario.matricula;
-
-  let completados = 0;
-
-  // 5 perfil + 4 contacto + 5 académico + 7 laboral
-  const total = 21;
-
-  // =========================
-  // PERFIL
-  // =========================
-  this.http.get<any>(`http://localhost:8181/egresados/${matricula}`)
-    .subscribe({
-
-      next: (data: any) => {
-        console.log('PERFIL:', data);
-
-
-        if (data?.nombre) completados++;
-        if (data?.apellidoPaterno) completados++;
-        if (data?.apellidoMaterno) completados++;
-        if (data?.generacion) completados++;
-        if (data?.campus) completados++;
-
-        this.actualizarPorcentaje(completados, total);
-      },
-
-      error: () => this.actualizarPorcentaje(completados, total)
-    });
-
-  // =========================
-  // CONTACTO
-  // =========================
-  this.http.get<any>(`http://localhost:8181/egresados/contacto/${matricula}`)
-    .subscribe({
-
-      next: (data: any) => {
-        console.log('CONTACTO:', data);
-
-
-        if (data?.correoPersonal) completados++;
-        if (data?.telefono) completados++;
-        if (data?.ciudad) completados++;
-        if (data?.estadoResidencia) completados++;
-
-        this.actualizarPorcentaje(completados, total);
-      },
-
-      error: () => this.actualizarPorcentaje(completados, total)
-    });
-
-  // =========================
-  // ACADÉMICO
-  // =========================
-  this.http.get<any>(`http://localhost:8181/egresados/academico/${matricula}`)
-    .subscribe({
-
-      next: (data: any) => {
-          console.log('ACADEMICO:', data);
-
-
-        if (data?.claveCarrera) completados++;
-        if (data?.promedio !== null && data?.promedio !== undefined) completados++;
-        if (data?.anioEgreso !== null && data?.anioEgreso !== undefined) completados++;
-        if (data?.titulado) completados++;
-        if (data?.cedulaProfesional) completados++;
-
-        this.actualizarPorcentaje(completados, total);
-      },
-
-      error: () => this.actualizarPorcentaje(completados, total)
-    });
-
-  // =========================
-  // LABORAL
-  // =========================
-  // =========================
-// LABORAL
-// =========================
-this.http.get<any[]>(`http://localhost:8181/egresado/laboral/${matricula}`)
-  .subscribe({
-
-    next: (data: any[]) => {
-      console.log('LABORAL:', data);
-
-      if (data && data.length > 0) {
-
-        const laboral = data[0];
-
-        if (laboral?.empresa) completados++;
-if (laboral?.puesto) completados++;
-if (laboral?.sector) completados++;
-if (laboral?.comoConsiguio) completados++;
-if (laboral?.tiempoConseguir) completados++;
-if (laboral?.tipoContrato) completados++;
-if (laboral?.salario) completados++;
-      }
-
-      this.actualizarPorcentaje(completados, total);
-    },
-
-    error: () => this.actualizarPorcentaje(completados, total)
-  });
-}
-
-actualizarPorcentaje(completados: number, total: number) {
-  this.porcentajePerfil = Math.round((completados / total) * 100);
-}
 }

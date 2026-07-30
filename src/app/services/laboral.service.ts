@@ -1,36 +1,52 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, catchError } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class LaboralService {
 
-  private baseUrl = '';
+  private readonly laboralUrl = '/egresados/laboral';
+  private readonly prestacionesUrl = '/egresados/prestaciones';
+  private readonly municipiosUrl = '/egresados/catalogos/municipios-oaxaca';
 
   constructor(private http: HttpClient) {}
 
   getLaborales(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/egresados/laboral`).pipe(
-      catchError(() => this.http.get<any[]>(`${this.baseUrl}/egresado/laboral`))
+    return this.http.get<any[]>(this.laboralUrl);
+  }
+
+  getPorMatricula(matricula: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.laboralUrl}/${matricula}`);
+  }
+
+  guardar(data: any): Observable<any> {
+    return this.http.post<any>(this.laboralUrl, data);
+  }
+
+  actualizar(id: number, data: any): Observable<any> {
+    return this.http.put<any>(`${this.laboralUrl}/${id}`, data);
+  }
+
+  eliminar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.laboralUrl}/${id}`);
+  }
+
+  getPrestaciones(): Observable<any[]> {
+    return this.http.get<any[]>(this.prestacionesUrl);
+  }
+
+  crearPrestacion(nombre: string): Observable<any> {
+    return this.http.post<any>(this.prestacionesUrl, { nombre });
+  }
+
+  getMunicipiosOaxaca(): Observable<string[]> {
+    return this.http.get<string[]>(this.municipiosUrl).pipe(
+      catchError(() => this.http.get<string[]>(`${this.laboralUrl}/catalogo/municipios-oaxaca`)),
+      catchError(() => this.http.get<string[]>('/assets/catalogos/municipios-oaxaca.json'))
     );
   }
 
   getEgresados(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/egresados`);
-  }
-
-  getPrestaciones(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/egresado/prestaciones`).pipe(
-      catchError(() => this.http.get<any[]>(`${this.baseUrl}/egresados/prestaciones`))
-    );
-  }
-
-  guardar(data: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/egresados/laboral`, data).pipe(
-      catchError(() => this.http.post<any>(`${this.baseUrl}/egresado/laboral`, data))
-    );
+    return this.http.get<any[]>('/egresados');
   }
 }

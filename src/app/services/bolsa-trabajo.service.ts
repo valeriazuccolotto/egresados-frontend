@@ -8,12 +8,16 @@ import { BolsaTrabajo, BolsaTrabajoRequest } from '../models/bolsa-trabajo';
 })
 export class BolsaTrabajoService {
 
-  private apiUrl = 'http://localhost:8181/bolsa-trabajo';
+  private apiUrl = '/bolsa-trabajo';
 
   constructor(private http: HttpClient) {}
 
   getVacantes(): Observable<BolsaTrabajo[]> {
     return this.http.get<BolsaTrabajo[]>(this.apiUrl);
+  }
+
+  getVacantesActivas(): Observable<BolsaTrabajo[]> {
+    return this.http.get<BolsaTrabajo[]>(`${this.apiUrl}/activas`);
   }
 
   crearVacante(vacante: BolsaTrabajoRequest): Observable<BolsaTrabajo> {

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SolicitudService } from '../../services/solicitud.service';
 import { AvisosPendientesService } from '../../services/avisos-pendientes.service';
-import { RespuestaSolicitud, Solicitud } from '../../models/solicitud.model';
+import { RespuestaSolicitud, Solicitud } from '../../models/solicitud';
 import { Usuario } from '../../models/usuario';
 
 type VistaAvisos = 'lista' | 'detalle';

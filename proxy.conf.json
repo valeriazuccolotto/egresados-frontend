@@ -28,5 +28,15 @@
     "target": "http://localhost:8181",
     "secure": false,
     "changeOrigin": true
+  },
+  "/bolsa-trabajo": {
+    "target": "http://localhost:8181",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/carreras": {
+    "target": "http://localhost:8181",
+    "secure": false,
+    "changeOrigin": true
   }
 }

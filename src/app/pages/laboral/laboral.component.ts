@@ -1,22 +1,21 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { catchError } from 'rxjs/operators';
+import { LaboralService } from '../../services/laboral.service';
 import { ESTADOS_REPUBLICA_MEXICANA } from '../../utils/estados-mexico.util';
 import { repararTextoEnObjeto } from '../../utils/texto-encoding.util';
 
 @Component({
   selector: 'app-laboral',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './laboral.component.html',
   styleUrls: ['./laboral.component.css']
 })
 export class LaboralComponent implements OnInit {
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private laboralService: LaboralService, private router: Router) {}
 
   matriculaUsuario: string = '';
 
@@ -80,9 +79,7 @@ this.matriculaUsuario = usuario.matricula;
 }
   // ================= HISTORIAL =================
   cargarHistorial() {
-    this.http.get<any[]>(`/egresado/laboral/${this.matriculaUsuario}`).pipe(
-      catchError(() => this.http.get<any[]>(`/egresados/laboral/${this.matriculaUsuario}`))
-    ).subscribe({
+    this.laboralService.getPorMatricula(this.matriculaUsuario).subscribe({
       next: data => {
         this.historial = (data || [])
           .map(item => repararTextoEnObjeto(item))
@@ -94,9 +91,7 @@ this.matriculaUsuario = usuario.matricula;
 
   // ================= CATALOGO =================
   cargarPrestacionesCatalogo() {
-    this.http.get<any[]>(`/egresado/prestaciones`).pipe(
-      catchError(() => this.http.get<any[]>(`/egresados/prestaciones`))
-    ).subscribe({
+    this.laboralService.getPrestaciones().subscribe({
       next: data => {
         this.listaPrestaciones = (data || []).map(item => repararTextoEnObjeto(item));
       },
@@ -106,11 +101,7 @@ this.matriculaUsuario = usuario.matricula;
 
   cargarMunicipiosOaxaca() {
     this.cargandoMunicipios = true;
-    this.http.get<string[]>(`/egresado/catalogos/municipios-oaxaca`).pipe(
-      catchError(() => this.http.get<string[]>(`/egresados/catalogos/municipios-oaxaca`)),
-      catchError(() => this.http.get<string[]>(`/egresado/laboral/catalogo/municipios-oaxaca`)),
-      catchError(() => this.http.get<string[]>(`/assets/catalogos/municipios-oaxaca.json`))
-    ).subscribe({
+    this.laboralService.getMunicipiosOaxaca().subscribe({
       next: data => {
         this.municipiosOaxaca = (data || []).map(nombre => repararTextoEnObjeto(nombre));
         this.cargandoMunicipios = false;
@@ -348,9 +339,7 @@ this.matriculaUsuario = usuario.matricula;
       return;
     }
     const datos = this.construirDatos();
-    this.http.post("/egresado/laboral", datos).pipe(
-      catchError(() => this.http.post("/egresados/laboral", datos))
-    ).subscribe({
+    this.laboralService.guardar(datos).subscribe({
       next: () => {
         this.mostrarMensaje("✓ Guardado correctamente");
         this.mostrarFormulario = false;
@@ -398,9 +387,7 @@ this.matriculaUsuario = usuario.matricula;
     };
 
     const id = laboral.idLaboral;
-    this.http.put(`/egresado/laboral/${id}`, payload).pipe(
-      catchError(() => this.http.put(`/egresados/laboral/${id}`, payload))
-    ).subscribe({
+    this.laboralService.actualizar(id, payload).subscribe({
       next: () => {
         const index = this.historial.findIndex(l => l.idLaboral === laboral.idLaboral);
         if (index !== -1) {
@@ -422,9 +409,7 @@ this.matriculaUsuario = usuario.matricula;
   confirmarEliminacion() {
     if (this.laboralAEliminar !== null) {
       const id = this.laboralAEliminar;
-      this.http.delete(`/egresado/laboral/${id}`).pipe(
-        catchError(() => this.http.delete(`/egresados/laboral/${id}`))
-      ).subscribe({
+      this.laboralService.eliminar(id).subscribe({
         next: () => {
           this.mostrarMensaje("🗑️ Eliminado correctamente");
           this.cargarHistorial();
@@ -469,9 +454,7 @@ this.matriculaUsuario = usuario.matricula;
   agregarOtroPrestacion() {
   if (!this.otroTexto.trim()) return;
 
-  this.http.post<any>("/egresado/prestaciones", { nombre: this.otroTexto }).pipe(
-    catchError(() => this.http.post<any>("/egresados/prestaciones", { nombre: this.otroTexto }))
-  ).subscribe({
+  this.laboralService.crearPrestacion(this.otroTexto).subscribe({
     next: (resp) => {
       this.form.prestacionesSeleccionadas.push(resp);
       this.listaPrestaciones.push(resp);
@@ -530,9 +513,7 @@ this.matriculaUsuario = usuario.matricula;
   agregarPrestacionNuevaEdit() {
   if (!this.otroTexto.trim()) return;
 
-  this.http.post<any>("/egresado/prestaciones", { nombre: this.otroTexto }).pipe(
-    catchError(() => this.http.post<any>("/egresados/prestaciones", { nombre: this.otroTexto }))
-  ).subscribe({
+  this.laboralService.crearPrestacion(this.otroTexto).subscribe({
     next: (resp) => {
       if (!this.laboralSeleccionado.prestaciones) {
         this.laboralSeleccionado.prestaciones = [];

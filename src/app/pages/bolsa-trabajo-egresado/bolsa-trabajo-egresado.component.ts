@@ -86,7 +86,7 @@ export class BolsaTrabajoEgresadoComponent implements OnInit {
   }
 
   cargarVacantes(): void {
-    this.bolsaTrabajoService.getVacantes().subscribe({
+    this.bolsaTrabajoService.getVacantesActivas().subscribe({
       next: (vacantes) => {
         this.vacantes = (vacantes || []).filter(vacante => this.esVacanteParaCarrera(vacante));
         this.cargando = false;

@@ -1,20 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
+import { PosgradoService } from '../../services/posgrado.service';
 import { fechaHoyLocal } from '../../utils/fecha-hoy.util';
 
 @Component({
   selector: 'app-posgrado',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './posgrado.component.html',
   styleUrls: ['./posgrado.component.css']
 })
 export class PosgradoComponent implements OnInit {
 
-  constructor(private http: HttpClient) {}
+  constructor(private posgradoService: PosgradoService) {}
 
   matriculaUsuario: string = '';
 
@@ -71,16 +70,14 @@ export class PosgradoComponent implements OnInit {
   }
 
   cargarHistorial() {
-    this.http.get<any[]>(`/egresado/posgrado/${this.matriculaUsuario}`).pipe(
-      catchError(() => this.http.get<any[]>(`/egresados/posgrado/${this.matriculaUsuario}`))
-    ).subscribe({
+    this.posgradoService.getPorMatricula(this.matriculaUsuario).subscribe({
       next: data => this.historial = (data || []).reverse(),
       error: () => this.mostrarMensaje('❌ Error al cargar historial')
     });
   }
 
   cargarBecas() {
-    this.http.get<any[]>('/tipo-beca').subscribe({
+    this.posgradoService.getTiposBeca().subscribe({
       next: data => this.listaBecas = data || [],
       error: () => this.mostrarMensaje('❌ Error al cargar becas')
     });
@@ -221,7 +218,7 @@ export class PosgradoComponent implements OnInit {
       fin: this.form.fin
     }, this.form.becasSeleccionadas, this.form.tieneBeca);
 
-    this.http.post('/egresado/posgrado', datos).subscribe({
+    this.posgradoService.guardar(datos).subscribe({
       next: () => {
         this.cargarHistorial();
         this.cargarBecas();
@@ -269,7 +266,7 @@ export class PosgradoComponent implements OnInit {
     );
 
     const id = this.posgradoSeleccionado.idPosgrado;
-    this.http.put(`/egresado/posgrado/${id}`, datos).subscribe({
+    this.posgradoService.actualizar(id, datos).subscribe({
       next: () => {
         this.cargarHistorial();
         this.cargarBecas();
@@ -316,7 +313,7 @@ export class PosgradoComponent implements OnInit {
   agregarOtraBeca() {
     if (!this.otroTexto.trim()) return;
 
-    this.http.post<any>('/tipo-beca', { nombre: this.otroTexto.trim() }).subscribe({
+    this.posgradoService.crearTipoBeca(this.otroTexto.trim()).subscribe({
       next: (resp) => {
         if (!this.listaBecas.some((b: any) => b.idTipoBeca === resp.idTipoBeca)) {
           this.listaBecas.push(resp);
@@ -384,7 +381,7 @@ export class PosgradoComponent implements OnInit {
   agregarBecaNuevaEdit() {
     if (!this.otroTexto.trim()) return;
 
-    this.http.post<any>('/tipo-beca', { nombre: this.otroTexto.trim() }).subscribe({
+    this.posgradoService.crearTipoBeca(this.otroTexto.trim()).subscribe({
       next: (resp) => {
         if (!this.posgradoSeleccionado.tiposBeca) {
           this.posgradoSeleccionado.tiposBeca = [];
@@ -426,9 +423,7 @@ export class PosgradoComponent implements OnInit {
   confirmarEliminacion() {
     if (this.posgradoAEliminar !== null) {
       const id = this.posgradoAEliminar;
-      this.http.delete(`/egresado/posgrado/${id}`).pipe(
-        catchError(() => this.http.delete(`/egresados/posgrado/${id}`))
-      ).subscribe({
+      this.posgradoService.eliminar(id).subscribe({
         next: () => {
           this.mostrarMensaje('🗑️ Posgrado eliminado correctamente');
           this.cargarHistorial();

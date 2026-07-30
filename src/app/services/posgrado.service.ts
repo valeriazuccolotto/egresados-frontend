@@ -1,28 +1,44 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class PosgradoService {
 
-  private baseUrl = '';
+  private readonly posgradoUrl = '/egresados/posgrado';
+  private readonly tipoBecaUrl = '/tipo-beca';
 
   constructor(private http: HttpClient) {}
 
   getPosgrados(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/egresados/posgrado`).pipe(
-      catchError(() => this.http.get<any[]>(`${this.baseUrl}/egresado/posgrado`))
-    );
+    return this.http.get<any[]>(this.posgradoUrl);
   }
 
-  getEgresados(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/egresados`);
+  getPorMatricula(matricula: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.posgradoUrl}/${matricula}`);
+  }
+
+  guardar(data: any): Observable<any> {
+    return this.http.post<any>(this.posgradoUrl, data);
+  }
+
+  actualizar(id: number, data: any): Observable<any> {
+    return this.http.put<any>(`${this.posgradoUrl}/${id}`, data);
+  }
+
+  eliminar(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.posgradoUrl}/${id}`);
   }
 
   getTiposBeca(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/tipo-beca`);
+    return this.http.get<any[]>(this.tipoBecaUrl);
+  }
+
+  crearTipoBeca(nombre: string): Observable<any> {
+    return this.http.post<any>(this.tipoBecaUrl, { nombre });
+  }
+
+  getEgresados(): Observable<any[]> {
+    return this.http.get<any[]>('/egresados');
   }
 }

@@ -8,7 +8,7 @@ import { Carrera } from '../models/carrera';
 })
 export class CarreraService {
 
-  private apiUrl = 'http://localhost:8181/carreras';
+  private apiUrl = '/carreras';
 
   constructor(private http: HttpClient) {}
 

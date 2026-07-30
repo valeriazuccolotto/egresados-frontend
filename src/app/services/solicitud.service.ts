@@ -1,16 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import {
   CrearSolicitudDto,
   EnviarRespuestaInformacionDto,
   RespuestaSolicitud,
   Solicitud,
   TipoSolicitud
-} from '../models/solicitud.model';
+} from '../models/solicitud';
 
 @Injectable({ providedIn: 'root' })
 export class SolicitudService {
+
+  private readonly adminUrl = '/admin/solicitar-info';
+  private readonly egresadoUrl = '/egresados/solicitar-info';
 
   constructor(private http: HttpClient) {}
 
@@ -18,73 +21,60 @@ export class SolicitudService {
 
   listarAdmin(tipo?: TipoSolicitud): Observable<Solicitud[]> {
     const query = tipo ? `?tipo=${tipo}` : '';
-    return this.http.get<any[]>(`/admin/solicitar-info${query}`).pipe(
-      catchError(() => this.http.get<any[]>(`/egresados/admin/solicitar-info${query}`)),
+    return this.http.get<any[]>(`${this.adminUrl}${query}`).pipe(
       map(list => (list || []).map(s => this.normalizarSolicitud(s)))
     );
   }
 
   crearInformacion(dto: CrearSolicitudDto): Observable<Solicitud> {
-    const body = { ...dto, tipo: 'INFORMACION' };
-    return this.http.post<any>('/admin/solicitar-info/informacion', body).pipe(
-      catchError(() => this.http.post<any>('/admin/solicitar-info', body)),
+    return this.http.post<any>(`${this.adminUrl}/informacion`, { ...dto, tipo: 'INFORMACION' }).pipe(
       map(s => this.normalizarSolicitud(s))
     );
   }
 
   crearArchivos(dto: CrearSolicitudDto): Observable<Solicitud> {
-    const body = { ...dto, tipo: 'ARCHIVOS' };
-    return this.http.post<any>('/admin/solicitar-info/archivos', body).pipe(
-      catchError(() => this.http.post<any>('/admin/solicitar-info', body)),
+    return this.http.post<any>(`${this.adminUrl}/archivos`, { ...dto, tipo: 'ARCHIVOS' }).pipe(
       map(s => this.normalizarSolicitud(s))
     );
   }
 
   cerrarSolicitud(idSolicitud: number): Observable<void> {
-    return this.http.patch<void>(`/admin/solicitar-info/${idSolicitud}/cerrar`, {}).pipe(
-      catchError(() => this.http.put<void>(`/admin/solicitar-info/${idSolicitud}/cerrar`, {}))
-    );
+    return this.http.patch<void>(`${this.adminUrl}/${idSolicitud}/cerrar`, {});
   }
 
   eliminarSolicitud(idSolicitud: number): Observable<void> {
-    return this.http.post<void>(`/admin/solicitar-info/${idSolicitud}/eliminar`, {}).pipe(
-      catchError(() => this.http.delete<void>(`/admin/solicitar-info/${idSolicitud}`))
-    );
+    return this.http.post<void>(`${this.adminUrl}/${idSolicitud}/eliminar`, {});
   }
 
   listarRespuestas(idSolicitud: number): Observable<RespuestaSolicitud[]> {
-    return this.http.get<any[]>(`/admin/solicitar-info/${idSolicitud}/respuestas`).pipe(
-      catchError(() => this.http.get<any[]>(`/egresados/admin/solicitar-info/${idSolicitud}/respuestas`)),
+    return this.http.get<any[]>(`${this.adminUrl}/${idSolicitud}/respuestas`).pipe(
       map(list => (list || []).map(r => this.normalizarRespuesta(r)))
     );
   }
 
   urlDescargaArchivo(idArchivo: number): string {
-    return `/admin/solicitar-info/archivos/${idArchivo}/descargar`;
+    return `${this.adminUrl}/archivos/${idArchivo}/descargar`;
   }
 
   // ——— Egresado ———
 
   listarParaEgresado(matricula: string): Observable<Solicitud[]> {
     const m = encodeURIComponent((matricula || '').trim());
-    return this.http.get<any[]>(`/egresados/solicitar-info/${m}`).pipe(
-      catchError(() => this.http.get<any[]>(`/egresado/solicitar-info/${m}`)),
+    return this.http.get<any[]>(`${this.egresadoUrl}/${m}`).pipe(
       map(list => (list || []).map(s => this.normalizarSolicitud(s)))
     );
   }
 
   obtenerParaEgresado(matricula: string, idSolicitud: number): Observable<Solicitud> {
     const m = encodeURIComponent(matricula);
-    return this.http.get<any>(`/egresados/solicitar-info/${m}/${idSolicitud}`).pipe(
-      catchError(() => this.http.get<any>(`/egresado/solicitar-info/${m}/${idSolicitud}`)),
+    return this.http.get<any>(`${this.egresadoUrl}/${m}/${idSolicitud}`).pipe(
       map(s => this.normalizarSolicitud(s))
     );
   }
 
   obtenerMiRespuesta(matricula: string, idSolicitud: number): Observable<RespuestaSolicitud> {
     const m = encodeURIComponent(matricula);
-    return this.http.get<any>(`/egresados/solicitar-info/${m}/${idSolicitud}/mi-respuesta`).pipe(
-      catchError(() => this.http.get<any>(`/egresado/solicitar-info/${m}/${idSolicitud}/mi-respuesta`)),
+    return this.http.get<any>(`${this.egresadoUrl}/${m}/${idSolicitud}/mi-respuesta`).pipe(
       map(r => this.normalizarRespuesta(r))
     );
   }
@@ -95,8 +85,7 @@ export class SolicitudService {
     dto: EnviarRespuestaInformacionDto
   ): Observable<RespuestaSolicitud> {
     const m = encodeURIComponent(matricula);
-    return this.http.post<any>(`/egresados/solicitar-info/${m}/${idSolicitud}/respuesta`, dto).pipe(
-      catchError(() => this.http.post<any>(`/egresado/solicitar-info/${m}/${idSolicitud}/respuesta`, dto)),
+    return this.http.post<any>(`${this.egresadoUrl}/${m}/${idSolicitud}/respuesta`, dto).pipe(
       map(r => this.normalizarRespuesta(r))
     );
   }
@@ -114,13 +103,9 @@ export class SolicitudService {
     }
     const m = encodeURIComponent(matricula);
     return this.http.post<any>(
-      `/egresados/solicitar-info/${m}/${idSolicitud}/respuesta-archivos`,
+      `${this.egresadoUrl}/${m}/${idSolicitud}/respuesta-archivos`,
       formData
     ).pipe(
-      catchError(() => this.http.post<any>(
-        `/egresado/solicitar-info/${m}/${idSolicitud}/respuesta-archivos`,
-        formData
-      )),
       map(r => this.normalizarRespuesta(r))
     );
   }

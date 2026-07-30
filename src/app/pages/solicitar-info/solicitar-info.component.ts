@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SolicitudService } from '../../services/solicitud.service';
 import { fechaHoyLocal } from '../../utils/fecha-hoy.util';
-import { CrearSolicitudDto, RespuestaSolicitud, Solicitud, TipoSolicitud } from '../../models/solicitud.model';
+import { CrearSolicitudDto, RespuestaSolicitud, Solicitud, TipoSolicitud } from '../../models/solicitud';
 
 type VistaAdmin = 'lista' | 'formulario';
 

@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { catchError } from 'rxjs/operators';
 import { Usuario } from '../../models/usuario';
+import { EgresadoService } from '../../services/egresado.service';
 
 @Component({
   selector: 'app-datos-personales',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './datos-personales.component.html',
   styleUrls: ['./datos-personales.component.css']
 })
@@ -26,7 +25,7 @@ export class DatosPersonalesComponent implements OnInit {
     generacion: ''
   };
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private egresadoService: EgresadoService, private router: Router) {}
 
   ngOnInit() {
     const raw = sessionStorage.getItem('usuario');
@@ -43,9 +42,7 @@ export class DatosPersonalesComponent implements OnInit {
   }
 
   cargarDatos() {
-    this.http.get<any>(`/egresados/${this.matriculaUsuario}`).pipe(
-      catchError(() => this.http.get<any>(`/egresado/${this.matriculaUsuario}`))
-    ).subscribe({
+    this.egresadoService.getByMatricula(this.matriculaUsuario).subscribe({
       next: (data) => {
         this.form = {
           nombre: data.nombre || '',
@@ -73,9 +70,7 @@ export class DatosPersonalesComponent implements OnInit {
 
     console.log("DATOS ENVIADOS:", datos);
 
-    this.http.post(`/egresados`, datos).pipe(
-      catchError(() => this.http.post(`/egresado`, datos))
-    ).subscribe({
+    this.egresadoService.guardar(datos).subscribe({
       next: () => {
         this.mensaje = "✓ Perfil actualizado";
         setTimeout(() => {

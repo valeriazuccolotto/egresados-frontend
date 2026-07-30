@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { catchError, forkJoin, of } from 'rxjs';
 
-import { EgresadoService } from '../../services/egresado/egresado.service';
+import { EgresadoService } from '../../services/egresado.service';
 import { PerfilService } from '../../services/perfil.service';
 import { repararTextoEnObjeto } from '../../utils/texto-encoding.util';
 
@@ -14,8 +13,7 @@ import { repararTextoEnObjeto } from '../../utils/texto-encoding.util';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule,
-    HttpClientModule
+    FormsModule
   ],
   templateUrl: './datos-recuperados.component.html',
   styleUrls: ['./datos-recuperados.component.css']

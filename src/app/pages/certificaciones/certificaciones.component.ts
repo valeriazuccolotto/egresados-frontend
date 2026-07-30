@@ -1,39 +1,31 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { RouterModule } from '@angular/router';
-import { Usuario } from '../../models/usuario';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
+import { CertificacionesService } from '../../services/certificaciones.service';
 import { fechaHoyLocal } from '../../utils/fecha-hoy.util';
 
 @Component({
   selector: 'app-certificaciones',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule,RouterModule],
-
+  imports: [CommonModule, FormsModule],
   templateUrl: './certificaciones.component.html',
   styleUrls: ['./certificaciones.component.css']
 })
 export class CertificacionesComponent implements OnInit {
 
-  constructor(private router: Router, private http: HttpClient) {}
+  constructor(private certificacionesService: CertificacionesService) {}
 
   matriculaUsuario: string = '';
 
-
   // ===== UI =====
-  menuOculto = false;
-  mostrarPopup = false;
   mostrarFormulario = false;
-  mostrarConfirmacion = false;   // 🔥 para el modal de confirmación
+  mostrarConfirmacion = false;
   mensaje = '';
 
   // ===== DATA =====
   historial: any[] = [];
   certSeleccionado: any = null;
-  certAEliminar: number | null = null; // 🔥 id temporal para eliminar
+  certAEliminar: number | null = null;
 
   // ===== FORM NUEVO =====
   form: any = {
@@ -41,7 +33,7 @@ export class CertificacionesComponent implements OnInit {
     certInicio: '',
     certFin: '',
     certObtencion: '',
-    certInstitucion: ''   // 🔥 nuevo campo
+    certInstitucion: ''
   };
 
   ngOnInit() {
@@ -58,23 +50,13 @@ export class CertificacionesComponent implements OnInit {
   this.cargarHistorial();
 }
   cargarHistorial() {
-    this.http.get<any[]>(`/egresado/certificaciones/${this.matriculaUsuario}`).pipe(
-      catchError(() => this.http.get<any[]>(`/egresados/certificaciones/${this.matriculaUsuario}`))
-    ).subscribe({
+    this.certificacionesService.getPorMatricula(this.matriculaUsuario).subscribe({
       next: (data) => this.historial = data || [],
       error: () => {
         this.historial = [];
         this.mostrarMensaje("❌ Error al cargar historial");
       }
     });
-  }
-
-  // ================= HEADER =================
-  toggleMenu() { this.menuOculto = !this.menuOculto; }
-  irNotificaciones() { this.router.navigate(['/notificaciones']); }
-  togglePopup(event: Event) {
-    event.stopPropagation();
-    this.mostrarPopup = !this.mostrarPopup;
   }
 
   // ================= CREAR =================
@@ -101,9 +83,7 @@ export class CertificacionesComponent implements OnInit {
     institucionCertificacion: this.form.certInstitucion
   };
 
-  this.http.post('/egresado/certificaciones', datos).pipe(
-    catchError(() => this.http.post('/egresados/certificaciones', datos))
-  ).subscribe({
+  this.certificacionesService.guardar(datos).subscribe({
     next: () => {
       this.mostrarMensaje("✓ Certificación guardada");
       this.resetForm();
@@ -132,9 +112,7 @@ export class CertificacionesComponent implements OnInit {
     };
 
     const id = this.certSeleccionado.idCertificacion;
-    this.http.put(`/egresado/certificaciones/${id}`, datosActualizados).pipe(
-      catchError(() => this.http.put(`/egresados/certificaciones/${id}`, datosActualizados))
-    ).subscribe({
+    this.certificacionesService.actualizar(id, datosActualizados).subscribe({
       next: () => {
         this.mostrarMensaje("✓ Certificación actualizada");
         this.certSeleccionado = null;
@@ -162,9 +140,7 @@ export class CertificacionesComponent implements OnInit {
   confirmarEliminacion() {
     if (this.certAEliminar !== null) {
       const id = this.certAEliminar;
-      this.http.delete(`/egresado/certificaciones/${id}`).pipe(
-        catchError(() => this.http.delete(`/egresados/certificaciones/${id}`))
-      ).subscribe({
+      this.certificacionesService.eliminar(id).subscribe({
         next: () => {
           this.mostrarMensaje("🗑️ Certificación eliminada correctamente");
           this.cargarHistorial();
