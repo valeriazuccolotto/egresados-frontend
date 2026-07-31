@@ -4,8 +4,15 @@
  * Las llamadas HttpClient (JSON) siguen yendo al backend :8181.
  */
 
+/** Prefijos de API bajo /admin que SÍ deben ir al backend aunque el Accept diga HTML. */
+const API_ADMIN_PREFIXES = [
+  '/admin/solicitar-info/',
+  '/admin/solicitudes-registro'
+];
+
 const PANTALLAS_ADMIN = [
   '/admin',
+  '/admin/dashboard',
   '/admin/usuarios',
   '/admin/datos-recuperados',
   '/admin/solicitar-info',
@@ -38,15 +45,28 @@ function esRecargaNavegador(req) {
   return accept.includes('text/html') && !accept.includes('application/json');
 }
 
+function esApiAdmin(path) {
+  return API_ADMIN_PREFIXES.some(prefix =>
+    path === prefix.replace(/\/$/, '') || path.startsWith(prefix)
+  );
+}
+
 function esPantallaAdmin(url) {
   const path = pathSinQuery(url);
+  if (esApiAdmin(path)) {
+    return false;
+  }
   if (PANTALLAS_ADMIN.includes(path)) {
     return true;
   }
   if (path.startsWith('/admin/bolsaTrabajo/editar/')) {
     return true;
   }
-  return path.startsWith('/admin/reportes/');
+  if (path.startsWith('/admin/reportes/')) {
+    return true;
+  }
+  // Cualquier otra pantalla Angular bajo /admin (evita 404 de Spring al F5)
+  return path === '/admin' || path.startsWith('/admin/');
 }
 
 function esPantallaEgresado(url) {
