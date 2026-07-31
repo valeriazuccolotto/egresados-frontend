@@ -6,7 +6,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
 import { LaboralService } from '../../../../services/laboral.service';
 import { coloresPrestaciones, datosGraficaPrestaciones } from '../../../../utils/prestaciones-reporte.util';
-import { descargarGraficaPorId } from '../../../../utils/descarga-graficas.util';
+import { descargarGraficaPdfPorId } from '../../../../utils/descarga-graficas.util';
 import { repararTextoEnObjeto } from '../../../../utils/texto-encoding.util';
 
 Chart.register(...registerables, ChartDataLabels);
@@ -93,8 +93,8 @@ export class PrestacionesComponent implements OnInit, OnDestroy {
     });
   }
 
-  descargar(): void {
-    descargarGraficaPorId('chart', 'prestaciones.png');
+  async descargar(): Promise<void> {
+    await descargarGraficaPdfPorId('chart', 'Prestaciones más comunes', 'prestaciones.pdf', 'Cuántos egresados cuentan con cada prestación laboral');
   }
 
   destruir() { this.chart?.destroy(); }

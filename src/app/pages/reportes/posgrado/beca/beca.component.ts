@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
-import { descargarGraficaPorId } from '../../../../utils/descarga-graficas.util';
+import { descargarGraficaPdfPorId } from '../../../../utils/descarga-graficas.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -60,8 +60,8 @@ export class BecaComponent implements OnInit, OnDestroy {
     });
   }
 
-  descargar(): void {
-    descargarGraficaPorId('chart', 'beca-posgrado.png');
+  async descargar(): Promise<void> {
+    await descargarGraficaPdfPorId('chart', '¿Tiene beca?', 'beca-posgrado.pdf', 'Egresados con y sin beca de posgrado');
   }
 
   destruir() { this.chart?.destroy(); }

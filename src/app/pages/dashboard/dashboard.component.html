@@ -2,15 +2,26 @@
 
   <!-- ENCABEZADO -->
   <div class="encabezado">
-    <div>
+    <div class="encabezado-texto">
       <h2>Concentrado de métricas de egresados</h2>
       <p>Resumen general de indicadores por campus</p>
     </div>
-    <div class="campus-box">
-      <span class="campus-label">Campus</span>
-      <select [(ngModel)]="campusSeleccionado" (change)="cambiarCampus()">
-        <option *ngFor="let c of campus">{{ c }}</option>
-      </select>
+    <div class="acciones-descarga">
+      <button
+        type="button"
+        class="btn-descargar-todas"
+        [disabled]="descargandoTodas"
+        (click)="abrirSelectorPdf()"
+      >
+        <span class="material-icons">picture_as_pdf</span>
+        Descargar PDF
+      </button>
+      <div class="campus-box">
+        <span class="campus-label">Campus</span>
+        <select [(ngModel)]="campusSeleccionado" (change)="cambiarCampus()">
+          <option *ngFor="let c of campus">{{ c }}</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -41,12 +52,32 @@
   <!-- FILA 1: Empleabilidad por carrera + Sectores laborales -->
   <div class="graficas-fila fila-2-1">
     <div class="grafica-card">
-      <div class="grafica-titulo"><span class="material-icons">bar_chart</span> Empleabilidad por carrera</div>
+      <div class="grafica-card-header">
+        <div class="grafica-titulo"><span class="material-icons">bar_chart</span> Empleabilidad por carrera</div>
+        <button
+          type="button"
+          class="btn-descargar-grafica"
+          (click)="descargarGrafica('g1', 'Empleabilidad por carrera', 'empleabilidad-por-carrera.pdf', 'Porcentaje de egresados empleados por carrera')"
+        >
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Porcentaje de egresados empleados por carrera</p>
       <div class="grafica-wrap alta"><canvas id="g1"></canvas></div>
     </div>
     <div class="grafica-card">
-      <div class="grafica-titulo"><span class="material-icons">donut_large</span> Sectores laborales</div>
+      <div class="grafica-card-header">
+        <div class="grafica-titulo"><span class="material-icons">donut_large</span> Sectores laborales</div>
+        <button
+          type="button"
+          class="btn-descargar-grafica"
+          (click)="descargarGrafica('g2', 'Sectores laborales', 'sectores-laborales.pdf', 'Distribución por sector de trabajo')"
+        >
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Distribución por sector de trabajo</p>
       <div class="grafica-wrap normal"><canvas id="g2"></canvas></div>
     </div>
@@ -55,12 +86,32 @@
   <!-- FILA 2: Tiempo para conseguir empleo + Titulación por carrera -->
   <div class="graficas-fila fila-igual">
     <div class="grafica-card">
-      <div class="grafica-titulo"><span class="material-icons">schedule</span> Tiempo para conseguir empleo por carrera</div>
+      <div class="grafica-card-header">
+        <div class="grafica-titulo"><span class="material-icons">schedule</span> Tiempo para conseguir empleo por carrera</div>
+        <button
+          type="button"
+          class="btn-descargar-grafica"
+          (click)="descargarGrafica('g3', 'Tiempo para conseguir empleo por carrera', 'tiempo-empleo-por-carrera.pdf', 'Desglose por carrera y rango de tiempo')"
+        >
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Desglose por carrera y rango de tiempo</p>
       <div class="grafica-wrap normal"><canvas id="g3"></canvas></div>
     </div>
     <div class="grafica-card">
-      <div class="grafica-titulo"><span class="material-icons">verified</span> Titulación por carrera</div>
+      <div class="grafica-card-header">
+        <div class="grafica-titulo"><span class="material-icons">verified</span> Titulación por carrera</div>
+        <button
+          type="button"
+          class="btn-descargar-grafica"
+          (click)="descargarGrafica('g4', 'Titulación por carrera', 'titulacion-por-carrera.pdf', 'Titulados vs no titulados por carrera')"
+        >
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Titulados vs no titulados por carrera</p>
       <div class="grafica-wrap normal"><canvas id="g4"></canvas></div>
     </div>
@@ -69,12 +120,32 @@
   <!-- FILA 3: Posgrados por maestría + Certificaciones por carrera -->
   <div class="graficas-fila fila-igual">
     <div class="grafica-card">
-      <div class="grafica-titulo"><span class="material-icons">menu_book</span> Egresados con posgrado por programa</div>
+      <div class="grafica-card-header">
+        <div class="grafica-titulo"><span class="material-icons">menu_book</span> Egresados con posgrado por programa</div>
+        <button
+          type="button"
+          class="btn-descargar-grafica"
+          (click)="descargarGrafica('g5', 'Egresados con posgrado por programa', 'posgrados-por-programa.pdf', 'Cantidad de egresados con posgrado por programa')"
+        >
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Cantidad de egresados con posgrado por programa</p>
-      <div class="grafica-wrap normal"><canvas id="g5"></canvas></div>
+      <div class="grafica-wrap muy-alta"><canvas id="g5"></canvas></div>
     </div>
     <div class="grafica-card">
-      <div class="grafica-titulo"><span class="material-icons">workspace_premium</span> Certificaciones por carrera</div>
+      <div class="grafica-card-header">
+        <div class="grafica-titulo"><span class="material-icons">workspace_premium</span> Certificaciones por carrera</div>
+        <button
+          type="button"
+          class="btn-descargar-grafica"
+          (click)="descargarGrafica('g6', 'Certificaciones por carrera', 'certificaciones-por-carrera.pdf', 'Egresados con al menos una certificación')"
+        >
+          <span class="material-icons">download</span>
+          Descargar
+        </button>
+      </div>
       <p class="grafica-desc">Egresados con al menos una certificación</p>
       <div class="grafica-wrap normal"><canvas id="g6"></canvas></div>
     </div>
@@ -110,3 +181,12 @@
   </div>
 
 </div>
+
+<app-selector-descarga-pdf
+  [visible]="mostrarSelectorPdf"
+  titulo="Descargar gráficas del dashboard"
+  [opciones]="opcionesPdf"
+  [cargando]="descargandoTodas"
+  (cerrar)="cerrarSelectorPdf()"
+  (confirmar)="onConfirmarDescargaPdf($event)"
+></app-selector-descarga-pdf>

@@ -11,10 +11,10 @@
         type="button"
         class="btn-descargar-todas"
         [disabled]="descargandoTodas"
-        (click)="descargarTodas()"
+        (click)="abrirSelectorPdf()"
       >
-        <span class="material-icons">folder_zip</span>
-        {{ descargandoTodas ? 'Preparando…' : 'Descargar todas' }}
+        <span class="material-icons">picture_as_pdf</span>
+        Descargar PDF
       </button>
       <div class="campus-box">
         <span class="material-icons">location_on</span>
@@ -59,7 +59,7 @@
           <span class="material-icons">school</span>
           Nivel de estudio
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartNivel', 'nivel-posgrado.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartNivel', 'Nivel de estudio', 'nivel-posgrado.pdf', 'Distribución entre maestría y doctorado')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -76,7 +76,7 @@
           <span class="material-icons">laptop</span>
           Modalidad de estudio
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartModalidad', 'modalidad-posgrado.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartModalidad', 'Modalidad de estudio', 'modalidad-posgrado.pdf', 'Presencial, virtual o híbrida')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -98,7 +98,7 @@
           <span class="material-icons">flag</span>
           Estatus actual
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartEstatus', 'estatus-posgrado.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartEstatus', 'Estatus actual', 'estatus-posgrado.pdf', 'En curso, finalizado o pausado')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -115,7 +115,7 @@
           <span class="material-icons">card_giftcard</span>
           ¿Tiene beca?
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartBeca', 'beca-posgrado.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartBeca', '¿Tiene beca?', 'beca-posgrado.pdf', 'Egresados con y sin beca de posgrado')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -132,7 +132,7 @@
           <span class="material-icons">connect_without_contact</span>
           Relación con la carrera
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartRelacionado', 'relacion-carrera-posgrado.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartRelacionado', 'Relación con la carrera', 'relacion-carrera-posgrado.pdf', 'Qué tan relacionado está el posgrado con su carrera')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -154,7 +154,7 @@
           <span class="material-icons">workspace_premium</span>
           Tipo de beca
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartTipoBeca', 'tipo-beca.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartTipoBeca', 'Tipo de beca', 'tipo-beca.pdf', 'Distribución de egresados según el tipo de beca que reciben')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -166,5 +166,14 @@
     </div>
 
   </div>
+
+  <app-selector-descarga-pdf
+    [visible]="mostrarSelectorPdf"
+    titulo="Descargar reportes de posgrado en PDF"
+    [opciones]="opcionesPdf"
+    [cargando]="descargandoTodas"
+    (cerrar)="cerrarSelectorPdf()"
+    (confirmar)="onConfirmarDescargaPdf($event)"
+  ></app-selector-descarga-pdf>
 
 </div>

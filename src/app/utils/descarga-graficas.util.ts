@@ -1,14 +1,24 @@
 import { Chart } from 'chart.js';
-import JSZip from 'jszip';
-
-export interface ArchivoDescarga {
-  nombreArchivo: string;
-  dataUrl: string;
-}
+import { jsPDF } from 'jspdf';
 
 export interface GraficaDescarga {
   canvasId: string;
   nombreArchivo: string;
+  titulo: string;
+  descripcion?: string;
+}
+
+export interface PaginaPdfGrafica {
+  titulo: string;
+  descripcion?: string;
+  imagenDataUrl: string;
+  filas: { etiqueta: string; valor: number; porcentaje: number }[];
+}
+
+export interface OpcionDescargaPdf {
+  id: string;
+  titulo: string;
+  descripcion?: string;
 }
 
 function asegurarExtension(nombre: string, extension: string): string {
@@ -16,13 +26,6 @@ function asegurarExtension(nombre: string, extension: string): string {
   return limpio.toLowerCase().endsWith(`.${extension}`)
     ? limpio
     : `${limpio}.${extension}`;
-}
-
-export function descargarDataUrl(dataUrl: string, nombreArchivo: string): void {
-  const a = document.createElement('a');
-  a.href = dataUrl;
-  a.download = asegurarExtension(nombreArchivo, 'png');
-  a.click();
 }
 
 export function obtenerChartPorCanvasId(canvasId: string): Chart | undefined {
@@ -37,63 +40,20 @@ export function chartADataUrl(chart: Chart): string {
   return chart.toBase64Image('image/png', 1);
 }
 
-export function descargarGraficaPorId(canvasId: string, nombreArchivo: string): boolean {
-  const chart = obtenerChartPorCanvasId(canvasId);
-  if (!chart) {
-    return false;
-  }
-  descargarDataUrl(chartADataUrl(chart), nombreArchivo);
-  return true;
-}
+export function datosTablaDesdeChart(chart: Chart): PaginaPdfGrafica['filas'] {
+  const labels = (chart.data.labels || []).map(l => String(l ?? ''));
+  const dataset = chart.data.datasets?.[0];
+  const values = (dataset?.data || []).map(v => Number(v) || 0);
+  const total = values.reduce((a, b) => a + b, 0);
 
-export async function recopilarGraficas(
-  items: GraficaDescarga[]
-): Promise<ArchivoDescarga[]> {
-  const archivos: ArchivoDescarga[] = [];
-  for (const item of items) {
-    const chart = obtenerChartPorCanvasId(item.canvasId);
-    if (!chart) {
-      continue;
-    }
-    archivos.push({
-      nombreArchivo: asegurarExtension(item.nombreArchivo, 'png'),
-      dataUrl: chartADataUrl(chart)
-    });
-  }
-  return archivos;
-}
-
-export async function descargarGraficasZip(
-  items: GraficaDescarga[],
-  zipNombre: string
-): Promise<void> {
-  const archivos = await recopilarGraficas(items);
-  await descargarArchivosZip(archivos, zipNombre);
-}
-
-export async function descargarArchivosZip(
-  archivos: ArchivoDescarga[],
-  zipNombre: string
-): Promise<void> {
-  if (!archivos.length) {
-    return;
-  }
-
-  const zip = new JSZip();
-  for (const archivo of archivos) {
-    const base64 = archivo.dataUrl.includes(',')
-      ? archivo.dataUrl.split(',')[1]
-      : archivo.dataUrl;
-    zip.file(asegurarExtension(archivo.nombreArchivo, 'png'), base64, { base64: true });
-  }
-
-  const blob = await zip.generateAsync({ type: 'blob' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = asegurarExtension(zipNombre, 'zip');
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1500);
+  return labels.map((etiqueta, i) => {
+    const valor = values[i] ?? 0;
+    return {
+      etiqueta,
+      valor,
+      porcentaje: total > 0 ? (valor / total) * 100 : 0
+    };
+  });
 }
 
 function aplicarEstilosComputados(origen: Element, destino: Element): void {
@@ -181,12 +141,182 @@ export async function svgADataUrl(svg: SVGSVGElement): Promise<string> {
   });
 }
 
-export async function descargarSvgComoPng(
-  svg: SVGSVGElement,
+function dibujarPagina(
+  doc: jsPDF,
+  pagina: PaginaPdfGrafica,
+  esPrimera: boolean
+): void {
+  if (!esPrimera) {
+    doc.addPage();
+  }
+
+  const margen = 16;
+  const anchoUtil = doc.internal.pageSize.getWidth() - margen * 2;
+  let y = margen;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.setTextColor(47, 143, 131);
+  const tituloLineas = doc.splitTextToSize(pagina.titulo, anchoUtil);
+  doc.text(tituloLineas, margen, y + 4);
+  y += tituloLineas.length * 7 + 4;
+
+  if (pagina.descripcion) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.setTextColor(100, 116, 139);
+    const descLineas = doc.splitTextToSize(pagina.descripcion, anchoUtil);
+    doc.text(descLineas, margen, y);
+    y += descLineas.length * 5 + 6;
+  } else {
+    y += 4;
+  }
+
+  const altoImgMax = 120;
+  const props = doc.getImageProperties(pagina.imagenDataUrl);
+  const ratio = props.width / Math.max(props.height, 1);
+  let imgW = anchoUtil;
+  let imgH = imgW / ratio;
+  if (imgH > altoImgMax) {
+    imgH = altoImgMax;
+    imgW = imgH * ratio;
+  }
+  const imgX = margen + (anchoUtil - imgW) / 2;
+  doc.addImage(pagina.imagenDataUrl, 'PNG', imgX, y, imgW, imgH);
+  y += imgH + 10;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(11);
+  doc.setTextColor(32, 79, 75);
+  doc.text('Datos de la gráfica', margen, y);
+  y += 7;
+
+  const colEtiqueta = margen;
+  const colValor = margen + anchoUtil * 0.62;
+  const colPct = margen + anchoUtil * 0.82;
+
+  doc.setFontSize(9);
+  doc.setTextColor(100, 116, 139);
+  doc.text('Categoría', colEtiqueta, y);
+  doc.text('Cantidad', colValor, y);
+  doc.text('%', colPct, y);
+  y += 2;
+  doc.setDrawColor(226, 236, 233);
+  doc.line(margen, y, margen + anchoUtil, y);
+  y += 6;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(51, 65, 85);
+  const altoPagina = doc.internal.pageSize.getHeight();
+
+  for (const fila of pagina.filas) {
+    if (y > altoPagina - 20) {
+      doc.addPage();
+      y = margen;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      doc.setTextColor(32, 79, 75);
+      doc.text('Datos de la gráfica (continuación)', margen, y);
+      y += 8;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(51, 65, 85);
+    }
+
+    const etiquetaLineas = doc.splitTextToSize(fila.etiqueta || 'Sin etiqueta', anchoUtil * 0.55);
+    doc.text(etiquetaLineas, colEtiqueta, y);
+    doc.text(String(fila.valor), colValor, y);
+    doc.text(`${fila.porcentaje.toFixed(1)}%`, colPct, y);
+    y += Math.max(etiquetaLineas.length * 4.5, 6) + 1;
+  }
+
+  const total = pagina.filas.reduce((a, f) => a + f.valor, 0);
+  y += 3;
+  doc.setDrawColor(226, 236, 233);
+  doc.line(margen, y, margen + anchoUtil, y);
+  y += 6;
+  doc.setFont('helvetica', 'bold');
+  doc.text('Total', colEtiqueta, y);
+  doc.text(String(total), colValor, y);
+  doc.text('100%', colPct, y);
+}
+
+export async function generarPdfGraficas(
+  paginas: PaginaPdfGrafica[],
   nombreArchivo: string
 ): Promise<void> {
-  const dataUrl = await svgADataUrl(svg);
-  descargarDataUrl(dataUrl, nombreArchivo);
+  if (!paginas.length) {
+    return;
+  }
+
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  for (let index = 0; index < paginas.length; index++) {
+    dibujarPagina(doc, paginas[index], index === 0);
+    // Evita congelar la UI al armar varias páginas
+    if (index < paginas.length - 1) {
+      await esperar(0);
+    }
+  }
+  doc.save(asegurarExtension(nombreArchivo, 'pdf'));
+}
+
+export async function descargarGraficaPdfPorId(
+  canvasId: string,
+  titulo: string,
+  nombreArchivo: string,
+  descripcion?: string
+): Promise<boolean> {
+  const chart = obtenerChartPorCanvasId(canvasId);
+  if (!chart) {
+    return false;
+  }
+
+  await generarPdfGraficas(
+    [{
+      titulo,
+      descripcion,
+      imagenDataUrl: chartADataUrl(chart),
+      filas: datosTablaDesdeChart(chart)
+    }],
+    nombreArchivo
+  );
+  return true;
+}
+
+export async function descargarGraficasPdf(
+  items: GraficaDescarga[],
+  nombreArchivo: string
+): Promise<void> {
+  const paginas: PaginaPdfGrafica[] = [];
+
+  for (const item of items) {
+    const chart = obtenerChartPorCanvasId(item.canvasId);
+    if (!chart) {
+      continue;
+    }
+    paginas.push({
+      titulo: item.titulo,
+      descripcion: item.descripcion,
+      imagenDataUrl: chartADataUrl(chart),
+      filas: datosTablaDesdeChart(chart)
+    });
+    await esperar(0);
+  }
+
+  await generarPdfGraficas(paginas, nombreArchivo);
+}
+
+export async function descargarImagenPdf(
+  imagenDataUrl: string,
+  titulo: string,
+  nombreArchivo: string,
+  descripcion?: string,
+  filas: PaginaPdfGrafica['filas'] = []
+): Promise<void> {
+  await generarPdfGraficas(
+    [{ titulo, descripcion, imagenDataUrl, filas }],
+    nombreArchivo
+  );
 }
 
 export function esperar(ms: number): Promise<void> {

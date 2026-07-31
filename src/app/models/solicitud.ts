@@ -1,15 +1,21 @@
 export type TipoSolicitud = 'INFORMACION' | 'ARCHIVOS';
 
+export interface CarreraSolicitud {
+  claveCarrera: string;
+  nombreCarrera?: string;
+}
+
 export interface Solicitud {
   idSolicitud?: number;
   tipo: TipoSolicitud;
   titulo: string;
   descripcion: string;
-  fechaInicio: string;
-  fechaFin: string;
+  fechaInicio?: string | null;
+  fechaFin?: string | null;
   activa?: boolean;
   creadoPor?: string;
   fechaCreacion?: string;
+  carreras?: CarreraSolicitud[];
   yaRespondio?: boolean;
   puedeResponder?: boolean;
   estadoEgresado?: 'PENDIENTE' | 'VENCIDA' | 'RESPONDIDA';
@@ -18,8 +24,9 @@ export interface Solicitud {
 export interface CrearSolicitudDto {
   titulo: string;
   descripcion: string;
-  fechaInicio: string;
-  fechaFin: string;
+  fechaInicio?: string | null;
+  fechaFin?: string | null;
+  carreras?: string[];
 }
 
 export interface EnviarRespuestaInformacionDto {

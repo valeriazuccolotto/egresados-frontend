@@ -157,8 +157,25 @@
             <div class="error" *ngIf="medio.invalid && medio.touched">Campo obligatorio</div>
         </div>
 
-        <div class="field-group">
-            <label><i class="fas fa-clock"></i>Tiempo en conseguir empleo <span class="required">*</span></label>
+        <div class="field-group" *ngIf="debeCapturarTiempoConseguir">
+            <label class="label-help">
+              <span><i class="fas fa-clock"></i> Tiempo en conseguir empleo <span class="required">*</span></span>
+              <span
+                class="help-icon"
+                [class.activo]="ayudaTiempoVisible"
+                (click)="toggleAyudaTiempo($event)"
+                (keydown.enter)="toggleAyudaTiempo($event)"
+                (keydown.space)="toggleAyudaTiempo($event)"
+                tabindex="0"
+                role="button"
+                aria-label="Ayuda sobre tiempo en conseguir empleo"
+              >
+                ?
+                <span class="tooltip-help">
+                  Se refiere al tiempo que te tomó conseguir empleo después de egresar de la universidad.
+                </span>
+              </span>
+            </label>
             <select [(ngModel)]="form.tiempo" name="tiempo" required #tiempo="ngModel">
             <option value="">Seleccione</option>
             <option>Menos de 3 meses</option>
@@ -444,18 +461,6 @@
             </select>
             <div class="error" *ngIf="medioEdit.invalid && medioEdit.touched">Campo obligatorio</div>
         </div>
-
-        <div class="field-group">
-            <label><i class="fas fa-clock"></i>Tiempo en conseguir empleo <span class="required">*</span></label>
-            <select [(ngModel)]="laboralSeleccionado.tiempoConseguir" name="tiempoConseguir" required #tiempoEdit="ngModel">
-            <option value="">Seleccione</option>
-            <option>Menos de 3 meses</option>
-            <option>3-6 meses</option>
-            <option>6-12 meses</option>
-            <option>Más de un año</option>
-            </select>
-            <div class="error" *ngIf="tiempoEdit.invalid && tiempoEdit.touched">Campo obligatorio</div>
-        </div>
         </div>
 
         <div class="bloque-formulario">
@@ -664,7 +669,7 @@
                     </div>
 
                     <!-- TIEMPO -->
-                    <div class="detalle-item">
+                    <div class="detalle-item" *ngIf="laboralConsulta.tiempoConseguir">
                         <div class="info-icon"><i class="fas fa-clock"></i></div>
                         <div>
                             <label>Tiempo en conseguir</label>

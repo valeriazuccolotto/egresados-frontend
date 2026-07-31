@@ -28,7 +28,7 @@
 
           (click)="descargarVistaActual()">
 
-          <span class="material-icons">download</span>
+          <span class="material-icons">picture_as_pdf</span>
 
           {{ descargandoVista ? 'Preparando…' : 'Descargar vista' }}
 
@@ -42,11 +42,11 @@
 
           [disabled]="descargandoVista || descargandoTodas"
 
-          (click)="descargarTodasVistas()">
+          (click)="abrirSelectorPdf()">
 
-          <span class="material-icons">folder_zip</span>
+          <span class="material-icons">picture_as_pdf</span>
 
-          {{ descargandoTodas ? 'Preparando…' : 'Descargar todas' }}
+          Descargar PDF
 
         </button>
 
@@ -527,4 +527,13 @@
   (cerrar)="cerrarModalExpediente()">
 
 </app-egresado-expediente-modal>
+
+<app-selector-descarga-pdf
+  [visible]="mostrarSelectorPdf"
+  titulo="Descargar mapa de ubicación laboral en PDF"
+  [opciones]="opcionesPdf"
+  [cargando]="descargandoTodas"
+  (cerrar)="cerrarSelectorPdf()"
+  (confirmar)="onConfirmarDescargaPdf($event)"
+></app-selector-descarga-pdf>
 

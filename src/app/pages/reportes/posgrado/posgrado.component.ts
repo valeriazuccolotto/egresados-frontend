@@ -11,10 +11,12 @@ import {
   ETIQUETAS_RELACION_POSGRADO
 } from '../../../utils/graficas-reporte.util';
 import {
-  descargarGraficaPorId,
-  descargarGraficasZip,
-  GraficaDescarga
+  descargarGraficaPdfPorId,
+  descargarGraficasPdf,
+  GraficaDescarga,
+  OpcionDescargaPdf
 } from '../../../utils/descarga-graficas.util';
+import { SelectorDescargaPdfComponent } from '../../../components/selector-descarga-pdf/selector-descarga-pdf.component';
 import { repararTextoEnObjeto } from '../../../utils/texto-encoding.util';
 import { Chart, registerables } from 'chart.js';
 
@@ -23,7 +25,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-posgrado',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SelectorDescargaPdfComponent],
   templateUrl: './posgrado.component.html',
   styleUrl: './posgrado.component.css'
 })
@@ -43,15 +45,52 @@ export class PosgradoComponent implements OnInit, OnDestroy {
   porcentajeConBeca = 0;
 
   descargandoTodas = false;
+  mostrarSelectorPdf = false;
 
   readonly graficasDescarga: GraficaDescarga[] = [
-    { canvasId: 'chartNivel', nombreArchivo: 'nivel-posgrado.png' },
-    { canvasId: 'chartModalidad', nombreArchivo: 'modalidad-posgrado.png' },
-    { canvasId: 'chartEstatus', nombreArchivo: 'estatus-posgrado.png' },
-    { canvasId: 'chartBeca', nombreArchivo: 'beca-posgrado.png' },
-    { canvasId: 'chartRelacionado', nombreArchivo: 'relacion-carrera-posgrado.png' },
-    { canvasId: 'chartTipoBeca', nombreArchivo: 'tipo-beca.png' }
+    {
+      canvasId: 'chartNivel',
+      nombreArchivo: 'nivel-posgrado.pdf',
+      titulo: 'Nivel de estudio',
+      descripcion: 'Distribución entre maestría y doctorado'
+    },
+    {
+      canvasId: 'chartModalidad',
+      nombreArchivo: 'modalidad-posgrado.pdf',
+      titulo: 'Modalidad de estudio',
+      descripcion: 'Presencial, virtual o híbrida'
+    },
+    {
+      canvasId: 'chartEstatus',
+      nombreArchivo: 'estatus-posgrado.pdf',
+      titulo: 'Estatus actual',
+      descripcion: 'En curso, finalizado o pausado'
+    },
+    {
+      canvasId: 'chartBeca',
+      nombreArchivo: 'beca-posgrado.pdf',
+      titulo: '¿Tiene beca?',
+      descripcion: 'Egresados con y sin beca de posgrado'
+    },
+    {
+      canvasId: 'chartRelacionado',
+      nombreArchivo: 'relacion-carrera-posgrado.pdf',
+      titulo: 'Relación con la carrera',
+      descripcion: 'Qué tan relacionado está el posgrado con su carrera'
+    },
+    {
+      canvasId: 'chartTipoBeca',
+      nombreArchivo: 'tipo-beca.pdf',
+      titulo: 'Tipo de beca',
+      descripcion: 'Distribución de egresados según el tipo de beca que reciben'
+    }
   ];
+
+  readonly opcionesPdf: OpcionDescargaPdf[] = this.graficasDescarga.map(g => ({
+    id: g.canvasId,
+    titulo: g.titulo,
+    descripcion: g.descripcion
+  }));
 
   private charts: Chart[] = [];
 
@@ -135,20 +174,33 @@ export class PosgradoComponent implements OnInit, OnDestroy {
       : 'N/A';
   }
 
-  descargarGrafica(canvasId: string, nombreArchivo: string): void {
-    descargarGraficaPorId(canvasId, nombreArchivo);
+  abrirSelectorPdf(): void {
+    this.mostrarSelectorPdf = true;
   }
 
-  async descargarTodas(): Promise<void> {
-    if (this.descargandoTodas) {
+  cerrarSelectorPdf(): void {
+    if (!this.descargandoTodas) {
+      this.mostrarSelectorPdf = false;
+    }
+  }
+
+  async onConfirmarDescargaPdf(ids: string[]): Promise<void> {
+    const seleccionadas = this.graficasDescarga.filter(g => ids.includes(g.canvasId));
+    if (!seleccionadas.length) {
       return;
     }
     this.descargandoTodas = true;
     try {
-      await descargarGraficasZip(this.graficasDescarga, 'reportes-posgrado.zip');
+      await new Promise<void>(resolve => setTimeout(resolve, 50));
+      await descargarGraficasPdf(seleccionadas, 'reportes-posgrado.pdf');
+      this.mostrarSelectorPdf = false;
     } finally {
       this.descargandoTodas = false;
     }
+  }
+
+  async descargarGrafica(canvasId: string, titulo: string, nombreArchivo: string, descripcion?: string): Promise<void> {
+    await descargarGraficaPdfPorId(canvasId, titulo, nombreArchivo, descripcion);
   }
 
   private normalizar(valor: any): string {

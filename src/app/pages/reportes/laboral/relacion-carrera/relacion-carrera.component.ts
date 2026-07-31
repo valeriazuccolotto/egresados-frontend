@@ -5,7 +5,7 @@ import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
 import { contarPorCampo, ETIQUETAS_RELACION_CARRERA_LABORAL, coloresGrafica } from '../../../../utils/graficas-reporte.util';
-import { descargarGraficaPorId } from '../../../../utils/descarga-graficas.util';
+import { descargarGraficaPdfPorId } from '../../../../utils/descarga-graficas.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -61,8 +61,8 @@ export class RelacionCarreraComponent implements OnInit, OnDestroy {
     });
   }
 
-  descargar(): void {
-    descargarGraficaPorId('chart', 'relacion-carrera-laboral.png');
+  async descargar(): Promise<void> {
+    await descargarGraficaPdfPorId('chart', 'Relación con la carrera', 'relacion-carrera-laboral.pdf', 'Qué tan relacionado está el trabajo con la carrera del egresado');
   }
 
   destruir() { this.chart?.destroy(); }

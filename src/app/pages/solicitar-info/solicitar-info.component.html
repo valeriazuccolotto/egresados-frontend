@@ -3,7 +3,7 @@
   <div class="section-header">
     <div class="section-title">
       <h2>Solicitar información</h2>
-      <p>Crea solicitudes para que los egresados respondan en un periodo definido</p>
+      <p>Crea solicitudes para que los egresados respondan; el periodo es opcional</p>
     </div>
   </div>
 
@@ -63,14 +63,62 @@
               : 'Indica qué información deben proporcionar los egresados...'"></textarea>
         </div>
 
-        <div class="field-group">
+        <div class="field-group full periodo-opcion">
+          <div class="opcion-tipo-bar periodo-bar">
+            <div class="opcion-tipo-texto periodo-texto">
+              <strong>Definir periodo</strong>
+              <span>
+                {{ definirPeriodo
+                  ? 'Indica fecha de inicio y fin para limitar las respuestas.'
+                  : 'Sin fechas: la solicitud quedará abierta hasta que la cierres.' }}
+              </span>
+            </div>
+            <label class="toggle-switch">
+              <input
+                type="checkbox"
+                [(ngModel)]="definirPeriodo"
+                name="definirPeriodo"
+                (ngModelChange)="onDefinirPeriodoChange($event)"
+              >
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="field-group" *ngIf="definirPeriodo">
           <label><i class="fas fa-calendar-day"></i>Fecha inicio <span class="required">*</span></label>
           <input type="date" [(ngModel)]="form.fechaInicio" name="fechaInicio" required>
         </div>
 
-        <div class="field-group">
+        <div class="field-group" *ngIf="definirPeriodo">
           <label><i class="fas fa-calendar-times"></i>Fecha fin <span class="required">*</span></label>
           <input type="date" [(ngModel)]="form.fechaFin" name="fechaFin" required>
+        </div>
+
+        <div class="field-group full carreras-bloque">
+          <label><i class="fas fa-graduation-cap"></i>Carreras a las que se enviará <span class="required">*</span></label>
+          <p class="hint-carreras">{{ labelCarrerasSeleccionadas }}</p>
+
+          <div class="carreras-grid" *ngIf="!cargandoCarreras && carreras.length > 0">
+            <label
+              class="carrera-option"
+              *ngFor="let carrera of carreras"
+              [class.activo]="isCarreraSeleccionada(carrera.claveCarrera)"
+            >
+              <input
+                type="checkbox"
+                [checked]="isCarreraSeleccionada(carrera.claveCarrera)"
+                (change)="toggleCarrera(carrera.claveCarrera)"
+              >
+              <span class="check-icon">✓</span>
+              {{ carrera.nombreCarrera }}
+            </label>
+          </div>
+
+          <p class="catalogo-msg" *ngIf="cargandoCarreras">Cargando carreras...</p>
+          <p class="catalogo-msg" *ngIf="!cargandoCarreras && carreras.length === 0">
+            No hay carreras disponibles.
+          </p>
         </div>
       </div>
 
@@ -105,7 +153,11 @@
             <p class="descripcion-preview">{{ s.descripcion }}</p>
             <p class="fechas-linea">
               <i class="fas fa-calendar-alt"></i>
-              {{ s.fechaInicio }} — {{ s.fechaFin }}
+              {{ textoPeriodo(s) }}
+            </p>
+            <p class="fechas-linea">
+              <i class="fas fa-graduation-cap"></i>
+              {{ textoCarreras(s) }}
             </p>
           </div>
 
@@ -152,7 +204,7 @@
           </div>
 
           <p *ngIf="r.contenido" class="respuesta-texto">{{ r.contenido }}</p>
-          <p *ngIf="r.comentario" class="respuesta-comentario"><em>{{ r.comentario }}</em></p>
+          <p *ngIf="r.comentario && r.comentario.trim() !== r.contenido?.trim()" class="respuesta-comentario"><em>{{ r.comentario }}</em></p>
 
           <div class="archivos-lista" *ngIf="r.archivos?.length">
             <a *ngFor="let a of r.archivos"
@@ -188,7 +240,7 @@
     </div>
 
     <div class="modal-body modal-body-compact">
-      <p>Los egresados ya no podrán responder antes de la fecha fin de la convocatoria.</p>
+      <p>Los egresados ya no podrán responder esta solicitud.</p>
     </div>
 
     <div class="cert-footer modal-footer-acciones">

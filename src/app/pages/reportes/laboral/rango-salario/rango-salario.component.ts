@@ -5,7 +5,7 @@ import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
 import { contarPorCampo, ETIQUETAS_SALARIO, coloresGrafica } from '../../../../utils/graficas-reporte.util';
-import { descargarGraficaPorId } from '../../../../utils/descarga-graficas.util';
+import { descargarGraficaPdfPorId } from '../../../../utils/descarga-graficas.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -60,8 +60,8 @@ export class RangoSalarioComponent implements OnInit, OnDestroy {
     });
   }
 
-  descargar(): void {
-    descargarGraficaPorId('chart', 'rango-salario.png');
+  async descargar(): Promise<void> {
+    await descargarGraficaPdfPorId('chart', 'Rango salarial', 'rango-salario.pdf', 'Distribución de egresados por rango de salario mensual');
   }
 
   destruir() { this.chart?.destroy(); }

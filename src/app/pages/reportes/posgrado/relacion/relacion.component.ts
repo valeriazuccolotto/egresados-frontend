@@ -5,7 +5,7 @@ import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
 import { contarPorCampo, ETIQUETAS_RELACION_POSGRADO, coloresGrafica } from '../../../../utils/graficas-reporte.util';
-import { descargarGraficaPorId } from '../../../../utils/descarga-graficas.util';
+import { descargarGraficaPdfPorId } from '../../../../utils/descarga-graficas.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -61,8 +61,8 @@ export class RelacionComponent implements OnInit, OnDestroy {
     });
   }
 
-  descargar(): void {
-    descargarGraficaPorId('chart', 'relacion-carrera-posgrado.png');
+  async descargar(): Promise<void> {
+    await descargarGraficaPdfPorId('chart', 'Relación con la carrera', 'relacion-carrera-posgrado.pdf', 'Qué tan relacionado está el posgrado con la carrera del egresado');
   }
 
   destruir() { this.chart?.destroy(); }

@@ -5,7 +5,7 @@ import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
 import { contarPorCampo, ETIQUETAS_TIPO_TITULACION, coloresGrafica } from '../../../../utils/graficas-reporte.util';
-import { descargarGraficaPorId } from '../../../../utils/descarga-graficas.util';
+import { descargarGraficaPdfPorId } from '../../../../utils/descarga-graficas.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -61,8 +61,8 @@ export class TipoTitulacionComponent implements OnInit, OnDestroy {
     });
   }
 
-  descargar(): void {
-    descargarGraficaPorId('chart', 'tipo-titulacion.png');
+  async descargar(): Promise<void> {
+    await descargarGraficaPdfPorId('chart', 'Tipo de titulación', 'tipo-titulacion.pdf', 'Modalidad con la que los egresados obtuvieron su título');
   }
 
   destruir() { this.chart?.destroy(); }

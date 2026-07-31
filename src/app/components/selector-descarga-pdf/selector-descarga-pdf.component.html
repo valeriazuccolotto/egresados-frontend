@@ -1,0 +1,57 @@
+<div class="modal-overlay" *ngIf="visible" (click)="onCerrar()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <button type="button" class="modal-close" (click)="onCerrar()" [disabled]="cargando">&times;</button>
+
+    <div class="modal-header">
+      <div class="modal-icon">
+        <span class="material-icons">picture_as_pdf</span>
+      </div>
+      <div>
+        <h3>{{ titulo }}</h3>
+        <p>Elige una, varias o todas las gráficas para generar el PDF</p>
+      </div>
+    </div>
+
+    <div class="modal-body">
+      <label class="opcion-todas">
+        <input
+          type="checkbox"
+          [checked]="todasSeleccionadas"
+          [disabled]="cargando"
+          (change)="toggleTodas()"
+        >
+        <span>Seleccionar todas</span>
+      </label>
+
+      <div class="lista-opciones">
+        <label class="opcion-item" *ngFor="let opcion of opciones">
+          <input
+            type="checkbox"
+            [checked]="estaSeleccionada(opcion.id)"
+            [disabled]="cargando"
+            (change)="toggleOpcion(opcion.id)"
+          >
+          <div>
+            <strong>{{ opcion.titulo }}</strong>
+            <small *ngIf="opcion.descripcion">{{ opcion.descripcion }}</small>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn-cancelar" (click)="onCerrar()" [disabled]="cargando">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="btn-confirmar"
+        [disabled]="cargando || cantidadSeleccionadas === 0"
+        (click)="onConfirmar()"
+      >
+        <span class="material-icons">download</span>
+        {{ cargando ? 'Generando PDF…' : ('Descargar PDF (' + cantidadSeleccionadas + ')') }}
+      </button>
+    </div>
+  </div>
+</div>

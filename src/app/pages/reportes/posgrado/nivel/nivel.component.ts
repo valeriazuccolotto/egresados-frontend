@@ -5,7 +5,7 @@ import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
 import { contarPorCampo, ETIQUETAS_NIVEL_POSGRADO, coloresGrafica } from '../../../../utils/graficas-reporte.util';
-import { descargarGraficaPorId } from '../../../../utils/descarga-graficas.util';
+import { descargarGraficaPdfPorId } from '../../../../utils/descarga-graficas.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -61,8 +61,8 @@ export class NivelComponent implements OnInit, OnDestroy {
     });
   }
 
-  descargar(): void {
-    descargarGraficaPorId('chart', 'nivel-posgrado.png');
+  async descargar(): Promise<void> {
+    await descargarGraficaPdfPorId('chart', 'Nivel de estudio', 'nivel-posgrado.pdf', 'Distribución entre maestría y doctorado');
   }
 
   destruir() { this.chart?.destroy(); }

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
-import { descargarGraficaPorId } from '../../../../utils/descarga-graficas.util';
+import { descargarGraficaPdfPorId } from '../../../../utils/descarga-graficas.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -60,8 +60,8 @@ export class PorInstitucionComponent implements OnInit, OnDestroy {
     });
   }
 
-  descargar(): void {
-    descargarGraficaPorId('chart', 'reconocimientos-por-institucion.png');
+  async descargar(): Promise<void> {
+    await descargarGraficaPdfPorId('chart', 'Reconocimientos por institución', 'reconocimientos-por-institucion.pdf', 'Instituciones que han otorgado reconocimientos a egresados');
   }
 
   destruir() { this.chart?.destroy(); }

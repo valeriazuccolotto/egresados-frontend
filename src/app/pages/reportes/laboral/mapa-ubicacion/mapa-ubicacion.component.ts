@@ -45,14 +45,18 @@ import {
 import { laboralesActualesPorMatricula } from '../../../../utils/laboral-actual.util';
 
 import {
-  ArchivoDescarga,
   chartADataUrl,
-  descargarArchivosZip,
-  descargarDataUrl,
+  datosTablaDesdeChart,
+  descargarImagenPdf,
   esperar,
+  generarPdfGraficas,
   obtenerChartPorCanvasId,
+  OpcionDescargaPdf,
+  PaginaPdfGrafica,
   svgADataUrl
 } from '../../../../utils/descarga-graficas.util';
+
+import { SelectorDescargaPdfComponent } from '../../../../components/selector-descarga-pdf/selector-descarga-pdf.component';
 
 import { repararTexto } from '../../../../utils/texto-encoding.util';
 
@@ -144,7 +148,7 @@ export interface UbicacionActivaModal {
 
   standalone: true,
 
-  imports: [CommonModule, FormsModule, EgresadoExpedienteModalComponent],
+  imports: [CommonModule, FormsModule, EgresadoExpedienteModalComponent, SelectorDescargaPdfComponent],
 
   templateUrl: './mapa-ubicacion.component.html',
 
@@ -207,6 +211,8 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
   descargandoVista = false;
 
   descargandoTodas = false;
+
+  mostrarSelectorPdf = false;
 
 
 
@@ -1146,42 +1152,83 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
 
 
 
+  private readonly tituloVistaPdf: Record<VistaMapaLaboral, string> = {
+    indice: 'Mapa de ubicación laboral (México)',
+    graficas: 'Egresados por estado de trabajo',
+    'top-estados': 'Estados con más egresados',
+    oaxaca: 'Mapa de Oaxaca por municipio'
+  };
+
+  private readonly nombreArchivoPdfVista: Record<VistaMapaLaboral, string> = {
+    indice: 'mapa-ubicacion-mexico.pdf',
+    graficas: 'mapa-egresados-por-estado.pdf',
+    'top-estados': 'mapa-top-estados.pdf',
+    oaxaca: 'mapa-oaxaca-municipios.pdf'
+  };
+
+  readonly opcionesPdf: OpcionDescargaPdf[] = this.vistas.map(v => ({
+    id: v.id,
+    titulo: this.tituloVistaPdf[v.id]
+  }));
+
+  abrirSelectorPdf(): void {
+    if (this.descargandoVista || this.descargandoTodas) {
+      return;
+    }
+    this.mostrarSelectorPdf = true;
+  }
+
+  cerrarSelectorPdf(): void {
+    if (!this.descargandoTodas) {
+      this.mostrarSelectorPdf = false;
+    }
+  }
+
   async descargarVistaActual(): Promise<void> {
     if (this.descargandoVista || this.descargandoTodas) {
       return;
     }
     this.descargandoVista = true;
     try {
-      const archivo = await this.capturarVistaActiva();
-      if (archivo) {
-        descargarDataUrl(archivo.dataUrl, archivo.nombreArchivo);
+      const pagina = await this.capturarPaginaVista(this.vistaActiva);
+      if (pagina) {
+        await descargarImagenPdf(
+          pagina.imagenDataUrl,
+          pagina.titulo,
+          this.nombreArchivoPdfVista[this.vistaActiva],
+          pagina.descripcion,
+          pagina.filas
+        );
       }
     } finally {
       this.descargandoVista = false;
     }
   }
 
-  async descargarTodasVistas(): Promise<void> {
-    if (this.descargandoTodas || this.descargandoVista) {
+  async onConfirmarDescargaPdf(ids: string[]): Promise<void> {
+    const vistasSeleccionadas = this.vistas.filter(v => ids.includes(v.id));
+    if (!vistasSeleccionadas.length) {
       return;
     }
+
     this.descargandoTodas = true;
     const vistaOriginal = this.vistaActiva;
-    const archivos: ArchivoDescarga[] = [];
+    const paginas: PaginaPdfGrafica[] = [];
 
     try {
-      for (const vista of this.vistas) {
+      for (const vista of vistasSeleccionadas) {
         this.cambiarVistaForzada(vista.id);
         await esperar(vista.id === 'oaxaca' ? 700 : 350);
         if (vista.id === 'oaxaca') {
           await this.esperarOaxacaListo(4000);
         }
-        const archivo = await this.capturarVistaActiva();
-        if (archivo) {
-          archivos.push(archivo);
+        const pagina = await this.capturarPaginaVista(vista.id);
+        if (pagina) {
+          paginas.push(pagina);
         }
       }
-      await descargarArchivosZip(archivos, 'mapa-ubicacion-laboral.zip');
+      await generarPdfGraficas(paginas, 'mapa-ubicacion-laboral.pdf');
+      this.mostrarSelectorPdf = false;
     } finally {
       this.cambiarVistaForzada(vistaOriginal);
       this.descargandoTodas = false;
@@ -1212,16 +1259,30 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async capturarVistaActiva(): Promise<ArchivoDescarga | null> {
-    switch (this.vistaActiva) {
+  private filasDesdeConteo(conteo: Record<string, number>): PaginaPdfGrafica['filas'] {
+    const entradas = Object.entries(conteo);
+    const total = entradas.reduce((acumulado, [, valor]) => acumulado + valor, 0);
+    return entradas
+      .sort((a, b) => b[1] - a[1])
+      .map(([etiqueta, valor]) => ({
+        etiqueta,
+        valor,
+        porcentaje: total > 0 ? (valor / total) * 100 : 0
+      }));
+  }
+
+  private async capturarPaginaVista(vista: VistaMapaLaboral): Promise<PaginaPdfGrafica | null> {
+    switch (vista) {
       case 'graficas': {
         const chart = obtenerChartPorCanvasId('chartEstadosTrabajo');
         if (!chart) {
           return null;
         }
         return {
-          nombreArchivo: 'mapa-egresados-por-estado.png',
-          dataUrl: chartADataUrl(chart)
+          titulo: this.tituloVistaPdf.graficas,
+          descripcion: 'Distribución según el campus seleccionado',
+          imagenDataUrl: chartADataUrl(chart),
+          filas: datosTablaDesdeChart(chart)
         };
       }
       case 'top-estados': {
@@ -1230,8 +1291,10 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
           return null;
         }
         return {
-          nombreArchivo: 'mapa-top-estados.png',
-          dataUrl: chartADataUrl(chart)
+          titulo: this.tituloVistaPdf['top-estados'],
+          descripcion: 'Distribución según el campus seleccionado',
+          imagenDataUrl: chartADataUrl(chart),
+          filas: datosTablaDesdeChart(chart)
         };
       }
       case 'oaxaca': {
@@ -1240,8 +1303,10 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
           return null;
         }
         return {
-          nombreArchivo: 'mapa-oaxaca-municipios.png',
-          dataUrl: await svgADataUrl(svg)
+          titulo: this.tituloVistaPdf.oaxaca,
+          descripcion: 'Egresados laborando en cada municipio de Oaxaca',
+          imagenDataUrl: await svgADataUrl(svg),
+          filas: this.filasDesdeConteo(this.conteoPorMunicipio)
         };
       }
       default: {
@@ -1250,8 +1315,10 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
           return null;
         }
         return {
-          nombreArchivo: 'mapa-ubicacion-mexico.png',
-          dataUrl: await svgADataUrl(svg)
+          titulo: this.tituloVistaPdf.indice,
+          descripcion: 'Egresados laborando por estado de la República Mexicana',
+          imagenDataUrl: await svgADataUrl(svg),
+          filas: this.filasDesdeConteo(this.conteoPorEstado)
         };
       }
     }

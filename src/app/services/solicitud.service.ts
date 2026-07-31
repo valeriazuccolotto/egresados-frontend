@@ -111,8 +111,10 @@ export class SolicitudService {
   }
 
   private normalizarSolicitud(raw: any): Solicitud {
-    const fechaInicio = this.normalizarFecha(raw?.fechaInicio ?? raw?.fecha_inicio);
-    const fechaFin = this.normalizarFecha(raw?.fechaFin ?? raw?.fecha_fin);
+    const fechaInicioRaw = this.normalizarFecha(raw?.fechaInicio ?? raw?.fecha_inicio);
+    const fechaFinRaw = this.normalizarFecha(raw?.fechaFin ?? raw?.fecha_fin);
+    const fechaInicio = fechaInicioRaw || null;
+    const fechaFin = fechaFinRaw || null;
     const activa = raw?.activa === false || raw?.activa === 'false' ? false : true;
     const yaRespondio = !!(raw?.yaRespondio ?? raw?.ya_respondio ?? false);
     let puedeResponder = raw?.puedeResponder ?? raw?.puede_responder;
@@ -135,24 +137,45 @@ export class SolicitudService {
       activa,
       creadoPor: raw?.creadoPor ?? raw?.creado_por,
       fechaCreacion: raw?.fechaCreacion ?? raw?.fecha_creacion,
+      carreras: this.normalizarCarreras(raw?.carreras),
       yaRespondio,
       puedeResponder,
       estadoEgresado: estadoEgresado as Solicitud['estadoEgresado']
     };
   }
 
+  private normalizarCarreras(raw: any): Solicitud['carreras'] {
+    if (!Array.isArray(raw)) {
+      return [];
+    }
+    return raw.map((c: any) => ({
+      claveCarrera: c?.claveCarrera ?? c?.clave_carrera ?? '',
+      nombreCarrera: c?.nombreCarrera ?? c?.nombre_carrera
+    })).filter((c: any) => !!c.claveCarrera);
+  }
+
   private calcularPuedeResponder(
     activa: boolean,
     yaRespondio: boolean,
-    fechaInicio: string,
-    fechaFin: string
+    fechaInicio: string | null,
+    fechaFin: string | null
   ): boolean {
-    if (yaRespondio || !activa || !fechaInicio || !fechaFin) return false;
+    if (yaRespondio || !activa) return false;
+
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-    const inicio = new Date(fechaInicio + 'T00:00:00');
-    const fin = new Date(fechaFin + 'T23:59:59');
-    return hoy >= inicio && hoy <= fin;
+
+    if (fechaInicio) {
+      const inicio = new Date(fechaInicio + 'T00:00:00');
+      if (hoy < inicio) return false;
+    }
+
+    if (fechaFin) {
+      const fin = new Date(fechaFin + 'T23:59:59');
+      if (hoy > fin) return false;
+    }
+
+    return true;
   }
 
   private normalizarRespuesta(raw: any): RespuestaSolicitud {

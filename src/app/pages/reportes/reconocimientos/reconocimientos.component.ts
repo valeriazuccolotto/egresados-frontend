@@ -4,10 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { ReconocimientosService } from '../../../services/reconocimientos.service';
 import { ETIQUETAS_TIPO_RECONOCIMIENTO } from '../../../utils/graficas-reporte.util';
 import {
-  descargarGraficaPorId,
-  descargarGraficasZip,
-  GraficaDescarga
+  descargarGraficaPdfPorId,
+  descargarGraficasPdf,
+  GraficaDescarga,
+  OpcionDescargaPdf
 } from '../../../utils/descarga-graficas.util';
+import { SelectorDescargaPdfComponent } from '../../../components/selector-descarga-pdf/selector-descarga-pdf.component';
 import { repararTextoEnObjeto } from '../../../utils/texto-encoding.util';
 import { Chart, registerables } from 'chart.js';
 
@@ -16,7 +18,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-reconocimientos',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SelectorDescargaPdfComponent],
   templateUrl: './reconocimientos.component.html',
   styleUrl: './reconocimientos.component.css'
 })
@@ -36,11 +38,28 @@ export class ReconocimientosComponent implements OnInit, OnDestroy {
   egresadosConReconocimiento = 0;
 
   descargandoTodas = false;
+  mostrarSelectorPdf = false;
 
   readonly graficasDescarga: GraficaDescarga[] = [
-    { canvasId: 'chartTipo', nombreArchivo: 'tipo-reconocimiento.png' },
-    { canvasId: 'chartInstitucion', nombreArchivo: 'reconocimientos-por-institucion.png' }
+    {
+      canvasId: 'chartTipo',
+      nombreArchivo: 'tipo-reconocimiento.pdf',
+      titulo: 'Tipo de reconocimiento',
+      descripcion: 'Distribución por tipo: académico, cultural o deportivo'
+    },
+    {
+      canvasId: 'chartInstitucion',
+      nombreArchivo: 'reconocimientos-por-institucion.pdf',
+      titulo: 'Reconocimientos por institución',
+      descripcion: 'Instituciones que han otorgado reconocimientos a egresados'
+    }
   ];
+
+  readonly opcionesPdf: OpcionDescargaPdf[] = this.graficasDescarga.map(g => ({
+    id: g.canvasId,
+    titulo: g.titulo,
+    descripcion: g.descripcion
+  }));
 
   private charts: Chart[] = [];
 
@@ -107,20 +126,33 @@ export class ReconocimientosComponent implements OnInit, OnDestroy {
       : 'N/A';
   }
 
-  descargarGrafica(canvasId: string, nombreArchivo: string): void {
-    descargarGraficaPorId(canvasId, nombreArchivo);
+  abrirSelectorPdf(): void {
+    this.mostrarSelectorPdf = true;
   }
 
-  async descargarTodas(): Promise<void> {
-    if (this.descargandoTodas) {
+  cerrarSelectorPdf(): void {
+    if (!this.descargandoTodas) {
+      this.mostrarSelectorPdf = false;
+    }
+  }
+
+  async onConfirmarDescargaPdf(ids: string[]): Promise<void> {
+    const seleccionadas = this.graficasDescarga.filter(g => ids.includes(g.canvasId));
+    if (!seleccionadas.length) {
       return;
     }
     this.descargandoTodas = true;
     try {
-      await descargarGraficasZip(this.graficasDescarga, 'reportes-reconocimientos.zip');
+      await new Promise<void>(resolve => setTimeout(resolve, 50));
+      await descargarGraficasPdf(seleccionadas, 'reportes-reconocimientos.pdf');
+      this.mostrarSelectorPdf = false;
     } finally {
       this.descargandoTodas = false;
     }
+  }
+
+  async descargarGrafica(canvasId: string, titulo: string, nombreArchivo: string, descripcion?: string): Promise<void> {
+    await descargarGraficaPdfPorId(canvasId, titulo, nombreArchivo, descripcion);
   }
 
   private normalizar(valor: any): string {

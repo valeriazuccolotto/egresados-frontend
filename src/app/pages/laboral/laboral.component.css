@@ -304,18 +304,24 @@
     bottom:130%;
     left:50%;
     transform:translateX(-50%);
-    width:220px;
+    width:260px;
     background:#1f2937;
     color:white;
     padding:10px;
     border-radius:8px;
     font-size:12px;
+    line-height:1.4;
     opacity:0;
     visibility:hidden;
     transition:.2s;
+    z-index:20;
+    pointer-events:none;
+    font-weight:400;
+    text-align:left;
 }
 
-.help-icon:hover .tooltip-help{
+.help-icon:hover .tooltip-help,
+.help-icon.activo .tooltip-help{
     opacity:1;
     visibility:visible;
 }
@@ -535,7 +541,7 @@
     background: #fff;
     border-radius: 14px;
     padding: 24px;
-    width: 320px;
+    width: 380px;
     max-width: 90%;
     text-align: center;
     border: 1px solid #e5e5e5;
@@ -555,7 +561,20 @@
 }
 
 .acciones-modal {
-    margin-top: 10px; /* opcional, pequeño ajuste */
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.acciones-modal .btn-guardar,
+.acciones-modal .btn-secundario {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    width: auto;
 }
 
 .acciones-modal .btn-guardar {
@@ -910,15 +929,6 @@
     font-size: 20px;
     font-weight: 600;
     color: #00332A;
-}
-
-/* FOOTER */
-.acciones-modal {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    padding: 20px 40px;
-    border-top: 1px solid #e5e7eb;
 }
 
 /* RESPONSIVE */

@@ -11,10 +11,10 @@
         type="button"
         class="btn-descargar-todas"
         [disabled]="descargandoTodas"
-        (click)="descargarTodas()"
+        (click)="abrirSelectorPdf()"
       >
-        <span class="material-icons">folder_zip</span>
-        {{ descargandoTodas ? 'Preparando…' : 'Descargar todas' }}
+        <span class="material-icons">picture_as_pdf</span>
+        Descargar PDF
       </button>
       <div class="campus-box">
         <span class="material-icons">location_on</span>
@@ -68,7 +68,7 @@
           <span class="material-icons">category</span>
           Sector laboral
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartSector', 'sector-laboral.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartSector', 'Sector laboral', 'sector-laboral.pdf', 'Distribución de egresados por sector de trabajo')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -85,7 +85,7 @@
           <span class="material-icons">search</span>
           ¿Cómo consiguió el empleo?
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartComoConsiguio', 'como-consiguio-empleo.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartComoConsiguio', '¿Cómo consiguió el empleo?', 'como-consiguio-empleo.pdf', 'Medio por el que obtuvieron su trabajo actual')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -107,7 +107,7 @@
           <span class="material-icons">schedule</span>
           Tiempo para conseguir empleo
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartTiempo', 'tiempo-empleo.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartTiempo', 'Tiempo para conseguir empleo', 'tiempo-empleo.pdf', 'Cuánto tiempo tardaron en obtener su primer empleo')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -124,7 +124,7 @@
           <span class="material-icons">description</span>
           Tipo de contrato
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartContrato', 'tipo-contrato.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartContrato', 'Tipo de contrato', 'tipo-contrato.pdf', 'Modalidad contractual de los egresados empleados')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -146,7 +146,7 @@
           <span class="material-icons">home_work</span>
           Modalidad de trabajo
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartModalidad', 'modalidad-laboral.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartModalidad', 'Modalidad de trabajo', 'modalidad-laboral.pdf', 'Presencial, remoto o híbrido')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -163,7 +163,7 @@
           <span class="material-icons">attach_money</span>
           Rango salarial
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartSalario', 'rango-salario.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartSalario', 'Rango salarial', 'rango-salario.pdf', 'Distribución de egresados por rango de salario mensual')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -185,7 +185,7 @@
           <span class="material-icons">connect_without_contact</span>
           Relación con la carrera
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartRelacion', 'relacion-carrera-laboral.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartRelacion', 'Relación con la carrera', 'relacion-carrera-laboral.pdf', 'Qué tan relacionado está el trabajo con su carrera')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -202,7 +202,7 @@
           <span class="material-icons">card_giftcard</span>
           Prestaciones más comunes
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartPrestaciones', 'prestaciones.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartPrestaciones', 'Prestaciones más comunes', 'prestaciones.pdf', 'Cuántos egresados cuentan con cada prestación')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -214,5 +214,14 @@
     </div>
 
   </div>
+
+  <app-selector-descarga-pdf
+    [visible]="mostrarSelectorPdf"
+    titulo="Descargar reportes laborales en PDF"
+    [opciones]="opcionesPdf"
+    [cargando]="descargandoTodas"
+    (cerrar)="cerrarSelectorPdf()"
+    (confirmar)="onConfirmarDescargaPdf($event)"
+  ></app-selector-descarga-pdf>
 
 </div>

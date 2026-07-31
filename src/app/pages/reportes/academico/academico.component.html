@@ -11,10 +11,10 @@
         type="button"
         class="btn-descargar-todas"
         [disabled]="descargandoTodas"
-        (click)="descargarTodas()"
+        (click)="abrirSelectorPdf()"
       >
-        <span class="material-icons">folder_zip</span>
-        {{ descargandoTodas ? 'Preparando…' : 'Descargar todas' }}
+        <span class="material-icons">picture_as_pdf</span>
+        Descargar PDF
       </button>
       <div class="campus-box">
         <span class="material-icons">location_on</span>
@@ -60,7 +60,7 @@
           <span class="material-icons">school</span>
           ¿Está titulado?
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartTitulado', 'titulados.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartTitulado', '¿Está titulado?', 'titulados.pdf', 'Porcentaje de egresados titulados vs no titulados')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -78,7 +78,7 @@
           <span class="material-icons">workspace_premium</span>
           Tipo de titulación
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartTipoTitulacion', 'tipo-titulacion.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartTipoTitulacion', 'Tipo de titulación', 'tipo-titulacion.pdf', 'Modalidad con la que obtuvieron su título')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -96,7 +96,7 @@
           <span class="material-icons">calendar_month</span>
           Año de egreso
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartAnioEgreso', 'anio-egreso.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartAnioEgreso', 'Año de egreso', 'anio-egreso.pdf', 'Distribución de egresados por año de egreso')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -114,7 +114,7 @@
           <span class="material-icons">menu_book</span>
           Egresados por carrera
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartCarrera', 'egresados-por-carrera.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartCarrera', 'Egresados por carrera', 'egresados-por-carrera.pdf', 'Cantidad de egresados registrados por carrera')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -126,4 +126,13 @@
     </div>
 
   </div>
+
+  <app-selector-descarga-pdf
+    [visible]="mostrarSelectorPdf"
+    titulo="Descargar reportes académicos en PDF"
+    [opciones]="opcionesPdf"
+    [cargando]="descargandoTodas"
+    (cerrar)="cerrarSelectorPdf()"
+    (confirmar)="onConfirmarDescargaPdf($event)"
+  ></app-selector-descarga-pdf>
 </div>

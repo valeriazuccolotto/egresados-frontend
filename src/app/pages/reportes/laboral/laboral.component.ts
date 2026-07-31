@@ -14,10 +14,12 @@ import {
   ETIQUETAS_TIPO_CONTRATO
 } from '../../../utils/graficas-reporte.util';
 import {
-  descargarGraficaPorId,
-  descargarGraficasZip,
-  GraficaDescarga
+  descargarGraficaPdfPorId,
+  descargarGraficasPdf,
+  GraficaDescarga,
+  OpcionDescargaPdf
 } from '../../../utils/descarga-graficas.util';
+import { SelectorDescargaPdfComponent } from '../../../components/selector-descarga-pdf/selector-descarga-pdf.component';
 import { repararTextoEnObjeto } from '../../../utils/texto-encoding.util';
 import { Chart, registerables } from 'chart.js';
 
@@ -26,7 +28,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-laboral',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, SelectorDescargaPdfComponent],
   templateUrl: './laboral.component.html',
   styleUrl: './laboral.component.css'
 })
@@ -45,17 +47,64 @@ export class LaboralComponent implements OnInit, OnDestroy {
   salarioMasFrecuente = '';
 
   descargandoTodas = false;
+  mostrarSelectorPdf = false;
 
   readonly graficasDescarga: GraficaDescarga[] = [
-    { canvasId: 'chartSector', nombreArchivo: 'sector-laboral.png' },
-    { canvasId: 'chartComoConsiguio', nombreArchivo: 'como-consiguio-empleo.png' },
-    { canvasId: 'chartTiempo', nombreArchivo: 'tiempo-empleo.png' },
-    { canvasId: 'chartContrato', nombreArchivo: 'tipo-contrato.png' },
-    { canvasId: 'chartModalidad', nombreArchivo: 'modalidad-laboral.png' },
-    { canvasId: 'chartSalario', nombreArchivo: 'rango-salario.png' },
-    { canvasId: 'chartRelacion', nombreArchivo: 'relacion-carrera-laboral.png' },
-    { canvasId: 'chartPrestaciones', nombreArchivo: 'prestaciones.png' }
+    {
+      canvasId: 'chartSector',
+      nombreArchivo: 'sector-laboral.pdf',
+      titulo: 'Sector laboral',
+      descripcion: 'Distribución de egresados por sector de trabajo'
+    },
+    {
+      canvasId: 'chartComoConsiguio',
+      nombreArchivo: 'como-consiguio-empleo.pdf',
+      titulo: '¿Cómo consiguió el empleo?',
+      descripcion: 'Medio por el que obtuvieron su trabajo actual'
+    },
+    {
+      canvasId: 'chartTiempo',
+      nombreArchivo: 'tiempo-empleo.pdf',
+      titulo: 'Tiempo para conseguir empleo',
+      descripcion: 'Cuánto tiempo tardaron en obtener su primer empleo'
+    },
+    {
+      canvasId: 'chartContrato',
+      nombreArchivo: 'tipo-contrato.pdf',
+      titulo: 'Tipo de contrato',
+      descripcion: 'Modalidad contractual de los egresados empleados'
+    },
+    {
+      canvasId: 'chartModalidad',
+      nombreArchivo: 'modalidad-laboral.pdf',
+      titulo: 'Modalidad de trabajo',
+      descripcion: 'Presencial, remoto o híbrido'
+    },
+    {
+      canvasId: 'chartSalario',
+      nombreArchivo: 'rango-salario.pdf',
+      titulo: 'Rango salarial',
+      descripcion: 'Distribución de egresados por rango de salario mensual'
+    },
+    {
+      canvasId: 'chartRelacion',
+      nombreArchivo: 'relacion-carrera-laboral.pdf',
+      titulo: 'Relación con la carrera',
+      descripcion: 'Qué tan relacionado está el trabajo con su carrera'
+    },
+    {
+      canvasId: 'chartPrestaciones',
+      nombreArchivo: 'prestaciones.pdf',
+      titulo: 'Prestaciones más comunes',
+      descripcion: 'Cuántos egresados cuentan con cada prestación'
+    }
   ];
+
+  readonly opcionesPdf: OpcionDescargaPdf[] = this.graficasDescarga.map(g => ({
+    id: g.canvasId,
+    titulo: g.titulo,
+    descripcion: g.descripcion
+  }));
 
   private charts: Chart[] = [];
 
@@ -137,20 +186,34 @@ export class LaboralComponent implements OnInit, OnDestroy {
       : 'N/A';
   }
 
-  descargarGrafica(canvasId: string, nombreArchivo: string): void {
-    descargarGraficaPorId(canvasId, nombreArchivo);
+  abrirSelectorPdf(): void {
+    this.mostrarSelectorPdf = true;
   }
 
-  async descargarTodas(): Promise<void> {
-    if (this.descargandoTodas) {
+  cerrarSelectorPdf(): void {
+    if (!this.descargandoTodas) {
+      this.mostrarSelectorPdf = false;
+    }
+  }
+
+  async onConfirmarDescargaPdf(ids: string[]): Promise<void> {
+    const seleccionadas = this.graficasDescarga.filter(g => ids.includes(g.canvasId));
+    if (!seleccionadas.length) {
       return;
     }
     this.descargandoTodas = true;
     try {
-      await descargarGraficasZip(this.graficasDescarga, 'reportes-laboral.zip');
+      // Cedemos el hilo para que el modal muestre "Generando PDF…"
+      await new Promise<void>(resolve => setTimeout(resolve, 50));
+      await descargarGraficasPdf(seleccionadas, 'reportes-laboral.pdf');
+      this.mostrarSelectorPdf = false;
     } finally {
       this.descargandoTodas = false;
     }
+  }
+
+  async descargarGrafica(canvasId: string, titulo: string, nombreArchivo: string, descripcion?: string): Promise<void> {
+    await descargarGraficaPdfPorId(canvasId, titulo, nombreArchivo, descripcion);
   }
 
   private normalizar(valor: any): string {

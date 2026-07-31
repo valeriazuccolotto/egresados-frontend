@@ -7,7 +7,7 @@ import { GraficasDataService } from '../../../../services/graficas-data.service'
 import { PosgradoService } from '../../../../services/posgrado.service';
 import { coloresPrestaciones } from '../../../../utils/prestaciones-reporte.util';
 import { datosGraficaTipoBeca } from '../../../../utils/tipo-beca-reporte.util';
-import { descargarGraficaPorId } from '../../../../utils/descarga-graficas.util';
+import { descargarGraficaPdfPorId } from '../../../../utils/descarga-graficas.util';
 import { repararTextoEnObjeto } from '../../../../utils/texto-encoding.util';
 
 Chart.register(...registerables, ChartDataLabels);
@@ -93,8 +93,8 @@ export class TipoBecaComponent implements OnInit, OnDestroy {
     });
   }
 
-  descargar(): void {
-    descargarGraficaPorId('chart', 'tipo-beca.png');
+  async descargar(): Promise<void> {
+    await descargarGraficaPdfPorId('chart', 'Tipo de beca', 'tipo-beca.pdf', 'Distribución de egresados según el tipo de beca que reciben');
   }
 
   destruir() { this.chart?.destroy(); }

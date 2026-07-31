@@ -11,10 +11,10 @@
         type="button"
         class="btn-descargar-todas"
         [disabled]="descargandoTodas"
-        (click)="descargarTodas()"
+        (click)="abrirSelectorPdf()"
       >
-        <span class="material-icons">folder_zip</span>
-        {{ descargandoTodas ? 'Preparando…' : 'Descargar todas' }}
+        <span class="material-icons">picture_as_pdf</span>
+        Descargar PDF
       </button>
       <div class="campus-box">
         <span class="material-icons">location_on</span>
@@ -59,7 +59,7 @@
           <span class="material-icons">emoji_events</span>
           Tipo de reconocimiento
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartTipo', 'tipo-reconocimiento.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartTipo', 'Tipo de reconocimiento', 'tipo-reconocimiento.pdf', 'Distribución por tipo: académico, cultural o deportivo')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -76,7 +76,7 @@
           <span class="material-icons">account_balance</span>
           Reconocimientos por institución
         </h3>
-        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartInstitucion', 'reconocimientos-por-institucion.png')">
+        <button type="button" class="btn-descargar-grafica" (click)="descargarGrafica('chartInstitucion', 'Reconocimientos por institución', 'reconocimientos-por-institucion.pdf', 'Instituciones que han otorgado reconocimientos a egresados')">
           <span class="material-icons">download</span>
           Descargar
         </button>
@@ -128,5 +128,14 @@
       </table>
     </div>
   </div>
+
+  <app-selector-descarga-pdf
+    [visible]="mostrarSelectorPdf"
+    titulo="Descargar reportes de reconocimientos en PDF"
+    [opciones]="opcionesPdf"
+    [cargando]="descargandoTodas"
+    (cerrar)="cerrarSelectorPdf()"
+    (confirmar)="onConfirmarDescargaPdf($event)"
+  ></app-selector-descarga-pdf>
 
 </div>

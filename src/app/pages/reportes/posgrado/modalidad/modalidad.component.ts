@@ -5,7 +5,7 @@ import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
 import { contarPorCampo, ETIQUETAS_MODALIDAD_POSGRADO, coloresGrafica } from '../../../../utils/graficas-reporte.util';
-import { descargarGraficaPorId } from '../../../../utils/descarga-graficas.util';
+import { descargarGraficaPdfPorId } from '../../../../utils/descarga-graficas.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -61,8 +61,8 @@ export class ModalidadPosgradoComponent implements OnInit, OnDestroy {
     });
   }
 
-  descargar(): void {
-    descargarGraficaPorId('chart', 'modalidad-posgrado.png');
+  async descargar(): Promise<void> {
+    await descargarGraficaPdfPorId('chart', 'Modalidad de estudio', 'modalidad-posgrado.pdf', 'Presencial, virtual o híbrida');
   }
 
   destruir() { this.chart?.destroy(); }

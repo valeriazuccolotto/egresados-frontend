@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SolicitudService } from '../../services/solicitud.service';
+import { CarreraService } from '../../services/carrera.service';
 import { fechaHoyLocal } from '../../utils/fecha-hoy.util';
+import { Carrera } from '../../models/carrera';
 import { CrearSolicitudDto, RespuestaSolicitud, Solicitud, TipoSolicitud } from '../../models/solicitud';
 
 type VistaAdmin = 'lista' | 'formulario';
@@ -27,6 +29,12 @@ export class SolicitarInfoComponent implements OnInit {
   form: CrearSolicitudDto = this.formularioVacio();
   /** Si está activo, la solicitud se publica como ARCHIVOS; si no, como INFORMACION. */
   habilitarSubidaArchivos = false;
+  /** Si está activo, se muestran y envían fechas de inicio/fin. */
+  definirPeriodo = false;
+
+  carreras: Carrera[] = [];
+  carrerasSeleccionadas: string[] = [];
+  cargandoCarreras = false;
 
   solicitudDetalle: Solicitud | null = null;
   respuestas: RespuestaSolicitud[] = [];
@@ -41,10 +49,28 @@ export class SolicitarInfoComponent implements OnInit {
   solicitudACerrar: Solicitud | null = null;
   cerrando = false;
 
-  constructor(private solicitudService: SolicitudService) {}
+  constructor(
+    private solicitudService: SolicitudService,
+    private carreraService: CarreraService
+  ) {}
 
   ngOnInit(): void {
     this.cargarHistorial();
+    this.cargarCarreras();
+  }
+
+  cargarCarreras(): void {
+    this.cargandoCarreras = true;
+    this.carreraService.getCarreras().subscribe({
+      next: (data) => {
+        this.carreras = data || [];
+        this.cargandoCarreras = false;
+      },
+      error: () => {
+        this.carreras = [];
+        this.cargandoCarreras = false;
+      }
+    });
   }
 
   cargarHistorial(): void {
@@ -67,6 +93,8 @@ export class SolicitarInfoComponent implements OnInit {
     this.vista = 'formulario';
     this.form = this.formularioVacio();
     this.habilitarSubidaArchivos = false;
+    this.definirPeriodo = false;
+    this.carrerasSeleccionadas = [];
     this.limpiarMensajes();
   }
 
@@ -74,14 +102,61 @@ export class SolicitarInfoComponent implements OnInit {
     this.vista = 'lista';
     this.form = this.formularioVacio();
     this.habilitarSubidaArchivos = false;
+    this.definirPeriodo = false;
+    this.carrerasSeleccionadas = [];
+  }
+
+  toggleCarrera(claveCarrera: string): void {
+    const idx = this.carrerasSeleccionadas.indexOf(claveCarrera);
+    if (idx >= 0) {
+      this.carrerasSeleccionadas.splice(idx, 1);
+    } else {
+      this.carrerasSeleccionadas.push(claveCarrera);
+    }
+  }
+
+  isCarreraSeleccionada(claveCarrera: string): boolean {
+    return this.carrerasSeleccionadas.includes(claveCarrera);
+  }
+
+  get labelCarrerasSeleccionadas(): string {
+    if (this.carrerasSeleccionadas.length === 0) {
+      return 'Selecciona una o más carreras';
+    }
+    if (this.carrerasSeleccionadas.length === 1) {
+      const carrera = this.carreras.find(c => c.claveCarrera === this.carrerasSeleccionadas[0]);
+      return carrera?.nombreCarrera || '1 carrera seleccionada';
+    }
+    return `${this.carrerasSeleccionadas.length} carreras seleccionadas`;
+  }
+
+  onDefinirPeriodoChange(activo: boolean): void {
+    if (activo) {
+      const hoy = fechaHoyLocal();
+      this.form.fechaInicio = this.form.fechaInicio || hoy;
+      this.form.fechaFin = this.form.fechaFin || hoy;
+      return;
+    }
+    this.form.fechaInicio = null;
+    this.form.fechaFin = null;
   }
 
   guardar(): void {
     if (!this.validarFormulario()) return;
 
+    const payload: CrearSolicitudDto = {
+      titulo: this.form.titulo,
+      descripcion: this.form.descripcion,
+      carreras: [...this.carrerasSeleccionadas]
+    };
+    if (this.definirPeriodo) {
+      payload.fechaInicio = this.form.fechaInicio;
+      payload.fechaFin = this.form.fechaFin;
+    }
+
     const peticion = this.habilitarSubidaArchivos
-      ? this.solicitudService.crearArchivos(this.form)
-      : this.solicitudService.crearInformacion(this.form);
+      ? this.solicitudService.crearArchivos(payload)
+      : this.solicitudService.crearInformacion(payload);
 
     peticion.subscribe({
       next: () => {
@@ -90,12 +165,15 @@ export class SolicitarInfoComponent implements OnInit {
           : '✓ Solicitud publicada (respuesta en texto)';
         this.vista = 'lista';
         this.habilitarSubidaArchivos = false;
+        this.definirPeriodo = false;
+        this.carrerasSeleccionadas = [];
         this.cargarHistorial();
       },
-      error: () => {
-        this.mensajeError = this.habilitarSubidaArchivos
-          ? '❌ Error al crear la solicitud con subida de archivos'
-          : '❌ Error al crear la solicitud de información';
+      error: (err) => {
+        this.mensajeError = this.extraerError(err)
+          || (this.habilitarSubidaArchivos
+            ? '❌ Error al crear la solicitud con subida de archivos'
+            : '❌ Error al crear la solicitud de información');
       }
     });
   }
@@ -206,12 +284,40 @@ export class SolicitarInfoComponent implements OnInit {
   estadoSolicitud(s: Solicitud): string {
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
-    const inicio = new Date(s.fechaInicio + 'T00:00:00');
-    const fin = new Date(s.fechaFin + 'T23:59:59');
-    if (hoy < inicio) return 'Programada';
-    if (hoy > fin) return 'Vencida';
-    if (s.activa === false) return 'Cerrada';
+
+    if (s.activa === false) {
+      return 'Cerrada';
+    }
+
+    if (s.fechaInicio) {
+      const inicio = new Date(s.fechaInicio + 'T00:00:00');
+      if (hoy < inicio) {
+        return 'Programada';
+      }
+    }
+
+    if (s.fechaFin) {
+      const fin = new Date(s.fechaFin + 'T23:59:59');
+      if (hoy > fin) {
+        return 'Vencida';
+      }
+    }
+
     return 'Activa';
+  }
+
+  textoPeriodo(s: Solicitud): string {
+    if (s.fechaInicio && s.fechaFin) {
+      return `${s.fechaInicio} — ${s.fechaFin}`;
+    }
+    return 'Sin periodo definido';
+  }
+
+  textoCarreras(s: Solicitud): string {
+    const nombres = (s.carreras || [])
+      .map(c => c.nombreCarrera || c.claveCarrera)
+      .filter(Boolean);
+    return nombres.length ? nombres.join(', ') : 'Sin carreras';
   }
 
   puedeCerrarAnticipadamente(s: Solicitud): boolean {
@@ -244,20 +350,39 @@ export class SolicitarInfoComponent implements OnInit {
       this.mensajeError = 'La descripción es obligatoria';
       return false;
     }
-    if (!this.form.fechaInicio || !this.form.fechaFin) {
-      this.mensajeError = 'Indica el periodo de respuesta';
-      return false;
+    if (this.definirPeriodo) {
+      if (!this.form.fechaInicio || !this.form.fechaFin) {
+        this.mensajeError = 'Indica el periodo de respuesta';
+        return false;
+      }
+      if (this.form.fechaFin < this.form.fechaInicio) {
+        this.mensajeError = 'La fecha fin no puede ser anterior a la fecha inicio';
+        return false;
+      }
     }
-    if (this.form.fechaFin < this.form.fechaInicio) {
-      this.mensajeError = 'La fecha fin no puede ser anterior a la fecha inicio';
+    if (this.carrerasSeleccionadas.length === 0) {
+      this.mensajeError = 'Selecciona al menos una carrera';
       return false;
     }
     return true;
   }
 
   private formularioVacio(): CrearSolicitudDto {
-    const hoy = fechaHoyLocal();
-    return { titulo: '', descripcion: '', fechaInicio: hoy, fechaFin: hoy };
+    return { titulo: '', descripcion: '', fechaInicio: null, fechaFin: null, carreras: [] };
+  }
+
+  private extraerError(err: any): string {
+    const cuerpo = err?.error;
+    if (typeof cuerpo === 'string' && cuerpo.trim()) {
+      return cuerpo.trim();
+    }
+    if (cuerpo?.message && typeof cuerpo.message === 'string') {
+      return cuerpo.message;
+    }
+    if (cuerpo?.error && typeof cuerpo.error === 'string') {
+      return cuerpo.error;
+    }
+    return err?.message || '';
   }
 
   private limpiarMensajes(): void {

@@ -7,10 +7,12 @@ import {
   ETIQUETAS_TIPO_TITULACION_CORTAS
 } from '../../../utils/graficas-reporte.util';
 import {
-  descargarGraficaPorId,
-  descargarGraficasZip,
-  GraficaDescarga
+  descargarGraficaPdfPorId,
+  descargarGraficasPdf,
+  GraficaDescarga,
+  OpcionDescargaPdf
 } from '../../../utils/descarga-graficas.util';
+import { SelectorDescargaPdfComponent } from '../../../components/selector-descarga-pdf/selector-descarga-pdf.component';
 import { repararTextoEnObjeto } from '../../../utils/texto-encoding.util';
 import { Chart, registerables } from 'chart.js';
 
@@ -19,7 +21,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-academico',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, SelectorDescargaPdfComponent],
   templateUrl: './academico.component.html',
   styleUrl: './academico.component.css'
 })
@@ -38,13 +40,40 @@ export class AcademicoComponent implements OnInit, AfterViewInit, OnDestroy {
   anioEgresoMasFrecuente = 0;
 
   descargandoTodas = false;
+  mostrarSelectorPdf = false;
 
   readonly graficasDescarga: GraficaDescarga[] = [
-    { canvasId: 'chartTitulado', nombreArchivo: 'titulados.png' },
-    { canvasId: 'chartTipoTitulacion', nombreArchivo: 'tipo-titulacion.png' },
-    { canvasId: 'chartAnioEgreso', nombreArchivo: 'anio-egreso.png' },
-    { canvasId: 'chartCarrera', nombreArchivo: 'egresados-por-carrera.png' }
+    {
+      canvasId: 'chartTitulado',
+      nombreArchivo: 'titulados.pdf',
+      titulo: '¿Está titulado?',
+      descripcion: 'Porcentaje de egresados titulados vs no titulados'
+    },
+    {
+      canvasId: 'chartTipoTitulacion',
+      nombreArchivo: 'tipo-titulacion.pdf',
+      titulo: 'Tipo de titulación',
+      descripcion: 'Modalidad con la que obtuvieron su título'
+    },
+    {
+      canvasId: 'chartAnioEgreso',
+      nombreArchivo: 'anio-egreso.pdf',
+      titulo: 'Año de egreso',
+      descripcion: 'Distribución de egresados por año de egreso'
+    },
+    {
+      canvasId: 'chartCarrera',
+      nombreArchivo: 'egresados-por-carrera.pdf',
+      titulo: 'Egresados por carrera',
+      descripcion: 'Cantidad de egresados registrados por carrera'
+    }
   ];
+
+  readonly opcionesPdf: OpcionDescargaPdf[] = this.graficasDescarga.map(g => ({
+    id: g.canvasId,
+    titulo: g.titulo,
+    descripcion: g.descripcion
+  }));
 
   private charts: Chart[] = [];
 
@@ -130,20 +159,33 @@ export class AcademicoComponent implements OnInit, AfterViewInit, OnDestroy {
       : 0;
   }
 
-  descargarGrafica(canvasId: string, nombreArchivo: string): void {
-    descargarGraficaPorId(canvasId, nombreArchivo);
+  abrirSelectorPdf(): void {
+    this.mostrarSelectorPdf = true;
   }
 
-  async descargarTodas(): Promise<void> {
-    if (this.descargandoTodas) {
+  cerrarSelectorPdf(): void {
+    if (!this.descargandoTodas) {
+      this.mostrarSelectorPdf = false;
+    }
+  }
+
+  async onConfirmarDescargaPdf(ids: string[]): Promise<void> {
+    const seleccionadas = this.graficasDescarga.filter(g => ids.includes(g.canvasId));
+    if (!seleccionadas.length) {
       return;
     }
     this.descargandoTodas = true;
     try {
-      await descargarGraficasZip(this.graficasDescarga, 'reportes-academico.zip');
+      await new Promise<void>(resolve => setTimeout(resolve, 50));
+      await descargarGraficasPdf(seleccionadas, 'reportes-academico.pdf');
+      this.mostrarSelectorPdf = false;
     } finally {
       this.descargandoTodas = false;
     }
+  }
+
+  async descargarGrafica(canvasId: string, titulo: string, nombreArchivo: string, descripcion?: string): Promise<void> {
+    await descargarGraficaPdfPorId(canvasId, titulo, nombreArchivo, descripcion);
   }
 
   private normalizar(valor: any): string {

@@ -59,6 +59,18 @@ export class LaboralComponent implements OnInit {
   municipioTouchedEdit = false;
   lugarExtranjeroTouchedCreate = false;
   lugarExtranjeroTouchedEdit = false;
+  ayudaTiempoVisible = false;
+
+  /** Solo se captura una vez: en el primer empleo (si aún no hay respuesta en el historial). */
+  get debeCapturarTiempoConseguir(): boolean {
+    return !this.historial.some(h => !!(h?.tiempoConseguir || '').toString().trim());
+  }
+
+  toggleAyudaTiempo(event?: Event): void {
+    event?.preventDefault();
+    event?.stopPropagation();
+    this.ayudaTiempoVisible = !this.ayudaTiempoVisible;
+  }
 
   // ================= INIT =================
   ngOnInit() {
@@ -302,6 +314,7 @@ this.matriculaUsuario = usuario.matricula;
   @HostListener('document:click')
   onDocumentClick() {
     this.cerrarDropdownsUbicacion();
+    this.ayudaTiempoVisible = false;
   }
 
   construirDatos() {
@@ -318,7 +331,7 @@ this.matriculaUsuario = usuario.matricula;
         ? this.form.municipioTrabajo?.trim()
         : null,
       comoConsiguio: this.form.medio,
-      tiempoConseguir: this.form.tiempo,
+      tiempoConseguir: this.debeCapturarTiempoConseguir ? this.form.tiempo : null,
       tipoContrato: this.form.contrato,
       modalidadTrabajo: this.form.modalidad,
       salario: this.form.salario,
@@ -330,6 +343,10 @@ this.matriculaUsuario = usuario.matricula;
 
   guardar() {
     this.estadoTrabajoTouchedCreate = true;
+    if (this.debeCapturarTiempoConseguir && !(this.form.tiempo || '').toString().trim()) {
+      this.mostrarMensaje('Indique el tiempo en conseguir empleo.');
+      return;
+    }
     if (!this.validarUbicacionLaboral(
       this.form.estadoTrabajo,
       this.form.lugarExtranjero,

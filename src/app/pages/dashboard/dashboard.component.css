@@ -22,7 +22,8 @@
   margin-bottom: 4px;
 }
 
-.encabezado p {
+.encabezado p,
+.encabezado-texto p {
   font-size: 13px;
   color: #888;
 }
@@ -136,6 +137,10 @@
 
 .grafica-wrap.alta {
   height: 340px;
+}
+
+.grafica-wrap.muy-alta {
+  height: 480px;
 }
 
 .grafica-wrap.normal {

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SolicitudService } from '../../services/solicitud.service';
 import { AvisosPendientesService } from '../../services/avisos-pendientes.service';
-import { RespuestaSolicitud, Solicitud } from '../../models/solicitud';
+import { Solicitud } from '../../models/solicitud';
 import { Usuario } from '../../models/usuario';
 
 type VistaAvisos = 'lista' | 'detalle';
@@ -26,11 +26,11 @@ export class NuevosAvisosComponent implements OnInit {
 
   avisos: Solicitud[] = [];
   avisoSeleccionado: Solicitud | null = null;
-  miRespuesta: RespuestaSolicitud | null = null;
 
-  contenido = '';
   comentario = '';
   archivosSeleccionados: File[] = [];
+
+  mostrarModalConfirmarArchivos = false;
 
   constructor(
     private solicitudService: SolicitudService,
@@ -51,10 +51,10 @@ export class NuevosAvisosComponent implements OnInit {
   cargarAvisos(): void {
     if (!this.matricula) return;
     this.cargando = true;
-    this.limpiarMensajes();
+    this.limpiarMensajes(false);
     this.solicitudService.listarParaEgresado(this.matricula).subscribe({
       next: (data) => {
-        this.avisos = (data || []).filter(a => !!a.idSolicitud);
+        this.avisos = (data || []).filter(a => !!a.idSolicitud && !!a.puedeResponder);
         this.cargando = false;
         this.avisosPendientesService.actualizar(this.matricula);
       },
@@ -70,18 +70,14 @@ export class NuevosAvisosComponent implements OnInit {
     if (!aviso.idSolicitud) return;
     this.vista = 'detalle';
     this.avisoSeleccionado = aviso;
-    this.contenido = '';
     this.comentario = '';
     this.archivosSeleccionados = [];
-    this.miRespuesta = null;
+    this.mostrarModalConfirmarArchivos = false;
     this.limpiarMensajes();
 
     this.solicitudService.obtenerParaEgresado(this.matricula, aviso.idSolicitud).subscribe({
       next: (detalle) => {
         this.avisoSeleccionado = detalle;
-        if (detalle.yaRespondio) {
-          this.cargarMiRespuesta(aviso.idSolicitud!);
-        }
       },
       error: () => {
         this.mensajeError = 'No se pudo cargar el detalle del aviso';
@@ -89,74 +85,138 @@ export class NuevosAvisosComponent implements OnInit {
     });
   }
 
-  volverLista(): void {
+  volverLista(conservarMensaje = false): void {
     this.vista = 'lista';
     this.avisoSeleccionado = null;
-    this.miRespuesta = null;
-    this.contenido = '';
     this.comentario = '';
     this.archivosSeleccionados = [];
-    this.limpiarMensajes();
+    this.mostrarModalConfirmarArchivos = false;
+    if (!conservarMensaje) {
+      this.limpiarMensajes();
+    }
     this.cargarAvisos();
   }
 
   onArchivosChange(event: Event): void {
     const input = event.target as HTMLInputElement;
-    this.archivosSeleccionados = input.files ? Array.from(input.files) : [];
+    const nuevos = input.files ? Array.from(input.files) : [];
+    if (nuevos.length) {
+      const existentes = new Set(
+        this.archivosSeleccionados.map(f => `${f.name}|${f.size}|${f.lastModified}`)
+      );
+      for (const archivo of nuevos) {
+        const clave = `${archivo.name}|${archivo.size}|${archivo.lastModified}`;
+        if (!existentes.has(clave)) {
+          this.archivosSeleccionados = [...this.archivosSeleccionados, archivo];
+          existentes.add(clave);
+        }
+      }
+    }
+    input.value = '';
   }
 
-  enviarRespuesta(): void {
+  quitarArchivo(indice: number): void {
+    if (indice < 0 || indice >= this.archivosSeleccionados.length) {
+      return;
+    }
+    this.archivosSeleccionados = this.archivosSeleccionados.filter((_, i) => i !== indice);
+  }
+
+  formatoTamano(bytes: number): string {
+    if (!bytes && bytes !== 0) return '';
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  }
+
+  marcarRealizado(): void {
     const aviso = this.avisoSeleccionado;
-    if (!aviso?.idSolicitud || !aviso.puedeResponder) return;
+    if (!aviso?.idSolicitud || !aviso.puedeResponder || aviso.tipo !== 'INFORMACION') {
+      return;
+    }
 
     this.enviando = true;
     this.limpiarMensajes();
 
-    if (aviso.tipo === 'ARCHIVOS') {
-      if (this.archivosSeleccionados.length === 0) {
-        this.enviando = false;
-        this.mensajeError = 'Selecciona al menos un archivo';
-        return;
-      }
-      this.solicitudService.responderArchivos(
-        this.matricula,
-        aviso.idSolicitud,
-        this.archivosSeleccionados,
-        this.comentario
-      ).subscribe({
-        next: () => this.onRespuestaEnviada(),
-        error: (err) => this.onErrorEnvio(err)
-      });
-      return;
-    }
-
-    if (!this.contenido?.trim()) {
-      this.enviando = false;
-      this.mensajeError = 'Escribe tu respuesta antes de enviar';
-      return;
-    }
-
     this.solicitudService.responderInformacion(this.matricula, aviso.idSolicitud, {
-      contenido: this.contenido.trim(),
-      comentario: this.comentario?.trim() || undefined
+      contenido: 'Realizado'
     }).subscribe({
-      next: () => this.onRespuestaEnviada(),
+      next: () => this.onRespuestaEnviada('✓ Aviso marcado como realizado'),
       error: (err) => this.onErrorEnvio(err)
     });
   }
 
+  abrirConfirmacionArchivos(): void {
+    if (this.archivosSeleccionados.length === 0) {
+      this.mensajeError = 'Selecciona al menos un archivo';
+      return;
+    }
+    this.limpiarMensajes();
+    this.mostrarModalConfirmarArchivos = true;
+  }
+
+  cerrarConfirmacionArchivos(): void {
+    if (this.enviando) {
+      return;
+    }
+    this.mostrarModalConfirmarArchivos = false;
+  }
+
+  confirmarEnvioArchivos(): void {
+    const aviso = this.avisoSeleccionado;
+    if (!aviso?.idSolicitud || !aviso.puedeResponder || aviso.tipo !== 'ARCHIVOS') {
+      return;
+    }
+    if (this.archivosSeleccionados.length === 0) {
+      this.mostrarModalConfirmarArchivos = false;
+      this.mensajeError = 'Selecciona al menos un archivo';
+      return;
+    }
+
+    this.enviando = true;
+    this.limpiarMensajes();
+
+    this.solicitudService.responderArchivos(
+      this.matricula,
+      aviso.idSolicitud,
+      this.archivosSeleccionados,
+      this.comentario
+    ).subscribe({
+      next: () => {
+        this.mostrarModalConfirmarArchivos = false;
+        this.onRespuestaEnviada('✓ Archivos enviados correctamente');
+      },
+      error: (err) => {
+        this.mostrarModalConfirmarArchivos = false;
+        this.onErrorEnvio(err);
+      }
+    });
+  }
+
   etiquetaTipo(tipo: string): string {
-    return tipo === 'ARCHIVOS' ? 'Archivos' : 'Información';
+    return tipo === 'ARCHIVOS' ? 'Archivos' : 'Aviso';
+  }
+
+  textoPeriodo(aviso: Solicitud): string {
+    if (aviso.fechaInicio && aviso.fechaFin) {
+      return `${aviso.fechaInicio} — ${aviso.fechaFin}`;
+    }
+    return 'Sin periodo definido';
+  }
+
+  textoCarreras(aviso: Solicitud): string {
+    const nombres = (aviso.carreras || [])
+      .map(c => c.nombreCarrera || c.claveCarrera)
+      .filter(Boolean);
+    return nombres.join(', ');
   }
 
   etiquetaEstado(aviso: Solicitud): string {
-    if (aviso.yaRespondio) return 'Respondida';
     if (aviso.puedeResponder) return 'Pendiente';
     return 'No disponible';
   }
 
   claseEstado(aviso: Solicitud): string {
-    if (aviso.yaRespondio) return 'estado-respondida';
     if (aviso.puedeResponder) return 'estado-pendiente';
     return 'estado-cerrada';
   }
@@ -165,41 +225,18 @@ export class NuevosAvisosComponent implements OnInit {
     return !!aviso.puedeResponder;
   }
 
-  mostrarBotonVerRespuesta(aviso: Solicitud): boolean {
-    return !!aviso.yaRespondio;
-  }
-
-  private cargarMiRespuesta(idSolicitud: number): void {
-    this.solicitudService.obtenerMiRespuesta(this.matricula, idSolicitud).subscribe({
-      next: (r) => this.miRespuesta = r,
-      error: () => {
-        this.miRespuesta = null;
-      }
-    });
-  }
-
-  private onRespuestaEnviada(): void {
+  private onRespuestaEnviada(mensajeExito: string): void {
     this.enviando = false;
-    this.mensaje = '✓ Tu respuesta se envió correctamente';
-    const id = this.avisoSeleccionado?.idSolicitud;
-    if (id) {
-      this.solicitudService.obtenerParaEgresado(this.matricula, id).subscribe({
-        next: (detalle) => {
-          this.avisoSeleccionado = detalle;
-          if (detalle.yaRespondio) {
-            this.cargarMiRespuesta(id);
-          }
-          this.avisosPendientesService.actualizar(this.matricula);
-        }
-      });
-    } else {
-      this.avisosPendientesService.actualizar(this.matricula);
-    }
+    this.mensaje = mensajeExito;
+    this.comentario = '';
+    this.archivosSeleccionados = [];
+    this.avisosPendientesService.actualizar(this.matricula);
+    this.volverLista(true);
   }
 
   private onErrorEnvio(err: unknown): void {
     this.enviando = false;
-    this.mensajeError = this.extraerError(err) || 'No se pudo enviar la respuesta';
+    this.mensajeError = this.extraerError(err) || 'No se pudo completar la acción';
   }
 
   private extraerError(err: any): string {
@@ -208,8 +245,10 @@ export class NuevosAvisosComponent implements OnInit {
     return '';
   }
 
-  private limpiarMensajes(): void {
-    this.mensaje = '';
+  private limpiarMensajes(limpiarExito = true): void {
+    if (limpiarExito) {
+      this.mensaje = '';
+    }
     this.mensajeError = '';
   }
 }
