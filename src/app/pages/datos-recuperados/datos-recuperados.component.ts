@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -6,6 +6,8 @@ import { catchError, forkJoin, of } from 'rxjs';
 
 import { EgresadoService } from '../../services/egresado.service';
 import { PerfilService } from '../../services/perfil.service';
+import { ValidacionCampo, ValidacionCampoService } from '../../services/validacion-campo.service';
+import { BtnValidarCampoComponent } from '../../components/btn-validar-campo/btn-validar-campo.component';
 import { repararTextoEnObjeto } from '../../utils/texto-encoding.util';
 
 @Component({
@@ -13,12 +15,13 @@ import { repararTextoEnObjeto } from '../../utils/texto-encoding.util';
   standalone: true,
   imports: [
     CommonModule,
-    FormsModule
+    FormsModule,
+    BtnValidarCampoComponent
   ],
   templateUrl: './datos-recuperados.component.html',
   styleUrls: ['./datos-recuperados.component.css']
 })
-export class DatosRecuperadosComponent implements OnInit {
+export class DatosRecuperadosComponent implements OnInit, OnDestroy {
 
   // =========================
   // BÚSQUEDA
@@ -54,17 +57,22 @@ export class DatosRecuperadosComponent implements OnInit {
   cargandoDetalle = false;
   detalleEgresado: any = null;
   seccionActiva:
+    | 'general'
     | 'contacto'
     | 'academico'
     | 'laboral'
     | 'posgrado'
     | 'reconocimientos'
-    | 'certificaciones' = 'contacto';
+    | 'certificaciones' = 'general';
 
   laboralSeleccionado: any = null;
   posgradoSeleccionado: any = null;
   reconocimientoSeleccionado: any = null;
   certificacionSeleccionada: any = null;
+
+  validaciones = new Map<string, ValidacionCampo>();
+  validandoCampo: string | null = null;
+  matriculaDetalle = '';
 
   // =========================
   // CONSTRUCTOR
@@ -72,6 +80,7 @@ export class DatosRecuperadosComponent implements OnInit {
   constructor(
     private egresadoService: EgresadoService,
     public perfilService: PerfilService,
+    private validacionCampoService: ValidacionCampoService,
     private route: ActivatedRoute
   ) {}
 
@@ -261,8 +270,10 @@ export class DatosRecuperadosComponent implements OnInit {
 
     this.mostrarModalDetalle = true;
     this.cargandoDetalle = true;
-    this.seccionActiva = 'contacto';
+    this.seccionActiva = 'general';
     this.detalleEgresado = null;
+    this.matriculaDetalle = m;
+    this.validaciones.clear();
     this.laboralSeleccionado = null;
     this.posgradoSeleccionado = null;
     this.reconocimientoSeleccionado = null;
@@ -275,9 +286,10 @@ export class DatosRecuperadosComponent implements OnInit {
       laboral: this.egresadoService.getLaboralPorMatricula(m).pipe(catchError(() => of([]))),
       posgrado: this.egresadoService.getPosgradoPorMatricula(m).pipe(catchError(() => of([]))),
       reconocimientos: this.egresadoService.getReconocimientosPorMatricula(m).pipe(catchError(() => of([]))),
-      certificaciones: this.egresadoService.getCertificacionesPorMatricula(m).pipe(catchError(() => of([])))
+      certificaciones: this.egresadoService.getCertificacionesPorMatricula(m).pipe(catchError(() => of([]))),
+      validaciones: this.validacionCampoService.listar(m).pipe(catchError(() => of([])))
     }).subscribe({
-      next: ({ perfil, contacto, academico, laboral, posgrado, reconocimientos, certificaciones }) => {
+      next: ({ perfil, contacto, academico, laboral, posgrado, reconocimientos, certificaciones, validaciones }) => {
         const combinado = {
           ...(perfil || {}),
           contacto,
@@ -288,6 +300,7 @@ export class DatosRecuperadosComponent implements OnInit {
           certificaciones
         };
         this.detalleEgresado = this.normalizarPerfilResponse(repararTextoEnObjeto(combinado));
+        this.cargarValidaciones(validaciones);
         // Solo abrir detalle por defecto cuando hay exactamente un registro; si hay varios, el usuario elige cuál ver.
         this.laboralSeleccionado =
           this.laborales.length === 1 ? this.laborales[0] : null;
@@ -313,11 +326,178 @@ export class DatosRecuperadosComponent implements OnInit {
     this.posgradoSeleccionado = null;
     this.reconocimientoSeleccionado = null;
     this.certificacionSeleccionada = null;
-    this.seccionActiva = 'contacto';
+    this.seccionActiva = 'general';
+    this.matriculaDetalle = '';
+    this.validaciones.clear();
   }
 
-  toggleSeccion(seccion: 'contacto' | 'academico' | 'laboral' | 'posgrado' | 'reconocimientos' | 'certificaciones'): void {
-    this.seccionActiva = this.seccionActiva === seccion ? 'contacto' : seccion;
+  ngOnDestroy(): void {}
+
+  toggleSeccion(seccion: 'general' | 'contacto' | 'academico' | 'laboral' | 'posgrado' | 'reconocimientos' | 'certificaciones'): void {
+    this.seccionActiva = this.seccionActiva === seccion ? 'general' : seccion;
+  }
+
+  claveValidacion(seccion: string, campo: string, referenciaId?: string | number | null): string {
+    const ref = referenciaId != null && referenciaId !== '' ? String(referenciaId) : '';
+    return `${seccion}:${campo}:${ref}`;
+  }
+
+  estaValidado(seccion: string, campo: string, referenciaId?: string | number | null): boolean {
+    return this.validaciones.get(this.claveValidacion(seccion, campo, referenciaId))?.validado ?? false;
+  }
+
+  estaValidando(seccion: string, campo: string, referenciaId?: string | number | null): boolean {
+    return this.validandoCampo === this.claveValidacion(seccion, campo, referenciaId);
+  }
+
+  obtenerValorValidado(seccion: string, campo: string, referenciaId?: string | number | null): string {
+    return this.validaciones.get(this.claveValidacion(seccion, campo, referenciaId))?.valorValidado ?? '';
+  }
+
+  validarCampo(
+    seccion: string,
+    campo: string,
+    referenciaId?: string | number | null
+  ): void {
+    const valorActual = this.getValorCampo(seccion, campo, referenciaId);
+    if (!this.matriculaDetalle || !this.tieneDato(valorActual)) {
+      return;
+    }
+
+    const clave = this.claveValidacion(seccion, campo, referenciaId);
+    const ref = referenciaId != null && referenciaId !== '' ? String(referenciaId) : undefined;
+    this.validandoCampo = clave;
+
+    this.validacionCampoService.validar(this.matriculaDetalle, {
+      seccion,
+      campo,
+      referenciaId: ref,
+      validadoPor: this.obtenerAdminSesion(),
+      valorValidado: this.normalizarValorValidacion(valorActual)
+    }).subscribe({
+      next: (validacion) => {
+        this.validaciones.set(clave, validacion);
+        this.validandoCampo = null;
+      },
+      error: () => {
+        this.validandoCampo = null;
+      }
+    });
+  }
+
+  getValorCampo(seccion: string, campo: string, referenciaId?: string | number | null): string {
+    const ref = referenciaId != null && referenciaId !== '' ? String(referenciaId) : '';
+
+    if (seccion === 'general') {
+      const mapa: Record<string, unknown> = {
+        matricula: this.detalleEgresado?.matricula || this.matriculaDetalle,
+        campus: this.detalleEgresado?.campus,
+        carrera: this.detalleEgresado?.carrera || this.academico?.claveCarrera,
+        generacion: this.detalleEgresado?.generacion
+      };
+      return this.normalizarValorValidacion(mapa[campo]);
+    }
+
+    if (seccion === 'academico') {
+      return this.normalizarValorValidacion(this.academico?.[campo]);
+    }
+
+    if (seccion === 'laboral' && this.laboralSeleccionado) {
+      if (campo === 'prestaciones') {
+        return this.normalizarValorValidacion(this.obtenerPrestaciones(this.laboralSeleccionado));
+      }
+      return this.normalizarValorValidacion(this.laboralSeleccionado[campo]);
+    }
+
+    if (seccion === 'posgrado' && this.posgradoSeleccionado) {
+      if (campo === 'tiposBeca') {
+        return this.normalizarValorValidacion(this.obtenerBecas(this.posgradoSeleccionado));
+      }
+      if (campo === 'tieneBeca') {
+        return this.normalizarValorValidacion(this.posgradoSeleccionado.tieneBeca ? 'Sí' : 'No');
+      }
+      return this.normalizarValorValidacion(this.posgradoSeleccionado[campo]);
+    }
+
+    if (seccion === 'reconocimientos' && this.reconocimientoSeleccionado) {
+      return this.normalizarValorValidacion(this.reconocimientoSeleccionado[campo]);
+    }
+
+    if (seccion === 'certificaciones' && this.certificacionSeleccionada) {
+      return this.normalizarValorValidacion(this.certificacionSeleccionada[campo]);
+    }
+
+    return ref;
+  }
+
+  private tieneDato(valor: unknown): boolean {
+    const texto = this.normalizarValorValidacion(valor);
+    if (!texto) {
+      return false;
+    }
+    const vacios = new Set([
+      'no registrado',
+      'no registrada',
+      'sin comentarios',
+      'no aplica',
+      'no cuenta con prestaciones',
+      'sin carrera registrada'
+    ]);
+    return !vacios.has(texto.toLowerCase());
+  }
+
+  private normalizarValorValidacion(valor: unknown): string {
+    if (valor === null || valor === undefined) {
+      return '';
+    }
+    return String(valor).trim();
+  }
+
+  private cargarValidaciones(validaciones: ValidacionCampo[]): void {
+    this.validaciones.clear();
+    for (const validacion of validaciones || []) {
+      this.validaciones.set(
+        this.claveValidacion(validacion.seccion, validacion.campo, validacion.referenciaId),
+        validacion
+      );
+    }
+  }
+
+  private obtenerAdminSesion(): string {
+    const raw = sessionStorage.getItem('usuario');
+    if (!raw) {
+      return 'admin';
+    }
+    try {
+      const usuario = JSON.parse(raw);
+      return usuario?.matricula || usuario?.nombre || 'admin';
+    } catch {
+      return 'admin';
+    }
+  }
+
+  refLaboral(): string | undefined {
+    return this.laboralSeleccionado?.idLaboral != null
+      ? String(this.laboralSeleccionado.idLaboral)
+      : undefined;
+  }
+
+  refPosgrado(): string | undefined {
+    return this.posgradoSeleccionado?.idPosgrado != null
+      ? String(this.posgradoSeleccionado.idPosgrado)
+      : undefined;
+  }
+
+  refReconocimiento(): string | undefined {
+    return this.reconocimientoSeleccionado?.idReconocimiento != null
+      ? String(this.reconocimientoSeleccionado.idReconocimiento)
+      : undefined;
+  }
+
+  refCertificacion(): string | undefined {
+    return this.certificacionSeleccionada?.idCertificacion != null
+      ? String(this.certificacionSeleccionada.idCertificacion)
+      : undefined;
   }
 
   // =========================
@@ -413,7 +593,13 @@ export class DatosRecuperadosComponent implements OnInit {
     const certificacionesRaw = this.obtenerLista(raw, ['certificaciones', 'certificacion']);
 
     return {
-      ...perfil,
+      matricula: this.pick(perfil, ['matricula']) || this.pick(raw, ['matricula']),
+      nombre: this.pick(perfil, ['nombre']),
+      apellidoPaterno: this.pick(perfil, ['apellidoPaterno', 'apellido_paterno']),
+      apellidoMaterno: this.pick(perfil, ['apellidoMaterno', 'apellido_materno']),
+      campus: this.pick(perfil, ['campus']),
+      generacion: this.pick(perfil, ['generacion']),
+      carrera: this.pick(perfil, ['carrera']),
       contacto: {
         telefono: this.pick(contactoRaw, ['telefono', 'telefonoCelular', 'celular']),
         correoPersonal: this.pick(contactoRaw, ['correoPersonal', 'correo_personal', 'correo', 'email']),
@@ -424,6 +610,7 @@ export class DatosRecuperadosComponent implements OnInit {
       },
       academico: {
         claveCarrera: this.pick(academicoRaw, ['claveCarrera', 'clave_carrera']),
+        carrera: this.pick(academicoRaw, ['carrera', 'nombreCarrera']),
         promedio: this.pick(academicoRaw, ['promedio']),
         anioEgreso: this.pick(academicoRaw, ['anioEgreso', 'anio_egreso']),
         titulado: this.pick(academicoRaw, ['titulado']),

@@ -12,8 +12,13 @@ import {
 import { SelectorDescargaPdfComponent } from '../../../components/selector-descarga-pdf/selector-descarga-pdf.component';
 import { repararTextoEnObjeto } from '../../../utils/texto-encoding.util';
 import { Chart, registerables } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import {
+  opcionesGraficaBarraHorizontal,
+  opcionesGraficaCircular
+} from '../../../utils/graficas-chart-options.util';
 
-Chart.register(...registerables);
+Chart.register(...registerables, ChartDataLabels);
 
 @Component({
   selector: 'app-reconocimientos',
@@ -177,10 +182,11 @@ export class ReconocimientosComponent implements OnInit, OnDestroy {
     );
     const canvas1 = document.getElementById('chartTipo') as HTMLCanvasElement;
     if (canvas1) {
+      const total = datosTipo.reduce((a, b) => a + b, 0);
       const chart = new Chart(canvas1, {
         type: 'pie',
         data: { labels: tipos, datasets: [{ data: datosTipo, backgroundColor: [V1, V2, V3] }] },
-        options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+        options: opcionesGraficaCircular(total)
       });
       this.charts.push(chart);
     }
@@ -198,11 +204,7 @@ export class ReconocimientosComponent implements OnInit, OnDestroy {
           labels: instituciones,
           datasets: [{ label: 'Reconocimientos', data: datosInst, backgroundColor: [V1, V2, V3, AZ, G1, V1, V2] }]
         },
-        options: {
-          indexAxis: 'y',
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } }
-        }
+        options: opcionesGraficaBarraHorizontal()
       });
       this.charts.push(chart);
     }

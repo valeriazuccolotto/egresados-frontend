@@ -332,7 +332,7 @@
                 </h3>
 
                 <p>
-                    Expediente completo del egresado
+                    Matrícula {{ detalleEgresado?.matricula || matriculaDetalle }} · Expediente completo del egresado
                 </p>
             </div>
 
@@ -345,6 +345,48 @@
             </div>
 
             <div *ngIf="!cargandoDetalle && detalleEgresado">
+                <!-- DATOS GENERALES (SERVICIOS ESCOLARES) -->
+                <div class="seccion-acordeon">
+                    <button class="acordeon-header" (click)="toggleSeccion('general')">
+                        <div class="acordeon-left">
+                            <div class="acordeon-icon">
+                                <i class="fas fa-id-card"></i>
+                            </div>
+                            <div class="acordeon-title">
+                                <h4>Datos generales</h4>
+                                <span>Matrícula {{ detalleEgresado.matricula || matriculaDetalle }}</span>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down acordeon-arrow" [class.open]="seccionActiva === 'general'"></i>
+                    </button>
+
+                    <div class="acordeon-body" *ngIf="seccionActiva === 'general'">
+                        <p class="validacion-ayuda">Valida cada dato con el botón ✓ (como servicios escolares).</p>
+                        <div class="detalle-grid">
+                            <div class="detalle-item" >
+                                <div class="info-icon"><i class="fas fa-hashtag"></i></div>
+                                <div><label>Matrícula</label><p>{{ detalleEgresado.matricula || matriculaDetalle || 'No registrada' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('general', 'matricula')" [valorValidadoGuardado]="obtenerValorValidado('general', 'matricula')" [validando]="estaValidando('general','matricula')" (validar)="validarCampo('general','matricula')"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item" >
+                                <div class="info-icon"><i class="fas fa-university"></i></div>
+                                <div><label>Campus</label><p>{{ detalleEgresado.campus || 'No registrado' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('general', 'campus')" [valorValidadoGuardado]="obtenerValorValidado('general', 'campus')" [validando]="estaValidando('general','campus')" (validar)="validarCampo('general','campus')"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item" >
+                                <div class="info-icon"><i class="fas fa-book"></i></div>
+                                <div><label>Carrera</label><p>{{ detalleEgresado.carrera || academico.claveCarrera || 'No registrada' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('general', 'carrera')" [valorValidadoGuardado]="obtenerValorValidado('general', 'carrera')" [validando]="estaValidando('general','carrera')" (validar)="validarCampo('general','carrera')"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item" >
+                                <div class="info-icon"><i class="fas fa-calendar-alt"></i></div>
+                                <div><label>Generación</label><p>{{ detalleEgresado.generacion || 'No registrada' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('general', 'generacion')" [valorValidadoGuardado]="obtenerValorValidado('general', 'generacion')" [validando]="estaValidando('general','generacion')" (validar)="validarCampo('general','generacion')"></app-btn-validar-campo>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- CONTACTO -->
                 <div class="seccion-acordeon">
                     <button class="acordeon-header" (click)="toggleSeccion('contacto')">
@@ -364,45 +406,27 @@
                         <div class="detalle-grid">
                             <div class="detalle-item">
                                 <div class="info-icon"><i class="fas fa-phone"></i></div>
-                                <div>
-                                    <label>Teléfono</label>
-                                    <p>{{ contacto.telefono || 'No registrado' }}</p>
-                                </div>
+                                <div><label>Teléfono</label><p>{{ contacto.telefono || 'No registrado' }}</p></div>
                             </div>
                             <div class="detalle-item">
                                 <div class="info-icon"><i class="fas fa-envelope"></i></div>
-                                <div>
-                                    <label>Correo</label>
-                                    <p>{{ contacto.correoPersonal || 'No registrado' }}</p>
-                                </div>
+                                <div><label>Correo</label><p>{{ contacto.correoPersonal || 'No registrado' }}</p></div>
                             </div>
                             <div class="detalle-item">
                                 <div class="info-icon"><i class="fas fa-city"></i></div>
-                                <div>
-                                    <label>Ciudad</label>
-                                    <p>{{ contacto.ciudad || 'No registrada' }}</p>
-                                </div>
+                                <div><label>Ciudad</label><p>{{ contacto.ciudad || 'No registrada' }}</p></div>
                             </div>
                             <div class="detalle-item">
                                 <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
-                                <div>
-                                    <label>Estado</label>
-                                    <p>{{ contacto.estadoResidencia || 'No registrado' }}</p>
-                                </div>
+                                <div><label>Estado</label><p>{{ contacto.estadoResidencia || 'No registrado' }}</p></div>
                             </div>
                             <div class="detalle-item">
                                 <div class="info-icon"><i class="fab fa-instagram"></i></div>
-                                <div>
-                                    <label>Instagram</label>
-                                    <p>{{ contacto.instagram || 'No registrado' }}</p>
-                                </div>
+                                <div><label>Instagram</label><p>{{ contacto.instagram || 'No registrado' }}</p></div>
                             </div>
                             <div class="detalle-item">
                                 <div class="info-icon"><i class="fab fa-facebook"></i></div>
-                                <div>
-                                    <label>Facebook</label>
-                                    <p>{{ contacto.facebook || 'No registrado' }}</p>
-                                </div>
+                                <div><label>Facebook</label><p>{{ contacto.facebook || 'No registrado' }}</p></div>
                             </div>
                         </div>
                     </div>
@@ -425,113 +449,75 @@
 
                     <div class="acordeon-body" *ngIf="seccionActiva === 'academico'">
                         <div class="detalle-grid">
-                            <div class="detalle-item">
+                            <div class="detalle-item " >
                                 <div class="info-icon"><i class="fas fa-book"></i></div>
-                                <div>
-                                    <label>Clave carrera</label>
-                                    <p>{{ academico.claveCarrera || 'No registrada' }}</p>
-                                </div>
+                                <div><label>Clave carrera</label><p>{{ academico.claveCarrera || 'No registrada' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('academico', 'claveCarrera')" [valorValidadoGuardado]="obtenerValorValidado('academico', 'claveCarrera')" [validando]="estaValidando('academico','claveCarrera')" (validar)="validarCampo('academico','claveCarrera')"></app-btn-validar-campo>
                             </div>
-                            <div class="detalle-item">
+                            <div class="detalle-item " >
                                 <div class="info-icon"><i class="fas fa-star"></i></div>
-                                <div>
-                                    <label>Promedio</label>
-                                    <p>{{ academico.promedio ?? 'No registrado' }}</p>
-                                </div>
+                                <div><label>Promedio</label><p>{{ academico.promedio ?? 'No registrado' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('academico', 'promedio')" [valorValidadoGuardado]="obtenerValorValidado('academico', 'promedio')" [validando]="estaValidando('academico','promedio')" (validar)="validarCampo('academico','promedio')"></app-btn-validar-campo>
                             </div>
-                            <div class="detalle-item">
+                            <div class="detalle-item " >
                                 <div class="info-icon"><i class="fas fa-calendar-alt"></i></div>
-                                <div>
-                                    <label>Año egreso</label>
-                                    <p>{{ academico.anioEgreso || 'No registrado' }}</p>
-                                </div>
+                                <div><label>Año egreso</label><p>{{ academico.anioEgreso || 'No registrado' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('academico', 'anioEgreso')" [valorValidadoGuardado]="obtenerValorValidado('academico', 'anioEgreso')" [validando]="estaValidando('academico','anioEgreso')" (validar)="validarCampo('academico','anioEgreso')"></app-btn-validar-campo>
                             </div>
-                            <div class="detalle-item">
+                            <div class="detalle-item " >
                                 <div class="info-icon"><i class="fas fa-scroll"></i></div>
-                                <div>
-                                    <label>Titulado</label>
-                                    <p>{{ academico.titulado || 'No registrado' }}</p>
-                                </div>
+                                <div><label>Titulado</label><p>{{ academico.titulado || 'No registrado' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('academico', 'titulado')" [valorValidadoGuardado]="obtenerValorValidado('academico', 'titulado')" [validando]="estaValidando('academico','titulado')" (validar)="validarCampo('academico','titulado')"></app-btn-validar-campo>
                             </div>
-                            <div class="detalle-item" *ngIf="estaTitulado">
+                            <div class="detalle-item " *ngIf="estaTitulado">
                                 <div class="info-icon"><i class="fas fa-calendar-check"></i></div>
-                                <div>
-                                    <label>Fecha titulación</label>
-                                    <p>{{ academico.fechaTitulacion || 'No registrada' }}</p>
-                                </div>
+                                <div><label>Fecha titulación</label><p>{{ academico.fechaTitulacion || 'No registrada' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('academico', 'fechaTitulacion')" [valorValidadoGuardado]="obtenerValorValidado('academico', 'fechaTitulacion')" [validando]="estaValidando('academico','fechaTitulacion')" (validar)="validarCampo('academico','fechaTitulacion')"></app-btn-validar-campo>
                             </div>
-                            <div class="detalle-item" *ngIf="estaTitulado">
+                            <div class="detalle-item " *ngIf="estaTitulado">
                                 <div class="info-icon"><i class="fas fa-file-signature"></i></div>
-                                <div>
-                                    <label>Tipo titulación</label>
-                                    <p>{{ academico.tipoTitulacion || 'No registrado' }}</p>
-                                </div>
+                                <div><label>Tipo titulación</label><p>{{ academico.tipoTitulacion || 'No registrado' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('academico', 'tipoTitulacion')" [valorValidadoGuardado]="obtenerValorValidado('academico', 'tipoTitulacion')" [validando]="estaValidando('academico','tipoTitulacion')" (validar)="validarCampo('academico','tipoTitulacion')"></app-btn-validar-campo>
                             </div>
-                            <div class="detalle-item">
+                            <div class="detalle-item " >
                                 <div class="info-icon"><i class="fas fa-id-card"></i></div>
-                                <div>
-                                    <label>Cédula profesional</label>
-                                    <p>{{ academico.cedulaProfesional || 'No' }}</p>
-                                </div>
+                                <div><label>Cédula profesional</label><p>{{ academico.cedulaProfesional || 'No' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('academico', 'cedulaProfesional')" [valorValidadoGuardado]="obtenerValorValidado('academico', 'cedulaProfesional')" [validando]="estaValidando('academico','cedulaProfesional')" (validar)="validarCampo('academico','cedulaProfesional')"></app-btn-validar-campo>
                             </div>
-
-                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'tesis'">
+                            <div class="detalle-item " *ngIf="estaTitulado && tipoTitulacionNormalizado === 'tesis'">
                                 <div class="info-icon"><i class="fas fa-book-open"></i></div>
-                                <div>
-                                    <label>Nombre tesis</label>
-                                    <p>{{ academico.nombreTesis || 'No registrado' }}</p>
-                                </div>
+                                <div><label>Nombre tesis</label><p>{{ academico.nombreTesis || 'No registrado' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('academico', 'nombreTesis')" [valorValidadoGuardado]="obtenerValorValidado('academico', 'nombreTesis')" [validando]="estaValidando('academico','nombreTesis')" (validar)="validarCampo('academico','nombreTesis')"></app-btn-validar-campo>
                             </div>
-                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'tesis'">
+                            <div class="detalle-item " *ngIf="estaTitulado && tipoTitulacionNormalizado === 'tesis'">
                                 <div class="info-icon"><i class="fas fa-user"></i></div>
-                                <div>
-                                    <label>Director</label>
-                                    <p>{{ academico.director || 'No registrado' }}</p>
-                                </div>
+                                <div><label>Director</label><p>{{ academico.director || 'No registrado' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('academico', 'director')" [valorValidadoGuardado]="obtenerValorValidado('academico', 'director')" [validando]="estaValidando('academico','director')" (validar)="validarCampo('academico','director')"></app-btn-validar-campo>
                             </div>
-                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'tesis'">
+                            <div class="detalle-item " *ngIf="estaTitulado && tipoTitulacionNormalizado === 'tesis'">
                                 <div class="info-icon"><i class="fas fa-user-friends"></i></div>
-                                <div>
-                                    <label>Codirector</label>
-                                    <p>{{ academico.codirector || 'No registrado' }}</p>
-                                </div>
+                                <div><label>Codirector</label><p>{{ academico.codirector || 'No registrado' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('academico', 'codirector')" [valorValidadoGuardado]="obtenerValorValidado('academico', 'codirector')" [validando]="estaValidando('academico','codirector')" (validar)="validarCampo('academico','codirector')"></app-btn-validar-campo>
                             </div>
-
-                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'ceneval'">
+                            <div class="detalle-item " *ngIf="estaTitulado && (tipoTitulacionNormalizado === 'ceneval' || tipoTitulacionNormalizado === 'experiencia_laboral')">
                                 <div class="info-icon"><i class="fas fa-calendar-day"></i></div>
-                                <div>
-                                    <label>Fecha examen</label>
-                                    <p>{{ academico.fechaExamen || 'No registrada' }}</p>
-                                </div>
+                                <div><label>Fecha examen</label><p>{{ academico.fechaExamen || 'No registrada' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('academico', 'fechaExamen')" [valorValidadoGuardado]="obtenerValorValidado('academico', 'fechaExamen')" [validando]="estaValidando('academico','fechaExamen')" (validar)="validarCampo('academico','fechaExamen')"></app-btn-validar-campo>
                             </div>
-                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'ceneval'">
+                            <div class="detalle-item " *ngIf="estaTitulado && tipoTitulacionNormalizado === 'ceneval'">
                                 <div class="info-icon"><i class="fas fa-chart-line"></i></div>
-                                <div>
-                                    <label>Puntaje CENEVAL</label>
-                                    <p>{{ academico.puntajeCeneval || 'No registrado' }}</p>
-                                </div>
+                                <div><label>Puntaje CENEVAL</label><p>{{ academico.puntajeCeneval || 'No registrado' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('academico', 'puntajeCeneval')" [valorValidadoGuardado]="obtenerValorValidado('academico', 'puntajeCeneval')" [validando]="estaValidando('academico','puntajeCeneval')" (validar)="validarCampo('academico','puntajeCeneval')"></app-btn-validar-campo>
                             </div>
-
-                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'experiencia_laboral'">
+                            <div class="detalle-item " *ngIf="estaTitulado && tipoTitulacionNormalizado === 'experiencia_laboral'">
                                 <div class="info-icon"><i class="fas fa-briefcase"></i></div>
-                                <div>
-                                    <label>Título memoria</label>
-                                    <p>{{ academico.tituloMemoria || 'No registrado' }}</p>
-                                </div>
+                                <div><label>Título memoria</label><p>{{ academico.tituloMemoria || 'No registrado' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('academico', 'tituloMemoria')" [valorValidadoGuardado]="obtenerValorValidado('academico', 'tituloMemoria')" [validando]="estaValidando('academico','tituloMemoria')" (validar)="validarCampo('academico','tituloMemoria')"></app-btn-validar-campo>
                             </div>
-                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'experiencia_laboral'">
+                            <div class="detalle-item " *ngIf="estaTitulado && tipoTitulacionNormalizado === 'experiencia_laboral'">
                                 <div class="info-icon"><i class="fas fa-user-tie"></i></div>
-                                <div>
-                                    <label>Asesor</label>
-                                    <p>{{ academico.asesor || 'No registrado' }}</p>
-                                </div>
-                            </div>
-                            <div class="detalle-item" *ngIf="estaTitulado && tipoTitulacionNormalizado === 'experiencia_laboral'">
-                                <div class="info-icon"><i class="fas fa-calendar-day"></i></div>
-                                <div>
-                                    <label>Fecha examen</label>
-                                    <p>{{ academico.fechaExamen || 'No registrada' }}</p>
-                                </div>
+                                <div><label>Asesor</label><p>{{ academico.asesor || 'No registrado' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('academico', 'asesor')" [valorValidadoGuardado]="obtenerValorValidado('academico', 'asesor')" [validando]="estaValidando('academico','asesor')" (validar)="validarCampo('academico','asesor')"></app-btn-validar-campo>
                             </div>
                         </div>
                     </div>
@@ -568,22 +554,20 @@
                         </ng-template>
 
                         <div class="detalle-grid detalle-seleccionado" *ngIf="laboralSeleccionado">
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-user-tie"></i></div><div><label>Puesto</label><p>{{ laboralSeleccionado.puesto }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-industry"></i></div><div><label>Sector</label><p>{{ laboralSeleccionado.sector }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-map-marker-alt"></i></div><div><label>¿Lugar donde está trabajando?</label><p>{{ laboralSeleccionado.estadoTrabajo || 'No registrado' }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-file-contract"></i></div><div><label>Contrato</label><p>{{ laboralSeleccionado.tipoContrato }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-laptop-house"></i></div><div><label>Modalidad</label><p>{{ laboralSeleccionado.modalidadTrabajo }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-money-bill-wave"></i></div><div><label>Salario</label><p>{{ laboralSeleccionado.salario }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-search"></i></div><div><label>Cómo consiguió</label><p>{{ laboralSeleccionado.comoConsiguio }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-clock"></i></div><div><label>Tiempo en conseguir</label><p>{{ laboralSeleccionado.tiempoConseguir }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-graduation-cap"></i></div><div><label>Relación con carrera</label><p>{{ laboralSeleccionado.relacionCarrera }}</p></div></div>
-                            <div class="detalle-item detalle-completo"><div class="info-icon"><i class="fas fa-comment"></i></div><div><label>Comentarios</label><p>{{ laboralSeleccionado.comentarios || 'Sin comentarios' }}</p></div></div>
-                            <div class="detalle-item detalle-completo">
+                            <div class="detalle-item" ><div class="info-icon"><i class="fas fa-user-tie"></i></div><div><label>Puesto</label><p>{{ laboralSeleccionado.puesto }}</p></div><app-btn-validar-campo [valorActual]="getValorCampo('laboral', 'puesto', refLaboral())" [valorValidadoGuardado]="obtenerValorValidado('laboral', 'puesto', refLaboral())" [validando]="estaValidando('laboral','puesto', refLaboral())" (validar)="validarCampo('laboral','puesto', refLaboral())"></app-btn-validar-campo></div>
+                            <div class="detalle-item" ><div class="info-icon"><i class="fas fa-industry"></i></div><div><label>Sector</label><p>{{ laboralSeleccionado.sector }}</p></div><app-btn-validar-campo [valorActual]="getValorCampo('laboral', 'sector', refLaboral())" [valorValidadoGuardado]="obtenerValorValidado('laboral', 'sector', refLaboral())" [validando]="estaValidando('laboral','sector', refLaboral())" (validar)="validarCampo('laboral','sector', refLaboral())"></app-btn-validar-campo></div>
+                            <div class="detalle-item" ><div class="info-icon"><i class="fas fa-map-marker-alt"></i></div><div><label>¿Lugar donde está trabajando?</label><p>{{ laboralSeleccionado.estadoTrabajo || 'No registrado' }}</p></div><app-btn-validar-campo [valorActual]="getValorCampo('laboral', 'estadoTrabajo', refLaboral())" [valorValidadoGuardado]="obtenerValorValidado('laboral', 'estadoTrabajo', refLaboral())" [validando]="estaValidando('laboral','estadoTrabajo', refLaboral())" (validar)="validarCampo('laboral','estadoTrabajo', refLaboral())"></app-btn-validar-campo></div>
+                            <div class="detalle-item" ><div class="info-icon"><i class="fas fa-file-contract"></i></div><div><label>Contrato</label><p>{{ laboralSeleccionado.tipoContrato }}</p></div><app-btn-validar-campo [valorActual]="getValorCampo('laboral', 'tipoContrato', refLaboral())" [valorValidadoGuardado]="obtenerValorValidado('laboral', 'tipoContrato', refLaboral())" [validando]="estaValidando('laboral','tipoContrato', refLaboral())" (validar)="validarCampo('laboral','tipoContrato', refLaboral())"></app-btn-validar-campo></div>
+                            <div class="detalle-item" ><div class="info-icon"><i class="fas fa-laptop-house"></i></div><div><label>Modalidad</label><p>{{ laboralSeleccionado.modalidadTrabajo }}</p></div><app-btn-validar-campo [valorActual]="getValorCampo('laboral', 'modalidadTrabajo', refLaboral())" [valorValidadoGuardado]="obtenerValorValidado('laboral', 'modalidadTrabajo', refLaboral())" [validando]="estaValidando('laboral','modalidadTrabajo', refLaboral())" (validar)="validarCampo('laboral','modalidadTrabajo', refLaboral())"></app-btn-validar-campo></div>
+                            <div class="detalle-item" ><div class="info-icon"><i class="fas fa-money-bill-wave"></i></div><div><label>Salario</label><p>{{ laboralSeleccionado.salario }}</p></div><app-btn-validar-campo [valorActual]="getValorCampo('laboral', 'salario', refLaboral())" [valorValidadoGuardado]="obtenerValorValidado('laboral', 'salario', refLaboral())" [validando]="estaValidando('laboral','salario', refLaboral())" (validar)="validarCampo('laboral','salario', refLaboral())"></app-btn-validar-campo></div>
+                            <div class="detalle-item" ><div class="info-icon"><i class="fas fa-search"></i></div><div><label>Cómo consiguió</label><p>{{ laboralSeleccionado.comoConsiguio }}</p></div><app-btn-validar-campo [valorActual]="getValorCampo('laboral', 'comoConsiguio', refLaboral())" [valorValidadoGuardado]="obtenerValorValidado('laboral', 'comoConsiguio', refLaboral())" [validando]="estaValidando('laboral','comoConsiguio', refLaboral())" (validar)="validarCampo('laboral','comoConsiguio', refLaboral())"></app-btn-validar-campo></div>
+                            <div class="detalle-item" ><div class="info-icon"><i class="fas fa-clock"></i></div><div><label>Tiempo en conseguir</label><p>{{ laboralSeleccionado.tiempoConseguir }}</p></div><app-btn-validar-campo [valorActual]="getValorCampo('laboral', 'tiempoConseguir', refLaboral())" [valorValidadoGuardado]="obtenerValorValidado('laboral', 'tiempoConseguir', refLaboral())" [validando]="estaValidando('laboral','tiempoConseguir', refLaboral())" (validar)="validarCampo('laboral','tiempoConseguir', refLaboral())"></app-btn-validar-campo></div>
+                            <div class="detalle-item" ><div class="info-icon"><i class="fas fa-graduation-cap"></i></div><div><label>Relación con carrera</label><p>{{ laboralSeleccionado.relacionCarrera }}</p></div><app-btn-validar-campo [valorActual]="getValorCampo('laboral', 'relacionCarrera', refLaboral())" [valorValidadoGuardado]="obtenerValorValidado('laboral', 'relacionCarrera', refLaboral())" [validando]="estaValidando('laboral','relacionCarrera', refLaboral())" (validar)="validarCampo('laboral','relacionCarrera', refLaboral())"></app-btn-validar-campo></div>
+                            <div class="detalle-item detalle-completo" ><div class="info-icon"><i class="fas fa-comment"></i></div><div><label>Comentarios</label><p>{{ laboralSeleccionado.comentarios || 'Sin comentarios' }}</p></div><app-btn-validar-campo [valorActual]="getValorCampo('laboral', 'comentarios', refLaboral())" [valorValidadoGuardado]="obtenerValorValidado('laboral', 'comentarios', refLaboral())" [validando]="estaValidando('laboral','comentarios', refLaboral())" (validar)="validarCampo('laboral','comentarios', refLaboral())"></app-btn-validar-campo></div>
+                            <div class="detalle-item detalle-completo" >
                                 <div class="info-icon"><i class="fas fa-gift"></i></div>
-                                <div>
-                                    <label>Prestaciones</label>
-                                    <p class="texto-lista-separada">{{ obtenerPrestaciones(laboralSeleccionado) }}</p>
-                                </div>
+                                <div><label>Prestaciones</label><p class="texto-lista-separada">{{ obtenerPrestaciones(laboralSeleccionado) }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('laboral', 'prestaciones', refLaboral())" [valorValidadoGuardado]="obtenerValorValidado('laboral', 'prestaciones', refLaboral())" [validando]="estaValidando('laboral','prestaciones', refLaboral())" (validar)="validarCampo('laboral','prestaciones', refLaboral())"></app-btn-validar-campo>
                             </div>
                         </div>
                     </div>
@@ -620,21 +604,55 @@
                         </ng-template>
 
                         <div class="detalle-grid detalle-seleccionado" *ngIf="posgradoSeleccionado">
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-university"></i></div><div><label>Institución</label><p>{{ posgradoSeleccionado.institucion }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-layer-group"></i></div><div><label>Nivel</label><p>{{ posgradoSeleccionado.nivelEstudio }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-book-open"></i></div><div><label>Programa</label><p>{{ posgradoSeleccionado.nombrePrograma }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-laptop-house"></i></div><div><label>Modalidad</label><p>{{ posgradoSeleccionado.modalidad }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-check-circle"></i></div><div><label>Estatus</label><p>{{ posgradoSeleccionado.estatus }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-link"></i></div><div><label>Relación carrera</label><p>{{ posgradoSeleccionado.relacionadoCarrera }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-calendar-day"></i></div><div><label>Inicio</label><p>{{ posgradoSeleccionado.fechaInicio || 'No registrada' }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-calendar-times"></i></div><div><label>Fin</label><p>{{ posgradoSeleccionado.fechaFin || 'No registrada' }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-award"></i></div><div><label>Tiene beca</label><p>{{ posgradoSeleccionado.tieneBeca ? 'Sí' : 'No' }}</p></div></div>
-                            <div class="detalle-item detalle-completo">
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-university"></i></div>
+                                <div><label>Institución</label><p>{{ posgradoSeleccionado.institucion }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('posgrado', 'institucion', refPosgrado())" [valorValidadoGuardado]="obtenerValorValidado('posgrado', 'institucion', refPosgrado())" [validando]="estaValidando('posgrado','institucion', refPosgrado())" (validar)="validarCampo('posgrado','institucion', refPosgrado())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-layer-group"></i></div>
+                                <div><label>Nivel</label><p>{{ posgradoSeleccionado.nivelEstudio }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('posgrado', 'nivelEstudio', refPosgrado())" [valorValidadoGuardado]="obtenerValorValidado('posgrado', 'nivelEstudio', refPosgrado())" [validando]="estaValidando('posgrado','nivelEstudio', refPosgrado())" (validar)="validarCampo('posgrado','nivelEstudio', refPosgrado())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-book-open"></i></div>
+                                <div><label>Programa</label><p>{{ posgradoSeleccionado.nombrePrograma }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('posgrado', 'nombrePrograma', refPosgrado())" [valorValidadoGuardado]="obtenerValorValidado('posgrado', 'nombrePrograma', refPosgrado())" [validando]="estaValidando('posgrado','nombrePrograma', refPosgrado())" (validar)="validarCampo('posgrado','nombrePrograma', refPosgrado())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-laptop-house"></i></div>
+                                <div><label>Modalidad</label><p>{{ posgradoSeleccionado.modalidad }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('posgrado', 'modalidad', refPosgrado())" [valorValidadoGuardado]="obtenerValorValidado('posgrado', 'modalidad', refPosgrado())" [validando]="estaValidando('posgrado','modalidad', refPosgrado())" (validar)="validarCampo('posgrado','modalidad', refPosgrado())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-check-circle"></i></div>
+                                <div><label>Estatus</label><p>{{ posgradoSeleccionado.estatus }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('posgrado', 'estatus', refPosgrado())" [valorValidadoGuardado]="obtenerValorValidado('posgrado', 'estatus', refPosgrado())" [validando]="estaValidando('posgrado','estatus', refPosgrado())" (validar)="validarCampo('posgrado','estatus', refPosgrado())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-link"></i></div>
+                                <div><label>Relación carrera</label><p>{{ posgradoSeleccionado.relacionadoCarrera }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('posgrado', 'relacionadoCarrera', refPosgrado())" [valorValidadoGuardado]="obtenerValorValidado('posgrado', 'relacionadoCarrera', refPosgrado())" [validando]="estaValidando('posgrado','relacionadoCarrera', refPosgrado())" (validar)="validarCampo('posgrado','relacionadoCarrera', refPosgrado())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-calendar-day"></i></div>
+                                <div><label>Inicio</label><p>{{ posgradoSeleccionado.fechaInicio || 'No registrada' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('posgrado', 'fechaInicio', refPosgrado())" [valorValidadoGuardado]="obtenerValorValidado('posgrado', 'fechaInicio', refPosgrado())" [validando]="estaValidando('posgrado','fechaInicio', refPosgrado())" (validar)="validarCampo('posgrado','fechaInicio', refPosgrado())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-calendar-times"></i></div>
+                                <div><label>Fin</label><p>{{ posgradoSeleccionado.fechaFin || 'No registrada' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('posgrado', 'fechaFin', refPosgrado())" [valorValidadoGuardado]="obtenerValorValidado('posgrado', 'fechaFin', refPosgrado())" [validando]="estaValidando('posgrado','fechaFin', refPosgrado())" (validar)="validarCampo('posgrado','fechaFin', refPosgrado())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-award"></i></div>
+                                <div><label>Tiene beca</label><p>{{ posgradoSeleccionado.tieneBeca ? 'Sí' : 'No' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('posgrado', 'tieneBeca', refPosgrado())" [valorValidadoGuardado]="obtenerValorValidado('posgrado', 'tieneBeca', refPosgrado())" [validando]="estaValidando('posgrado','tieneBeca', refPosgrado())" (validar)="validarCampo('posgrado','tieneBeca', refPosgrado())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item detalle-completo" >
                                 <div class="info-icon"><i class="fas fa-gift"></i></div>
-                                <div>
-                                    <label>Tipos de beca</label>
-                                    <p class="texto-lista-separada">{{ obtenerBecas(posgradoSeleccionado) }}</p>
-                                </div>
+                                <div><label>Tipos de beca</label><p>{{ obtenerBecas(posgradoSeleccionado) }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('posgrado', 'tiposBeca', refPosgrado())" [valorValidadoGuardado]="obtenerValorValidado('posgrado', 'tiposBeca', refPosgrado())" [validando]="estaValidando('posgrado','tiposBeca', refPosgrado())" (validar)="validarCampo('posgrado','tiposBeca', refPosgrado())"></app-btn-validar-campo>
                             </div>
                         </div>
                     </div>
@@ -671,10 +689,26 @@
                         </ng-template>
 
                         <div class="detalle-grid detalle-seleccionado" *ngIf="reconocimientoSeleccionado">
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-medal"></i></div><div><label>Nombre</label><p>{{ reconocimientoSeleccionado.nombreReconocimiento }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-tag"></i></div><div><label>Tipo</label><p>{{ reconocimientoSeleccionado.tipoReconocimiento }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-calendar-check"></i></div><div><label>Fecha entrega</label><p>{{ reconocimientoSeleccionado.fechaEntrega || 'No registrada' }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-university"></i></div><div><label>Institución</label><p>{{ reconocimientoSeleccionado.institucion || 'No registrada' }}</p></div></div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-medal"></i></div>
+                                <div><label>Nombre</label><p>{{ reconocimientoSeleccionado.nombreReconocimiento }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('reconocimientos', 'nombreReconocimiento', refReconocimiento())" [valorValidadoGuardado]="obtenerValorValidado('reconocimientos', 'nombreReconocimiento', refReconocimiento())" [validando]="estaValidando('reconocimientos','nombreReconocimiento', refReconocimiento())" (validar)="validarCampo('reconocimientos','nombreReconocimiento', refReconocimiento())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-tag"></i></div>
+                                <div><label>Tipo</label><p>{{ reconocimientoSeleccionado.tipoReconocimiento }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('reconocimientos', 'tipoReconocimiento', refReconocimiento())" [valorValidadoGuardado]="obtenerValorValidado('reconocimientos', 'tipoReconocimiento', refReconocimiento())" [validando]="estaValidando('reconocimientos','tipoReconocimiento', refReconocimiento())" (validar)="validarCampo('reconocimientos','tipoReconocimiento', refReconocimiento())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-calendar-check"></i></div>
+                                <div><label>Fecha entrega</label><p>{{ reconocimientoSeleccionado.fechaEntrega || 'No registrada' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('reconocimientos', 'fechaEntrega', refReconocimiento())" [valorValidadoGuardado]="obtenerValorValidado('reconocimientos', 'fechaEntrega', refReconocimiento())" [validando]="estaValidando('reconocimientos','fechaEntrega', refReconocimiento())" (validar)="validarCampo('reconocimientos','fechaEntrega', refReconocimiento())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-university"></i></div>
+                                <div><label>Institución</label><p>{{ reconocimientoSeleccionado.institucion || 'No registrada' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('reconocimientos', 'institucion', refReconocimiento())" [valorValidadoGuardado]="obtenerValorValidado('reconocimientos', 'institucion', refReconocimiento())" [validando]="estaValidando('reconocimientos','institucion', refReconocimiento())" (validar)="validarCampo('reconocimientos','institucion', refReconocimiento())"></app-btn-validar-campo>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -710,11 +744,31 @@
                         </ng-template>
 
                         <div class="detalle-grid detalle-seleccionado" *ngIf="certificacionSeleccionada">
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-certificate"></i></div><div><label>Nombre</label><p>{{ certificacionSeleccionada.nombreCertificacion }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-building"></i></div><div><label>Institución</label><p>{{ certificacionSeleccionada.institucionCertificacion }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-calendar-day"></i></div><div><label>Inicio</label><p>{{ certificacionSeleccionada.fechaInicio || 'No registrada' }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-calendar-times"></i></div><div><label>Fin</label><p>{{ certificacionSeleccionada.fechaFin || 'No registrada' }}</p></div></div>
-                            <div class="detalle-item"><div class="info-icon"><i class="fas fa-calendar-check"></i></div><div><label>Obtención</label><p>{{ certificacionSeleccionada.fechaObtencion || 'No registrada' }}</p></div></div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-certificate"></i></div>
+                                <div><label>Nombre</label><p>{{ certificacionSeleccionada.nombreCertificacion }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('certificaciones', 'nombreCertificacion', refCertificacion())" [valorValidadoGuardado]="obtenerValorValidado('certificaciones', 'nombreCertificacion', refCertificacion())" [validando]="estaValidando('certificaciones','nombreCertificacion', refCertificacion())" (validar)="validarCampo('certificaciones','nombreCertificacion', refCertificacion())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-building"></i></div>
+                                <div><label>Institución</label><p>{{ certificacionSeleccionada.institucionCertificacion }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('certificaciones', 'institucionCertificacion', refCertificacion())" [valorValidadoGuardado]="obtenerValorValidado('certificaciones', 'institucionCertificacion', refCertificacion())" [validando]="estaValidando('certificaciones','institucionCertificacion', refCertificacion())" (validar)="validarCampo('certificaciones','institucionCertificacion', refCertificacion())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-calendar-day"></i></div>
+                                <div><label>Inicio</label><p>{{ certificacionSeleccionada.fechaInicio || 'No registrada' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('certificaciones', 'fechaInicio', refCertificacion())" [valorValidadoGuardado]="obtenerValorValidado('certificaciones', 'fechaInicio', refCertificacion())" [validando]="estaValidando('certificaciones','fechaInicio', refCertificacion())" (validar)="validarCampo('certificaciones','fechaInicio', refCertificacion())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-calendar-times"></i></div>
+                                <div><label>Fin</label><p>{{ certificacionSeleccionada.fechaFin || 'No registrada' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('certificaciones', 'fechaFin', refCertificacion())" [valorValidadoGuardado]="obtenerValorValidado('certificaciones', 'fechaFin', refCertificacion())" [validando]="estaValidando('certificaciones','fechaFin', refCertificacion())" (validar)="validarCampo('certificaciones','fechaFin', refCertificacion())"></app-btn-validar-campo>
+                            </div>
+                            <div class="detalle-item " >
+                                <div class="info-icon"><i class="fas fa-calendar-check"></i></div>
+                                <div><label>Obtención</label><p>{{ certificacionSeleccionada.fechaObtencion || 'No registrada' }}</p></div>
+                                <app-btn-validar-campo [valorActual]="getValorCampo('certificaciones', 'fechaObtencion', refCertificacion())" [valorValidadoGuardado]="obtenerValorValidado('certificaciones', 'fechaObtencion', refCertificacion())" [validando]="estaValidando('certificaciones','fechaObtencion', refCertificacion())" (validar)="validarCampo('certificaciones','fechaObtencion', refCertificacion())"></app-btn-validar-campo>
+                            </div>
                         </div>
                     </div>
                 </div>

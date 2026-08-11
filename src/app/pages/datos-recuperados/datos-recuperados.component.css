@@ -307,9 +307,18 @@
 
 .detalle-item {
     display: flex;
+    align-items: flex-start;
     gap: 12px;
+    position: relative;
     border-bottom: 1px solid #eef2f1;
     padding: 10px 0;
+}
+
+.detalle-item.campo-validado {
+    background: #edf9f4;
+    border-radius: 10px;
+    padding: 8px;
+    border: 1px solid #b7e4d4;
 }
 
 .info-icon {
@@ -463,6 +472,12 @@
 .mensaje-vacio-seccion {
     margin: 6px 0;
     color: #6b7280;
+}
+
+.validacion-ayuda {
+    margin: 0 0 12px;
+    color: #5b6b78;
+    font-size: 13px;
 }
 
 /* FOOTER */

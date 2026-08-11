@@ -10,6 +10,7 @@ import { PostulacionBolsaTrabajoService } from '../../services/postulacion-bolsa
 import { EstadisticasPostulacion, PostulacionVista } from '../../models/postulacion-bolsa-trabajo';
 import { CarreraService } from '../../services/carrera.service';
 import { Carrera } from '../../models/carrera';
+import { descargarCsvFilas } from '../../utils/descarga-graficas.util';
 
 @Component({
   selector: 'app-bolsa-trabajo',
@@ -273,34 +274,23 @@ export class BolsaTrabajoComponent implements OnInit {
       return;
     }
 
-    const filas = [
+    descargarCsvFilas(
       ['Egresado', 'Matricula', 'Estado', 'Fecha aplicacion', 'Fecha contratacion'],
-      ...this.postulantes.map(p => [
+      this.postulantes.map(p => [
         this.nombreCompletoPostulante(p),
         p.matricula,
         p.estado,
         p.fechaAplicacion || '',
         p.fechaContratacion || ''
-      ])
-    ];
-
-    const csv = filas
-      .map(fila => fila.map(celda => `"${String(celda).replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `postulantes_${vacante.idBolsaTrabajo}_${vacante.nombreEmpresa.replace(/\s+/g, '_')}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+      ]),
+      `postulantes_${vacante.idBolsaTrabajo}_${vacante.nombreEmpresa.replace(/\s+/g, '_')}.csv`
+    );
   }
 
   exportarVacantes(): void {
-    const filas = [
+    descargarCsvFilas(
       ['Empresa', 'Puesto', 'Modalidad', 'Salario', 'Correo', 'Telefono', 'Carreras', 'Activo'],
-      ...this.vacantesFiltradas.map(v => [
+      this.vacantesFiltradas.map(v => [
         v.nombreEmpresa,
         v.puesto,
         this.modalidadLabel(v),
@@ -309,20 +299,9 @@ export class BolsaTrabajoComponent implements OnInit {
         v.telefonoContacto || '',
         this.nombresCarreras(v),
         v.activo === false ? 'No' : 'Si'
-      ])
-    ];
-
-    const csv = filas
-      .map(fila => fila.map(celda => `"${String(celda).replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'vacantes_bolsa_trabajo.csv';
-    a.click();
-    URL.revokeObjectURL(url);
+      ]),
+      'vacantes_bolsa_trabajo.csv'
+    );
   }
 
   cargarPostulantes(vacante: BolsaTrabajo): void {

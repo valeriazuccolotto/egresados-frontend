@@ -5,6 +5,7 @@ import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
 import { descargarGraficaPdfPorId } from '../../../../utils/descarga-graficas.util';
+import { opcionesGraficaCircular, opcionesGraficaBarraVertical, opcionesGraficaBarraHorizontal } from '../../../../utils/graficas-chart-options.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -44,22 +45,7 @@ export class CantidadEgresadosComponent implements OnInit, OnDestroy {
         labels: carreras,
         datasets: [{ label: 'Egresados', data: values, backgroundColor: ['#2f8f83','#52b0a4','#85cdc6','#1a6e78','#9eaab3','#c8d0d5','#2f8f83','#52b0a4','#1a6e78','#85cdc6'] }]
       },
-      options: {
-        indexAxis: 'y',
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: false },
-          datalabels: {
-            anchor: 'end',
-            align: 'end',
-            color: '#333',
-            font: { size: 13, weight: 'bold' },
-            formatter: (value: number) => value === 0 ? '' : value
-          }
-        },
-        scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
-      }
+      options: opcionesGraficaBarraHorizontal()
     });
   }
 

@@ -6,6 +6,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
 import { contarPorCampo, ETIQUETAS_TIEMPO_EMPLEO, coloresGrafica } from '../../../../utils/graficas-reporte.util';
 import { descargarGraficaPdfPorId } from '../../../../utils/descarga-graficas.util';
+import { opcionesGraficaBarraVertical } from '../../../../utils/graficas-chart-options.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -42,21 +43,7 @@ export class TiempoEmpleoComponent implements OnInit, OnDestroy {
     this.chart = new Chart(canvas, {
       type: 'bar',
       data: { labels, datasets: [{ label: 'Egresados', data: values, backgroundColor: coloresGrafica(labels.length) }] },
-      options: {
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: false },
-          datalabels: {
-            anchor: 'end',
-            align: 'end',
-            color: '#333',
-            font: { size: 13, weight: 'bold' },
-            formatter: (value: number) => value === 0 ? '' : value
-          }
-        },
-        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
-      }
+      options: opcionesGraficaBarraVertical()
     });
   }
 

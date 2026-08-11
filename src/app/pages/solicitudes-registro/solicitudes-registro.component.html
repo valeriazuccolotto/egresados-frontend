@@ -50,7 +50,7 @@
             <td>{{ s.fechaSolicitud | date:'dd/MM/yyyy HH:mm' }}</td>
             <td class="acciones">
               <ng-container *ngIf="s.estado==='PENDIENTE'">
-                <button class="btn-aceptar" type="button" [disabled]="procesando" (click)="aceptar(s)">Aceptar</button>
+                <button class="btn-aceptar" type="button" [disabled]="procesando" (click)="abrirAceptacion(s)">Aceptar</button>
                 <button class="btn-rechazar" type="button" [disabled]="procesando" (click)="abrirRechazo(s)">Rechazar</button>
               </ng-container>
               <span *ngIf="s.estado==='RECHAZADA' && s.motivoRechazo" class="motivo" [title]="s.motivoRechazo">
@@ -64,19 +64,65 @@
     </div>
   </div>
 
-  <div class="modal-backdrop" *ngIf="mostrarRechazo" (click)="cerrarRechazo()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <h3>Rechazar solicitud</h3>
-      <p *ngIf="solicitudSeleccionada">
-        {{ nombreCompleto(solicitudSeleccionada) }} · {{ solicitudSeleccionada.matricula }}
-      </p>
-      <label for="motivo">Motivo del rechazo</label>
-      <textarea id="motivo" rows="4" [(ngModel)]="motivoRechazo"
-                placeholder="Explica por qué se rechaza la solicitud"></textarea>
-      <div class="modal-acciones">
-        <button type="button" class="btn-secundario" (click)="cerrarRechazo()">Cancelar</button>
-        <button type="button" class="btn-rechazar" [disabled]="procesando" (click)="confirmarRechazo()">
-          Confirmar rechazo
+  <div class="modal-overlay" *ngIf="mostrarAceptacion" (click)="cerrarAceptacion()">
+    <div class="modal-card modal-confirmar" (click)="$event.stopPropagation()">
+      <div class="modal-header modal-header-compact">
+        <div class="modal-icon modal-icon-aceptar">
+          <i class="fas fa-user-check"></i>
+        </div>
+        <div>
+          <h3>¿Aceptar solicitud?</h3>
+          <p class="modal-subtitulo" *ngIf="solicitudSeleccionada">
+            {{ nombreCompleto(solicitudSeleccionada) }} · {{ solicitudSeleccionada.matricula }}
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-body modal-body-compact">
+        <p>
+          Se creará la cuenta del egresado y se enviará un correo a
+          <strong>{{ solicitudSeleccionada?.correo }}</strong> con la contraseña temporal.
+        </p>
+      </div>
+
+      <div class="cert-footer modal-footer-acciones">
+        <button type="button" class="cert-btn-secondary" [disabled]="procesando" (click)="cerrarAceptacion()">
+          No
+        </button>
+        <button type="button" class="btn-aceptar-confirmar" [disabled]="procesando" (click)="confirmarAceptacion()">
+          {{ procesando ? 'Aceptando...' : 'Sí, aceptar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" *ngIf="mostrarRechazo" (click)="cerrarRechazo()">
+    <div class="modal-card modal-confirmar modal-rechazo" (click)="$event.stopPropagation()">
+      <div class="modal-header modal-header-compact">
+        <div class="modal-icon modal-icon-alerta">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div>
+          <h3>¿Rechazar solicitud?</h3>
+          <p class="modal-subtitulo" *ngIf="solicitudSeleccionada">
+            {{ nombreCompleto(solicitudSeleccionada) }} · {{ solicitudSeleccionada.matricula }}
+          </p>
+        </div>
+      </div>
+
+      <div class="modal-body modal-body-compact">
+        <p>Indica el motivo del rechazo. Se enviará por correo al egresado.</p>
+        <label for="motivo">Motivo del rechazo</label>
+        <textarea id="motivo" rows="4" [(ngModel)]="motivoRechazo"
+                  placeholder="Explica por qué se rechaza la solicitud"></textarea>
+      </div>
+
+      <div class="cert-footer modal-footer-acciones">
+        <button type="button" class="cert-btn-secondary" [disabled]="procesando" (click)="cerrarRechazo()">
+          Cancelar
+        </button>
+        <button type="button" class="btn-rechazar-confirmar" [disabled]="procesando" (click)="confirmarRechazo()">
+          {{ procesando ? 'Rechazando...' : 'Sí, rechazar' }}
         </button>
       </div>
     </div>

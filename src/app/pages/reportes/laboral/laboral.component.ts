@@ -22,8 +22,14 @@ import {
 import { SelectorDescargaPdfComponent } from '../../../components/selector-descarga-pdf/selector-descarga-pdf.component';
 import { repararTextoEnObjeto } from '../../../utils/texto-encoding.util';
 import { Chart, registerables } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import {
+  opcionesGraficaBarraHorizontal,
+  opcionesGraficaBarraVertical,
+  opcionesGraficaCircular
+} from '../../../utils/graficas-chart-options.util';
 
-Chart.register(...registerables);
+Chart.register(...registerables, ChartDataLabels);
 
 @Component({
   selector: 'app-laboral',
@@ -274,10 +280,11 @@ export class LaboralComponent implements OnInit, OnDestroy {
     const canvas = document.getElementById(id) as HTMLCanvasElement;
     if (!canvas) return;
     const data = labels.map(l => laborales.filter(x => this.normalizar(x[campo]) === this.normalizar(l)).length);
+    const total = data.reduce((a, b) => a + b, 0);
     const chart = new Chart(canvas, {
       type: 'pie',
       data: { labels, datasets: [{ data, backgroundColor: colors }] },
-      options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+      options: opcionesGraficaCircular(total)
     });
     this.charts.push(chart);
   }
@@ -286,10 +293,11 @@ export class LaboralComponent implements OnInit, OnDestroy {
     const canvas = document.getElementById(id) as HTMLCanvasElement;
     if (!canvas) return;
     const data = labels.map(l => laborales.filter(x => this.normalizar(x[campo]) === this.normalizar(l)).length);
+    const total = data.reduce((a, b) => a + b, 0);
     const chart = new Chart(canvas, {
       type: 'doughnut',
       data: { labels, datasets: [{ data, backgroundColor: colors }] },
-      options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+      options: opcionesGraficaCircular(total)
     });
     this.charts.push(chart);
   }
@@ -301,7 +309,7 @@ export class LaboralComponent implements OnInit, OnDestroy {
     const chart = new Chart(canvas, {
       type: 'bar',
       data: { labels, datasets: [{ label: 'Egresados', data, backgroundColor: colors }] },
-      options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+      options: opcionesGraficaBarraVertical()
     });
     this.charts.push(chart);
   }
@@ -321,17 +329,7 @@ export class LaboralComponent implements OnInit, OnDestroy {
           backgroundColor: coloresPrestaciones(labels.length)
         }]
       },
-      options: {
-        indexAxis: 'y',
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: {
-            beginAtZero: true,
-            ticks: { stepSize: 1 }
-          }
-        }
-      }
+      options: opcionesGraficaBarraHorizontal()
     });
     this.charts.push(chart);
   }

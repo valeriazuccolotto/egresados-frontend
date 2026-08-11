@@ -1,0 +1,57 @@
+:host {
+  display: inline-flex;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.btn-validar-campo {
+  min-width: 92px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid #2f8f83;
+  background: linear-gradient(180deg, #3aa396 0%, #2f8f83 100%);
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 8px rgba(47, 143, 131, 0.22);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.btn-validar-campo:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(47, 143, 131, 0.28);
+  background: linear-gradient(180deg, #43b0a1 0%, #338a7f 100%);
+}
+
+.btn-validar-campo:disabled {
+  opacity: 0.65;
+  cursor: wait;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-validar-campo i {
+  font-size: 12px;
+}
+
+.etiqueta-validado {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #ecfdf3;
+  border: 1px solid #86efac;
+  color: #15803d;
+  font-size: 12px;
+  font-weight: 700;
+}

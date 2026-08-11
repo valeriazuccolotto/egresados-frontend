@@ -10,6 +10,13 @@ import { forkJoin } from 'rxjs';
 
 import { Chart, registerables } from 'chart.js';
 
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+import {
+  opcionesGraficaBarraHorizontal,
+  opcionesGraficaBarraVertical
+} from '../../../../utils/graficas-chart-options.util';
+
 import { EgresadoExpedienteModalComponent } from '../../../../components/egresado-expediente-modal/egresado-expediente-modal.component';
 
 import { GraficasDataService } from '../../../../services/graficas-data.service';
@@ -62,7 +69,7 @@ import { repararTexto } from '../../../../utils/texto-encoding.util';
 
 
 
-Chart.register(...registerables);
+Chart.register(...registerables, ChartDataLabels);
 
 
 
@@ -164,7 +171,7 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
 
     { id: 'indice', label: 'Índice' },
 
-    { id: 'graficas', label: 'Gráficas de trabajo' },
+    { id: 'graficas', label: 'Todos los estados' },
 
     { id: 'top-estados', label: 'Estados con más egresados' },
 
@@ -796,6 +803,31 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
 
 
 
+  /** Todos los estados del mapa con su conteo (incluye ceros). */
+  private datosTodosLosEstados(): { estado: string; total: number }[] {
+
+    const datos = this.estadosMapa.map(estadoMapa => ({
+
+      estado: estadoMapa.estado,
+
+      total: this.conteoPorEstado[estadoMapa.estado] ?? 0
+
+    }));
+
+    const extranjero = this.marcadores.find(m => m.esExtranjero);
+
+    if (extranjero) {
+
+      datos.push({ estado: 'Extranjero', total: extranjero.egresados.length });
+
+    }
+
+    return datos.sort((a, b) => a.estado.localeCompare(b.estado, 'es'));
+
+  }
+
+
+
   private construirGraficasVista(): void {
 
     if (this.vistaActiva === 'graficas') {
@@ -822,15 +854,14 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
 
     }
 
-    const datos = this.datosEstadosOrdenados().sort((a, b) =>
-
-      a.estado.localeCompare(b.estado, 'es')
-
-    );
+    const datos = this.datosTodosLosEstados();
 
     const labels = datos.map(d => d.estado);
 
     const values = datos.map(d => d.total);
+
+    const opcionesEstados = opcionesGraficaBarraVertical(60) as any;
+    opcionesEstados.plugins = { ...opcionesEstados.plugins, legend: { display: false } };
 
     const chart = new Chart(canvas, {
 
@@ -856,21 +887,7 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
 
       },
 
-      options: {
-
-        maintainAspectRatio: false,
-
-        plugins: { legend: { display: false } },
-
-        scales: {
-
-          y: { beginAtZero: true, ticks: { stepSize: 1 } },
-
-          x: { ticks: { maxRotation: 60, minRotation: 45 } }
-
-        }
-
-      }
+      options: opcionesEstados
 
     });
 
@@ -890,11 +907,14 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
 
     }
 
-    const top = this.datosEstadosOrdenados().slice(0, 10);
+    const top = this.datosEstadosOrdenados().filter(d => d.total > 0).slice(0, 10);
 
     const labels = top.map(d => d.estado);
 
     const values = top.map(d => d.total);
+
+    const opcionesTop = opcionesGraficaBarraHorizontal() as any;
+    opcionesTop.plugins = { ...opcionesTop.plugins, legend: { display: false } };
 
     const chart = new Chart(canvas, {
 
@@ -920,21 +940,7 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
 
       },
 
-      options: {
-
-        indexAxis: 'y',
-
-        maintainAspectRatio: false,
-
-        plugins: { legend: { display: false } },
-
-        scales: {
-
-          x: { beginAtZero: true, ticks: { stepSize: 1 } }
-
-        }
-
-      }
+      options: opcionesTop
 
     });
 
@@ -1154,7 +1160,7 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
 
   private readonly tituloVistaPdf: Record<VistaMapaLaboral, string> = {
     indice: 'Mapa de ubicación laboral (México)',
-    graficas: 'Egresados por estado de trabajo',
+    graficas: 'Egresados por estado de trabajo (todos los estados)',
     'top-estados': 'Estados con más egresados',
     oaxaca: 'Mapa de Oaxaca por municipio'
   };
@@ -1330,11 +1336,11 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
 
       case 'graficas':
 
-        return 'Egresados por estado de trabajo';
+        return 'Egresados por estado de trabajo (todos los estados)';
 
       case 'top-estados':
 
-        return 'Estados con más egresados';
+        return 'Estados con más egresados (top 10)';
 
       case 'oaxaca':
 
@@ -1356,9 +1362,11 @@ export class MapaUbicacionLaboralComponent implements OnInit, OnDestroy {
 
       case 'graficas':
 
+        return 'Conteo por cada estado conforme van registrando egresados';
+
       case 'top-estados':
 
-        return 'Distribución según el campus seleccionado';
+        return 'Solo los estados con mayor número de egresados laborando';
 
       case 'oaxaca':
 

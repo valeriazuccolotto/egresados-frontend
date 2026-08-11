@@ -6,6 +6,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { GraficasDataService } from '../../../../services/graficas-data.service';
 import { contarPorCampo, ETIQUETAS_MODALIDAD_LABORAL, coloresGrafica } from '../../../../utils/graficas-reporte.util';
 import { descargarGraficaPdfPorId } from '../../../../utils/descarga-graficas.util';
+import { opcionesGraficaCircular, opcionesGraficaBarraVertical, opcionesGraficaBarraHorizontal } from '../../../../utils/graficas-chart-options.util';
 Chart.register(...registerables, ChartDataLabels);
 
 @Component({
@@ -43,21 +44,7 @@ export class ModalidadLaboralComponent implements OnInit, OnDestroy {
     this.chart = new Chart(canvas, {
       type: 'doughnut',
       data: { labels, datasets: [{ data: values, backgroundColor: coloresGrafica(labels.length) }] },
-      options: {
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'bottom', labels: { font: { size: 14 } } },
-          tooltip: { enabled: false },
-          datalabels: {
-            color: '#fff',
-            font: { size: 13, weight: 'bold' },
-            formatter: (value: number) => {
-              if (total === 0 || value === 0) return '';
-              return `${value}\n(${((value/total)*100).toFixed(1)}%)`;
-            }
-          }
-        }
-      }
+      options: opcionesGraficaCircular(total)
     });
   }
 

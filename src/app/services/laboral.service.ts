@@ -42,7 +42,7 @@ export class LaboralService {
   getMunicipiosOaxaca(): Observable<string[]> {
     return this.http.get<string[]>(this.municipiosUrl).pipe(
       catchError(() => this.http.get<string[]>(`${this.laboralUrl}/catalogo/municipios-oaxaca`)),
-      catchError(() => this.http.get<string[]>('/assets/catalogos/municipios-oaxaca.json'))
+      catchError(() => this.http.get<string[]>('/assets/catalogos/municipios-oaxaca.pdf'))
     );
   }
 

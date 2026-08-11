@@ -1,0 +1,12 @@
+<button
+  *ngIf="debeMostrarBoton"
+  type="button"
+  class="btn-validar-campo"
+  [disabled]="deshabilitado || validando"
+  (click)="validar.emit(); $event.stopPropagation()"
+  title="Validar que el dato es correcto"
+>
+  <i class="fas fa-check-circle" *ngIf="!validando"></i>
+  <i class="fas fa-spinner fa-spin" *ngIf="validando"></i>
+  <span>{{ validando ? 'Validando...' : 'Validar' }}</span>
+</button>

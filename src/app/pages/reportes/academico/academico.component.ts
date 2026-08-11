@@ -15,8 +15,14 @@ import {
 import { SelectorDescargaPdfComponent } from '../../../components/selector-descarga-pdf/selector-descarga-pdf.component';
 import { repararTextoEnObjeto } from '../../../utils/texto-encoding.util';
 import { Chart, registerables } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+import {
+  opcionesGraficaBarraHorizontal,
+  opcionesGraficaBarraVertical,
+  opcionesGraficaCircular
+} from '../../../utils/graficas-chart-options.util';
 
-Chart.register(...registerables);
+Chart.register(...registerables, ChartDataLabels);
 
 @Component({
   selector: 'app-academico',
@@ -246,13 +252,14 @@ export class AcademicoComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  crearGrafica(id: string, tipo: any, labels: string[], data: number[], colors: string[]) {
+  crearGrafica(id: string, tipo: 'pie' | 'doughnut', labels: string[], data: number[], colors: string[]) {
     const canvas = document.getElementById(id) as HTMLCanvasElement;
     if (!canvas) return;
+    const total = data.reduce((a, b) => a + b, 0);
     const chart = new Chart(canvas, {
       type: tipo,
       data: { labels, datasets: [{ data, backgroundColor: colors }] },
-      options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+      options: opcionesGraficaCircular(total)
     });
     this.charts.push(chart);
   }
@@ -263,7 +270,7 @@ export class AcademicoComponent implements OnInit, AfterViewInit, OnDestroy {
     const chart = new Chart(canvas, {
       type: 'bar',
       data: { labels, datasets: [{ label: 'Egresados', data, backgroundColor: colors }] },
-      options: { maintainAspectRatio: false, plugins: { legend: { display: false } } }
+      options: opcionesGraficaBarraVertical()
     });
     this.charts.push(chart);
   }
@@ -274,11 +281,7 @@ export class AcademicoComponent implements OnInit, AfterViewInit, OnDestroy {
     const chart = new Chart(canvas, {
       type: 'bar',
       data: { labels, datasets: [{ label: 'Egresados', data, backgroundColor: colors }] },
-      options: {
-        indexAxis: 'y',
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } }
-      }
+      options: opcionesGraficaBarraHorizontal()
     });
     this.charts.push(chart);
   }

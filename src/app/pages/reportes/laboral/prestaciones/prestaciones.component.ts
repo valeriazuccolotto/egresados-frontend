@@ -7,6 +7,7 @@ import { GraficasDataService } from '../../../../services/graficas-data.service'
 import { LaboralService } from '../../../../services/laboral.service';
 import { coloresPrestaciones, datosGraficaPrestaciones } from '../../../../utils/prestaciones-reporte.util';
 import { descargarGraficaPdfPorId } from '../../../../utils/descarga-graficas.util';
+import { opcionesGraficaBarraHorizontal } from '../../../../utils/graficas-chart-options.util';
 import { repararTextoEnObjeto } from '../../../../utils/texto-encoding.util';
 
 Chart.register(...registerables, ChartDataLabels);
@@ -74,22 +75,7 @@ export class PrestacionesComponent implements OnInit, OnDestroy {
           backgroundColor: coloresPrestaciones(labels.length)
         }]
       },
-      options: {
-        indexAxis: 'y',
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: { enabled: false },
-          datalabels: {
-            anchor: 'end',
-            align: 'end',
-            color: '#333',
-            font: { size: 13, weight: 'bold' },
-            formatter: (value: number) => value === 0 ? '' : value
-          }
-        },
-        scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
-      }
+      options: opcionesGraficaBarraHorizontal()
     });
   }
 

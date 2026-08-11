@@ -1,7 +1,9 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { RouterModule, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { filter } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { SolicitudesPendientesAdminService } from '../../services/solicitudes-pendientes-admin.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -10,12 +12,18 @@ import { filter } from 'rxjs/operators';
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit, OnDestroy {
   @Input() abierto = true;
   reportesAbierto = false;
   subMenuAbierto: string | null = null;
+  haySolicitudesPendientes = false;
 
-  constructor(private router: Router) {
+  private pendientesSub?: Subscription;
+
+  constructor(
+    private router: Router,
+    private solicitudesPendientesAdmin: SolicitudesPendientesAdminService
+  ) {
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd)
     ).subscribe((e: any) => {
@@ -28,6 +36,17 @@ export class SidebarComponent {
 
       if (url.includes('reportes')) this.reportesAbierto = true;
     });
+  }
+
+  ngOnInit(): void {
+    this.solicitudesPendientesAdmin.iniciarPolling();
+    this.pendientesSub = this.solicitudesPendientesAdmin.hayPendientes$.subscribe(
+      pendiente => this.haySolicitudesPendientes = pendiente
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.pendientesSub?.unsubscribe();
   }
 
   toggleReportes() {

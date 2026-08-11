@@ -16,11 +16,6 @@
       Solicitar información
     </a>
 
-    <a routerLink="/admin/solicitudes" routerLinkActive="activo">
-      <span class="material-icons">person_add</span>
-      Solicitudes
-    </a>
-
     <!-- REPORTES -->
     <div class="menu-item" [class.abierto]="reportesAbierto" (click)="toggleReportes()">
       <span class="material-icons">bar_chart</span>
@@ -150,6 +145,17 @@
     <a routerLink="/admin/bolsaTrabajo" routerLinkActive="activo">
       <span class="material-icons">work</span>
       Bolsa De Trabajo
+    </a>
+
+    <a
+      routerLink="/admin/solicitudes"
+      routerLinkActive="activo"
+      class="menu-solicitudes"
+      [class.menu-solicitudes-alerta]="haySolicitudesPendientes"
+    >
+      <span class="material-icons">person_add</span>
+      Solicitudes
+      <span class="menu-alerta-badge" *ngIf="haySolicitudesPendientes" aria-hidden="true"></span>
     </a>
 
 

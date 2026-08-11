@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SolicitudRegistro } from '../../models/solicitud-registro';
 import { SolicitudRegistroService } from '../../services/solicitud-registro.service';
+import { SolicitudesPendientesAdminService } from '../../services/solicitudes-pendientes-admin.service';
 
 @Component({
   selector: 'app-solicitudes-registro',
@@ -21,10 +22,14 @@ export class SolicitudesRegistroComponent implements OnInit {
 
   solicitudSeleccionada: SolicitudRegistro | null = null;
   mostrarRechazo = false;
+  mostrarAceptacion = false;
   motivoRechazo = '';
   procesando = false;
 
-  constructor(private solicitudRegistroService: SolicitudRegistroService) {}
+  constructor(
+    private solicitudRegistroService: SolicitudRegistroService,
+    private solicitudesPendientesAdmin: SolicitudesPendientesAdminService
+  ) {}
 
   ngOnInit(): void {
     this.cargar();
@@ -57,20 +62,37 @@ export class SolicitudesRegistroComponent implements OnInit {
     return [s.nombre, s.apellidoPaterno, s.apellidoMaterno].filter(Boolean).join(' ');
   }
 
-  aceptar(s: SolicitudRegistro): void {
-    if (!s.idSolicitud || this.procesando) return;
-    if (!confirm(`¿Aceptar el registro de ${this.nombreCompleto(s)} (${s.matricula})?`)) {
+  abrirAceptacion(s: SolicitudRegistro): void {
+    this.solicitudSeleccionada = s;
+    this.mostrarAceptacion = true;
+  }
+
+  cerrarAceptacion(): void {
+    if (this.procesando) {
+      return;
+    }
+    this.mostrarAceptacion = false;
+    this.solicitudSeleccionada = null;
+  }
+
+  confirmarAceptacion(): void {
+    if (!this.solicitudSeleccionada?.idSolicitud || this.procesando) {
       return;
     }
 
     this.procesando = true;
     this.mensaje = '';
     this.errorMsg = '';
-    this.solicitudRegistroService.aceptar(s.idSolicitud, this.matriculaAdmin()).subscribe({
+    this.solicitudRegistroService.aceptar(
+      this.solicitudSeleccionada.idSolicitud,
+      this.matriculaAdmin()
+    ).subscribe({
       next: () => {
         this.procesando = false;
+        this.cerrarAceptacion();
         this.mensaje = 'Solicitud aceptada. Se envió el correo con la contraseña temporal.';
         this.cargar();
+        this.solicitudesPendientesAdmin.actualizar();
       },
       error: (err) => {
         this.procesando = false;
@@ -86,6 +108,9 @@ export class SolicitudesRegistroComponent implements OnInit {
   }
 
   cerrarRechazo(): void {
+    if (this.procesando) {
+      return;
+    }
     this.mostrarRechazo = false;
     this.solicitudSeleccionada = null;
     this.motivoRechazo = '';
@@ -112,6 +137,7 @@ export class SolicitudesRegistroComponent implements OnInit {
         this.cerrarRechazo();
         this.mensaje = 'Solicitud rechazada. Se envió el correo con el motivo.';
         this.cargar();
+        this.solicitudesPendientesAdmin.actualizar();
       },
       error: (err) => {
         this.procesando = false;
